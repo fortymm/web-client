@@ -4,7 +4,7 @@
       <form class="grid grid-cols-1 gap-6" @submit.prevent="signUp">
         <div
           v-if="submissionFailed"
-          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative pb-"
+          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
           role="alert"
         >
           <span class="block sm:inline">
@@ -92,35 +92,34 @@ export default Vue.extend({
     }
   },
   methods: {
-    signUp() {
+    async signUp() {
       this.$data.submissionFailed = false
       this.$data.errors = []
       this.$data.signingUp = true
-      fetch('https://www.fortymm.com/api/v1/users', {
-        method: 'POST',
-        body: JSON.stringify({ user: { ...this.$data.user } }),
-      })
-        .then((response) => {
-          this.$data.submissionFailed = false
-          if (response.ok || response.status === 422) {
-            return response.json()
-          }
 
-          return Promise.reject(new Error())
-        })
-        .then(({ data, errors }) => {
-          if (data) {
-            this.$emit('user-created', data)
+      try {
+        const signUpRequest = await fetch(
+          'https://www.fortymm.com/api/v1/users',
+          {
+            method: 'POST',
+            body: JSON.stringify({ user: { ...this.$data.user } }),
           }
+        )
 
-          this.errors = errors || []
-        })
-        .catch(() => {
+        if (signUpRequest.ok) {
+          const { data } = await signUpRequest.json()
+          this.$emit('user-created', data)
+        } else if (signUpRequest.status === 422) {
+          const { errors } = await signUpRequest.json()
+          this.$data.errors = errors
+        } else {
           this.$data.submissionFailed = true
-        })
-        .finally(() => {
-          this.$data.signingUp = false
-        })
+        }
+      } catch {
+        this.$data.submissionFailed = true
+      }
+
+      this.$data.signingUp = false
     },
   },
 })

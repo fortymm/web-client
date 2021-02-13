@@ -18,7 +18,7 @@ const signUpForm = {
   },
 }
 
-const signIn = (username, emailAddress, password) => {
+const signUp = (username, emailAddress, password) => {
   userEvent.type(signUpForm.usernameInput, username)
   userEvent.type(signUpForm.emailAddressInput, emailAddress)
   userEvent.type(signUpForm.passwordInput, password)
@@ -57,7 +57,7 @@ describe('SignUpForm', () => {
 
   describe('while the sign up request is pending', () => {
     beforeEach(() =>
-      signIn('username', 'email-address@gmail.com', 'my super secret password')
+      signUp('username', 'email-address@gmail.com', 'my super secret password')
     )
 
     it('disables the username input', () => {
@@ -106,7 +106,7 @@ describe('SignUpForm', () => {
           )
         })
       )
-      signIn('username', 'email-address@gmail.com', 'my super secret password')
+      signUp('username', 'email-address@gmail.com', 'my super secret password')
 
       await waitFor(() => expect(signUpForm.submitButton).toBeDisabled())
       await waitFor(() => expect(signUpForm.submitButton).toBeEnabled())
@@ -145,7 +145,7 @@ describe('SignUpForm', () => {
           res(ctx.text('asdf'))
         )
       )
-      signIn('username', 'email-address@gmail.com', 'my super secret password')
+      signUp('username', 'email-address@gmail.com', 'my super secret password')
 
       await waitFor(() => expect(signUpForm.submitButton).toBeDisabled())
       await waitFor(() => expect(signUpForm.submitButton).toBeEnabled())
@@ -184,7 +184,7 @@ describe('SignUpForm', () => {
           return res(ctx.status(500), ctx.json({}))
         })
       )
-      signIn('username', 'email-address@gmail.com', 'my super secret password')
+      signUp('username', 'email-address@gmail.com', 'my super secret password')
 
       await waitFor(() => expect(signUpForm.submitButton).toBeDisabled())
       await waitFor(() => expect(signUpForm.submitButton).toBeEnabled())
@@ -223,7 +223,7 @@ describe('SignUpForm', () => {
           res.networkError('OOPS')
         )
       )
-      signIn('username', 'email-address@gmail.com', 'my super secret password')
+      signUp('username', 'email-address@gmail.com', 'my super secret password')
 
       await waitFor(() => expect(signUpForm.submitButton).toBeDisabled())
       await waitFor(() => expect(signUpForm.submitButton).toBeEnabled())
@@ -255,7 +255,7 @@ describe('SignUpForm', () => {
 
   describe('when signing up is successful', () => {
     beforeEach(async () => {
-      signIn('username', 'email-address@gmail.com', 'my super secret password')
+      signUp('username', 'email-address@gmail.com', 'my super secret password')
       await waitFor(() => expect(emitted()).not.toEqual({}))
     })
 
