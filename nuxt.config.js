@@ -1,3 +1,8 @@
+const isDevelopment = process.env.NODE_ENV === 'development'
+const developmentEnvironmentPlugins = isDevelopment
+  ? ['~/plugins/mocks.client.js']
+  : []
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -17,7 +22,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [...developmentEnvironmentPlugins],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
