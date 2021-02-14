@@ -4,11 +4,19 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapMutations } from 'vuex'
+import SignInForm from '@/components/SignInForm.vue'
 export default Vue.extend({
+  components: {
+    SignInForm,
+  },
+  middleware: 'unauthenticated',
   methods: {
-    redirectToTheLandingPage() {
+    redirectToTheLandingPage(event: any) {
+      this.signIn(event)
       this.$router.push('/')
     },
+    ...mapMutations({ signIn: 'signIn' }),
   },
 })
 </script>
