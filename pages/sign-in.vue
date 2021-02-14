@@ -10,6 +10,7 @@ export default Vue.extend({
   components: {
     SignInForm,
   },
+  layout: 'centered',
   middleware: 'unauthenticated',
   methods: {
     redirectToTheLandingPage(event: any) {
