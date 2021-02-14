@@ -26,7 +26,10 @@ describe('/sign-in', () => {
   beforeEach(() => ($router = { push: jest.fn() }))
 
   it('redirects to / when a user signs in', async () => {
-    const store = { state: {}, mutations: { signIn: jest.fn() } }
+    const store = {
+      state: { session: {} },
+      mutations: { 'session/signIn': jest.fn() },
+    }
     render(SignIn, { store, mocks: { $router } })
     signIn('email-address@gmail.com', 'my super secret password')
     await waitFor(() => expect($router.push).toHaveBeenCalledWith('/'))
@@ -35,7 +38,10 @@ describe('/sign-in', () => {
 
   it('updates the current session when a user signs in', async () => {
     const signInMock = jest.fn()
-    const store = { state: {}, mutations: { signIn: signInMock } }
+    const store = {
+      state: {},
+      mutations: { 'session/signIn': signInMock },
+    }
     render(SignIn, { store, mocks: { $router } })
     signIn('email-address@gmail.com', 'my super secret password')
     await waitFor(() => expect(signInMock).toHaveBeenCalled())

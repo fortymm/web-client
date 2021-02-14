@@ -17,7 +17,7 @@ export default Vue.extend({
       this.signIn(event)
       this.$router.push('/')
     },
-    ...mapMutations({ signIn: 'signIn' }),
+    ...mapMutations({ signIn: 'session/signIn' }),
   },
 })
 </script>
