@@ -6,7 +6,7 @@ describe("App", () => {
   test("renders the app heading", () => {
     render(<App />);
     expect(
-      screen.getByRole("heading", { name: "Vite + React" })
+      screen.getByRole("heading", { name: "Vite + React" }),
     ).toBeInTheDocument();
   });
 });
