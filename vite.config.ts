@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   preview: {
-    port: 5173,
+    port: 5175,
   },
   test: {
     environment: "happy-dom",
