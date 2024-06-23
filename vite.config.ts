@@ -9,9 +9,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  preview: {
-    port: 5175,
-  },
   test: {
     environment: "happy-dom",
     setupFiles: "./setupTests.ts",
