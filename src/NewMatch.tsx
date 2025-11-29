@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import NewMatchHero from './NewMatch/NewMatchHero'
 import NewMatchSearch from './NewMatch/NewMatchSearch'
 import NewMatchContent from './NewMatch/NewMatchContent'
@@ -9,6 +10,11 @@ import StickyBottomPanel from './NewMatch/StickyBottomPanel'
 
 function NewMatch() {
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
+  const navigate = useNavigate()
+
+  const handleMatchCreated = (matchId: string) => {
+    navigate(`/matches/${matchId}/score`)
+  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
@@ -26,7 +32,10 @@ function NewMatch() {
 
       <StickyBottomPanel>
         <MatchLengthControl value={matchLength} onChange={setMatchLength} />
-        <QuickMatchButton />
+        <QuickMatchButton
+          matchLength={matchLength}
+          onMatchCreated={handleMatchCreated}
+        />
       </StickyBottomPanel>
     </div>
   )

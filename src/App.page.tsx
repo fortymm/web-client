@@ -1,11 +1,23 @@
 import { render, screen } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { routes } from './routes'
+import { TestQueryProvider, createTestQueryClient } from './test/utils'
+import { type QueryClient } from '@tanstack/react-query'
+
+interface RenderOptions {
+  queryClient?: QueryClient
+}
 
 export const appPage = {
-  render(initialRoute: string = '/') {
+  render(initialRoute: string = '/', options: RenderOptions = {}) {
+    const { queryClient = createTestQueryClient() } = options
     const router = createMemoryRouter(routes, { initialEntries: [initialRoute] })
-    render(<RouterProvider router={router} />)
+    render(
+      <TestQueryProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </TestQueryProvider>
+    )
+    return { queryClient }
   },
 
   get navbar() {

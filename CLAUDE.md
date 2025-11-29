@@ -16,15 +16,21 @@ npx tsc -b           # Type check only
 - **Framework**: React 19 + TypeScript 5.9
 - **Build**: Vite 7
 - **Styling**: Tailwind CSS 4 + DaisyUI 5
-- **Testing**: Vitest + @testing-library/react + happy-dom
+- **Testing**: Vitest + @testing-library/react + happy-dom + MSW
 - **Routing**: React Router DOM 7
+- **Data Fetching**: React Query + Axios
+- **Forms**: React Hook Form + Zod
 
 ## Project Structure
 
 ```
 src/
-├── NewMatch/           # Feature folder (components + tests + page objects)
-├── test/setup.ts       # Test configuration
+├── NewMatch/           # Feature folder (components + hooks + tests + page objects)
+├── lib/                # Shared utilities (api client, etc.)
+├── test/
+│   ├── setup.ts        # Test configuration + MSW setup
+│   ├── utils.ts        # Test utilities (QueryClientProvider wrapper)
+│   └── mocks/          # MSW handlers and server
 ├── App.tsx             # Main router wrapper
 ├── Layout.tsx          # Root layout with navbar
 ├── routes.tsx          # Route definitions
@@ -63,6 +69,91 @@ describe('QuickMatchButton', () => {
 })
 ```
 
+## Hook Page Objects
+
+Hooks that make API calls follow a similar pattern with a page object for testing:
+
+1. **Hook** (`useFeature.ts`) - The custom hook with Zod schema
+2. **Page Object** (`useFeature.page.ts`) - Test helpers including `requestHandler`
+3. **Tests** use the page object's `requestHandler` for MSW mocking
+
+### Example
+
+```typescript
+// useCreateMatch.ts
+export const createMatchPayloadSchema = z.object({
+  opponentId: z.string().nullable(),
+  matchLength: z.union([z.literal(1), z.literal(3), z.literal(5), z.literal(7)]),
+})
+
+export type CreateMatchPayload = z.infer<typeof createMatchPayloadSchema>
+
+export function useCreateMatch() {
+  return useMutation({
+    mutationFn: async (payload: CreateMatchPayload) => {
+      const validatedPayload = createMatchPayloadSchema.parse(payload)
+      const response = await api.post('/matches', validatedPayload)
+      return response.data
+    },
+  })
+}
+
+export { ENDPOINT as CREATE_MATCH_ENDPOINT }
+
+// useCreateMatch.page.ts
+export const useCreateMatchPage = {
+  render(options = {}) {
+    const queryClient = options.queryClient ?? createTestQueryClient()
+    const { result } = renderHook(() => useCreateMatch(), {
+      wrapper: createWrapper(queryClient),
+    })
+    return { result, queryClient }
+  },
+
+  requestHandler(handler: HttpResponseResolver) {
+    return http.post(FULL_ENDPOINT, handler)
+  },
+}
+
+// In tests - use the page object's requestHandler
+server.use(
+  useCreateMatchPage.requestHandler(async ({ request }) => {
+    const body = await request.json()
+    return HttpResponse.json({ id: 'match-123', ...body })
+  })
+)
+```
+
+## Hook Colocation
+
+**Keep hooks with the components that use them.** Only place hooks in a shared `src/hooks/` directory if they are used across multiple feature folders.
+
+```
+src/
+├── NewMatch/
+│   ├── QuickMatchButton.tsx
+│   ├── QuickMatchButton.page.tsx
+│   ├── QuickMatchButton.test.tsx
+│   ├── useCreateMatch.ts          # Hook lives with component
+│   └── useCreateMatch.page.ts     # Hook page object
+```
+
+## Zod Schema Conventions
+
+- Define schemas for all API payloads using Zod
+- Export the schema and inferred type together
+- Use `.parse()` to validate before sending to API
+- Use `@hookform/resolvers/zod` for form validation
+
+```typescript
+export const createMatchPayloadSchema = z.object({
+  opponentId: z.string().nullable(),
+  matchLength: z.union([z.literal(1), z.literal(3), z.literal(5), z.literal(7)]),
+})
+
+export type CreateMatchPayload = z.infer<typeof createMatchPayloadSchema>
+```
+
 ## Code Conventions
 
 - **Queries**: Prefer `getByRole()` > `getByText()` > `getByLabelText()`
@@ -70,6 +161,7 @@ describe('QuickMatchButton', () => {
 - **Props**: Use TypeScript interfaces; discriminated unions for restricted strings
 - **Tests**: Always use page objects; never query DOM directly in tests
 - **Composition**: Page objects delegate to child page objects
+- **API Mocking**: Use hook page objects' `requestHandler` method - never hardcode URLs in tests
 
 ## CI Pipeline
 
