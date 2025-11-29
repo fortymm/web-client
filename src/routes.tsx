@@ -1,7 +1,7 @@
 import Layout from './Layout'
 import LandingPage from './LandingPage'
 import MatchDetailPage from './MatchDetailPage'
-import NewMatchPage from './pages/NewMatchPage'
+import NewMatch from './NewMatch'
 
 export const routes = [
   {
@@ -20,6 +20,6 @@ export const routes = [
   },
   {
     path: '/match/new',
-    element: <NewMatchPage />,
+    element: <NewMatch />,
   },
 ]

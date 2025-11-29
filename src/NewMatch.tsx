@@ -1,16 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-import {
-  NewMatchHero,
-  NewMatchSearch,
-  NewMatchContent,
-  SectionHeader,
-  MatchLengthControl,
-  QuickMatchButton,
-  StickyBottomPanel,
-} from '../components/new-match'
+import NewMatchHero from './NewMatch/NewMatchHero'
+import NewMatchSearch from './NewMatch/NewMatchSearch'
+import NewMatchContent from './NewMatch/NewMatchContent'
+import SectionHeader from './NewMatch/SectionHeader'
+import MatchLengthControl from './NewMatch/MatchLengthControl'
+import QuickMatchButton from './NewMatch/QuickMatchButton'
+import StickyBottomPanel from './NewMatch/StickyBottomPanel'
 
-function NewMatchPage() {
+function NewMatch() {
   const navigate = useNavigate()
 
   const handleBack = () => {
@@ -50,4 +48,4 @@ function NewMatchPage() {
   )
 }
 
-export default NewMatchPage
+export default NewMatch
