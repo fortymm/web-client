@@ -2,21 +2,28 @@ import { describe, it, expect } from 'vitest'
 import { appPage } from './App.page'
 
 describe('App', () => {
-  it('renders the counter button', () => {
-    appPage.render()
-    expect(appPage.currentCount).toBe(0)
+  describe('routing', () => {
+    it('renders the layout on the root route', () => {
+      appPage.render('/')
+      expect(appPage.navbar).toBeInTheDocument()
+      expect(appPage.main).toBeInTheDocument()
+    })
+
+    it('renders the brand link in the navbar', () => {
+      appPage.render('/')
+      expect(appPage.brandLink).toBeInTheDocument()
+    })
   })
 
-  it('increments the count when clicked', async () => {
-    appPage.render()
+  describe('layout structure', () => {
+    it('has the navbar with FortyMM branding', () => {
+      appPage.render('/')
+      expect(appPage.brandLink).toHaveTextContent('FortyMM')
+    })
 
-    await appPage.clickIncreaseCount()
-    expect(appPage.currentCount).toBe(1)
-
-    await appPage.clickIncreaseCount()
-    expect(appPage.currentCount).toBe(2)
-
-    await appPage.clickIncreaseCount()
-    expect(appPage.currentCount).toBe(3)
+    it('has a main content area', () => {
+      appPage.render('/')
+      expect(appPage.main).toBeInTheDocument()
+    })
   })
 })

@@ -1,23 +1,22 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import App from './App'
+import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { routes } from './routes'
 
 export const appPage = {
-  render() {
-    render(<App />)
+  render(initialRoute: string = '/') {
+    const router = createMemoryRouter(routes, { initialEntries: [initialRoute] })
+    render(<RouterProvider router={router} />)
   },
 
-  get increaseCountButton() {
-    return screen.getByRole('button')
+  get navbar() {
+    return screen.getByRole('navigation')
   },
 
-  get currentCount() {
-    const text = appPage.increaseCountButton.textContent ?? ''
-    const match = text.match(/count is (\d+)/)
-    return match ? parseInt(match[1], 10) : 0
+  get brandLink() {
+    return screen.getByRole('link', { name: 'FortyMM' })
   },
 
-  async clickIncreaseCount() {
-    await userEvent.click(appPage.increaseCountButton)
+  get main() {
+    return screen.getByRole('main')
   },
 }
