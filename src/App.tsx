@@ -1,19 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Layout from './Layout'
-import LandingPage from './LandingPage'
-
-export const routes = [
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: <LandingPage />,
-      },
-    ],
-  },
-]
+import { routes } from './routes'
 
 const router = createBrowserRouter(routes)
 
