@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { appPage } from './App.page'
 
@@ -7,8 +7,12 @@ export const landingPagePage = {
     appPage.render('/')
   },
 
+  get main() {
+    return screen.getByRole('main')
+  },
+
   get increaseCountButton() {
-    return screen.getByRole('button', { name: /count is \d+/ })
+    return within(landingPagePage.main).getByRole('button', { name: /count is \d+/ })
   },
 
   get currentCount() {
