@@ -37,8 +37,26 @@ describe('NewMatch', () => {
       expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
 
       // Bottom panel
-      expect(newMatchPage.matchLengthControl).toBeInTheDocument()
+      expect(newMatchPage.matchLengthLabel).toBeInTheDocument()
+      expect(newMatchPage.matchLengthGroup).toBeInTheDocument()
       expect(newMatchPage.quickMatchButton).toBeInTheDocument()
+    })
+  })
+
+  describe('match length control', () => {
+    it('defaults to best of 5', () => {
+      newMatchPage.render()
+      expect(newMatchPage.getMatchLengthRadio(5)).toBeChecked()
+    })
+
+    it('allows selecting different match lengths', async () => {
+      newMatchPage.render()
+
+      await newMatchPage.selectMatchLength(3)
+      expect(newMatchPage.getMatchLengthRadio(3)).toBeChecked()
+
+      await newMatchPage.selectMatchLength(7)
+      expect(newMatchPage.getMatchLengthRadio(7)).toBeChecked()
     })
   })
 })

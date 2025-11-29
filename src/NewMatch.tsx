@@ -1,12 +1,15 @@
+import { useState } from 'react'
 import NewMatchHero from './NewMatch/NewMatchHero'
 import NewMatchSearch from './NewMatch/NewMatchSearch'
 import NewMatchContent from './NewMatch/NewMatchContent'
 import SectionHeader from './NewMatch/SectionHeader'
-import MatchLengthControl from './NewMatch/MatchLengthControl'
+import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import StickyBottomPanel from './NewMatch/StickyBottomPanel'
 
 function NewMatch() {
+  const [matchLength, setMatchLength] = useState<MatchLength>(5)
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
@@ -22,7 +25,7 @@ function NewMatch() {
       </div>
 
       <StickyBottomPanel>
-        <MatchLengthControl />
+        <MatchLengthControl value={matchLength} onChange={setMatchLength} />
         <QuickMatchButton />
       </StickyBottomPanel>
     </div>

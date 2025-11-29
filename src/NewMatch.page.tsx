@@ -43,9 +43,25 @@ export const newMatchPage = {
     return sectionHeaderPage.recentPlayersHeader
   },
 
-  // Bottom panel
-  get matchLengthControl() {
-    return matchLengthControlPage.control
+  // Bottom panel - Match length control
+  get matchLengthLabel() {
+    return matchLengthControlPage.label
+  },
+
+  get matchLengthGroup() {
+    return matchLengthControlPage.group
+  },
+
+  get matchLengthRadios() {
+    return matchLengthControlPage.allRadios
+  },
+
+  getMatchLengthRadio(length: 1 | 3 | 5 | 7) {
+    return matchLengthControlPage.getRadio(length)
+  },
+
+  async selectMatchLength(length: 1 | 3 | 5 | 7) {
+    await matchLengthControlPage.selectLength(length)
   },
 
   get quickMatchButton() {
