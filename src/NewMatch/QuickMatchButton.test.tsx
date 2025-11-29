@@ -29,10 +29,10 @@ describe('QuickMatchButton', () => {
       )
     })
 
-    it('displays main text with lightning emoji', () => {
+    it('displays main text with bolt icon', () => {
       quickMatchButtonPage.render()
       expect(quickMatchButtonPage.mainText).toBeInTheDocument()
-      expect(quickMatchButtonPage.button).toHaveTextContent('⚡')
+      expect(quickMatchButtonPage.boltIcon).toBeInTheDocument()
     })
 
     it('displays subtitle text', () => {
@@ -40,9 +40,9 @@ describe('QuickMatchButton', () => {
       expect(quickMatchButtonPage.subtitleText).toBeInTheDocument()
     })
 
-    it('has minimum touch height of 56px', () => {
+    it('has fixed touch height of 56px', () => {
       quickMatchButtonPage.render()
-      expect(quickMatchButtonPage.button).toHaveClass('min-h-[56px]')
+      expect(quickMatchButtonPage.button).toHaveClass('h-[56px]')
     })
 
     it('is full width', () => {
@@ -141,6 +141,7 @@ describe('QuickMatchButton', () => {
           capturedPayload = await request.json() as Record<string, unknown>
           return HttpResponse.json({
             id: 'match-123',
+            playerId: null,
             matchLength: capturedPayload.matchLength,
             opponentId: capturedPayload.opponentId,
             status: 'in_progress',
@@ -165,6 +166,7 @@ describe('QuickMatchButton', () => {
         useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
             id: 'match-456',
+            playerId: null,
             matchLength: 5,
             opponentId: null,
             status: 'in_progress',
@@ -190,6 +192,7 @@ describe('QuickMatchButton', () => {
           capturedMatchLength = body.matchLength as number
           return HttpResponse.json({
             id: 'match-789',
+            playerId: null,
             matchLength: capturedMatchLength,
             opponentId: null,
             status: 'in_progress',
@@ -279,12 +282,18 @@ describe('QuickMatchButton', () => {
       quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
 
-      // Button is now disabled and in loading state
-      // Subsequent clicks should not trigger additional API calls
+      // Wait for button to enter loading state
       await waitFor(() => {
         expect(quickMatchButtonPage.loadingButton).toBeDisabled()
       })
 
+      // Try to click again while loading - should be ignored
+      const loadingButton = quickMatchButtonPage.loadingButton
+      await loadingButton.click()
+      await loadingButton.click()
+      await loadingButton.click()
+
+      // Should still only have one API call
       expect(callCount).toBe(1)
     })
   })

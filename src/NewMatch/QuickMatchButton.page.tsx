@@ -51,6 +51,10 @@ export const quickMatchButtonPage = {
     return screen.getByText(/Quick Match/i)
   },
 
+  get boltIcon() {
+    return screen.getByRole('button').querySelector('svg')
+  },
+
   get subtitleText() {
     return screen.queryByText(/Start now · Choose player later/i)
   },

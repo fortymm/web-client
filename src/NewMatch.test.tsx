@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { screen, waitFor } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import { HttpResponse, delay } from 'msw'
 import { server } from './test/mocks/server'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { useCreateMatchPage } from './NewMatch/useCreateMatch.page'
+import { matchScorePagePage } from './MatchScorePage.page'
 
 describe('NewMatch', () => {
   beforeEach(() => {
@@ -81,6 +82,7 @@ describe('NewMatch', () => {
           capturedPayload = await request.json() as Record<string, unknown>
           return HttpResponse.json({
             id: 'match-123',
+            playerId: null,
             matchLength: capturedPayload.matchLength,
             opponentId: null,
             status: 'in_progress',
@@ -108,6 +110,7 @@ describe('NewMatch', () => {
           capturedPayload = await request.json() as Record<string, unknown>
           return HttpResponse.json({
             id: 'match-456',
+            playerId: null,
             matchLength: capturedPayload.matchLength,
             opponentId: null,
             status: 'in_progress',
@@ -149,6 +152,7 @@ describe('NewMatch', () => {
         useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
             id: 'match-789',
+            playerId: null,
             matchLength: 5,
             opponentId: null,
             status: 'in_progress',
@@ -161,7 +165,7 @@ describe('NewMatch', () => {
       await newMatchPage.clickQuickMatch()
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /Score Match/i })).toBeInTheDocument()
+        expect(matchScorePagePage.heading).toBeInTheDocument()
       })
     })
 
@@ -174,6 +178,7 @@ describe('NewMatch', () => {
           capturedPayloads.push(payload)
           return HttpResponse.json({
             id: `match-${capturedPayloads.length}`,
+            playerId: null,
             matchLength: payload.matchLength,
             opponentId: null,
             status: 'in_progress',

@@ -1,4 +1,5 @@
 import { type FC } from 'react'
+import { BoltIcon } from '@heroicons/react/24/solid'
 import { type MatchLength } from './MatchLengthControl'
 import { useCreateMatch } from './useCreateMatch'
 
@@ -43,28 +44,22 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
   return (
     <button
       type="button"
-      className="btn btn-primary btn-block h-auto py-3 flex-col gap-0 min-h-[56px]"
+      className="btn btn-primary btn-block h-[56px] py-3 flex-col gap-0"
       onClick={handleClick}
       disabled={disabled || isCreating}
       aria-busy={isCreating}
     >
-      {isCreating ? (
-        <>
+      <span className="flex items-center gap-1.5 text-base font-semibold h-6">
+        {isCreating ? (
           <span className="loading loading-spinner loading-sm" />
-          <span className="text-xs font-normal opacity-80">
-            Creating match...
-          </span>
-        </>
-      ) : (
-        <>
-          <span className="flex items-center gap-1.5 text-base font-semibold">
-            <span>⚡</span> Quick Match
-          </span>
-          <span className="text-xs font-normal opacity-80">
-            Start now · Choose player later
-          </span>
-        </>
-      )}
+        ) : (
+          <BoltIcon className="h-5 w-5" />
+        )}
+        <span>Quick Match</span>
+      </span>
+      <span className="text-xs font-normal opacity-80">
+        {isCreating ? 'Creating match...' : 'Start now · Choose player later'}
+      </span>
     </button>
   )
 }

@@ -11,21 +11,23 @@ export const createMatchPayloadSchema = z.object({
 
 export type CreateMatchPayload = z.infer<typeof createMatchPayloadSchema>
 
-export interface CreateMatchResponse {
-  id: string
-  playerId: string | null
-  opponentId: string | null
-  matchLength: number
-  status: string
-  createdAt: string
-}
+export const createMatchResponseSchema = z.object({
+  id: z.string(),
+  playerId: z.string().nullable(),
+  opponentId: z.string().nullable(),
+  matchLength: z.number(),
+  status: z.string(),
+  createdAt: z.string().transform((val) => new Date(val)),
+})
+
+export type CreateMatchResponse = z.infer<typeof createMatchResponseSchema>
 
 export function useCreateMatch() {
   return useMutation({
     mutationFn: async (payload: CreateMatchPayload): Promise<CreateMatchResponse> => {
       const validatedPayload = createMatchPayloadSchema.parse(payload)
-      const response = await api.post<CreateMatchResponse>(ENDPOINT, validatedPayload)
-      return response.data
+      const response = await api.post(ENDPOINT, validatedPayload)
+      return createMatchResponseSchema.parse(response.data)
     },
   })
 }
