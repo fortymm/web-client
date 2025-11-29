@@ -20,4 +20,12 @@ export const landingPagePage = {
   async clickIncreaseCount() {
     await userEvent.click(landingPagePage.increaseCountButton)
   },
+
+  get newMatchLink() {
+    return within(appPage.main).getByRole('link', { name: 'New Match' })
+  },
+
+  async clickNewMatchLink() {
+    await userEvent.click(landingPagePage.newMatchLink)
+  },
 }
