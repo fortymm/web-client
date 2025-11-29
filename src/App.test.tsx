@@ -3,19 +3,39 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect } from 'vitest'
 import App from './App'
 
+const appPage = {
+  user: userEvent.setup(),
+
+  render() {
+    render(<App />)
+  },
+
+  get increaseCountButton() {
+    return screen.getByRole('button')
+  },
+
+  get currentCount() {
+    const text = appPage.increaseCountButton.textContent ?? ''
+    const match = text.match(/count is (\d+)/)
+    return match ? parseInt(match[1], 10) : 0
+  },
+
+  async clickIncreaseCount() {
+    await appPage.user.click(appPage.increaseCountButton)
+  },
+}
+
 describe('App', () => {
   it('renders the counter button', () => {
-    render(<App />)
-    expect(screen.getByRole('button')).toHaveTextContent('count is 0')
+    appPage.render()
+    expect(appPage.currentCount).toBe(0)
   })
 
   it('increments the count when clicked', async () => {
-    const user = userEvent.setup()
-    render(<App />)
+    appPage.render()
 
-    const button = screen.getByRole('button')
-    await user.click(button)
+    await appPage.clickIncreaseCount()
 
-    expect(button).toHaveTextContent('count is 1')
+    expect(appPage.currentCount).toBe(1)
   })
 })
