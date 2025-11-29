@@ -19,7 +19,7 @@ export const routes = [
     ],
   },
   {
-    path: '/match/new',
+    path: '/matches/new',
     element: <NewMatch />,
   },
 ]
