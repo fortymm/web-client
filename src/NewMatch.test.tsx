@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
-import { HttpResponse, delay } from 'msw'
+import { HttpResponse } from 'msw'
 import { server } from './test/mocks/server'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { useCreateMatchPage } from './NewMatch/useCreateMatch.page'
 import { matchScorePagePage } from './MatchScorePage.page'
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 describe('NewMatch', () => {
   beforeEach(() => {
@@ -95,10 +97,11 @@ describe('NewMatch', () => {
       await newMatchPage.clickQuickMatch()
 
       await waitFor(() => {
-        expect(capturedPayload).toEqual({
+        expect(capturedPayload).toMatchObject({
           opponentId: null,
           matchLength: 5,
         })
+        expect(capturedPayload?.id).toMatch(UUID_REGEX)
       })
     })
 
@@ -124,30 +127,15 @@ describe('NewMatch', () => {
       await newMatchPage.clickQuickMatch()
 
       await waitFor(() => {
-        expect(capturedPayload).toEqual({
+        expect(capturedPayload).toMatchObject({
           opponentId: null,
           matchLength: 7,
         })
+        expect(capturedPayload?.id).toMatch(UUID_REGEX)
       })
     })
 
-    it('shows loading state while creating match', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          await delay('infinite')
-          return HttpResponse.json({})
-        })
-      )
-
-      newMatchPage.render()
-      await newMatchPage.clickQuickMatch()
-
-      await waitFor(() => {
-        expect(newMatchPage.quickMatchButtonLoading).toBeDisabled()
-      })
-    })
-
-    it('navigates to score page after successful match creation', async () => {
+    it('navigates to score page immediately with generated id', async () => {
       server.use(
         useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
@@ -164,9 +152,8 @@ describe('NewMatch', () => {
       newMatchPage.render()
       await newMatchPage.clickQuickMatch()
 
-      await waitFor(() => {
-        expect(matchScorePagePage.heading).toBeInTheDocument()
-      })
+      // Navigation happens optimistically, so it should be immediate
+      expect(matchScorePagePage.heading).toBeInTheDocument()
     })
 
     it('can change match length and create match in sequence', async () => {
@@ -195,10 +182,11 @@ describe('NewMatch', () => {
       await newMatchPage.clickQuickMatch()
 
       await waitFor(() => {
-        expect(capturedPayloads[0]).toEqual({
+        expect(capturedPayloads[0]).toMatchObject({
           opponentId: null,
           matchLength: 1,
         })
+        expect(capturedPayloads[0]?.id).toMatch(UUID_REGEX)
       })
     })
   })

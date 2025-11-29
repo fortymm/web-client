@@ -39,14 +39,6 @@ export const quickMatchButtonPage = {
     return screen.getByRole('button', { name: /Quick Match/i })
   },
 
-  get loadingButton() {
-    return screen.getByRole('button', { name: /Creating match/i })
-  },
-
-  get spinner() {
-    return screen.getByRole('button').querySelector('.loading-spinner')
-  },
-
   get mainText() {
     return screen.getByText(/Quick Match/i)
   },
@@ -57,10 +49,6 @@ export const quickMatchButtonPage = {
 
   get subtitleText() {
     return screen.queryByText(/Start now · Choose player later/i)
-  },
-
-  get loadingText() {
-    return screen.queryByText(/Creating match.../i)
   },
 
   async click() {

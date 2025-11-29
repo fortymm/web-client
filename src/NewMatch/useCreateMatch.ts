@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 const ENDPOINT = '/matches'
 
 export const createMatchPayloadSchema = z.object({
+  id: z.string().uuid(),
   opponentId: z.string().nullable(),
   matchLength: z.union([z.literal(1), z.literal(3), z.literal(5), z.literal(7)]),
 })
