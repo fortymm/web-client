@@ -68,7 +68,7 @@ describe('LandingPage', () => {
 
       await landingPagePage.clickNewMatchLink()
 
-      expect(newMatchPage.heading).toBeInTheDocument()
+      expect(newMatchPage.hero.heading).toBeInTheDocument()
     })
   })
 })
