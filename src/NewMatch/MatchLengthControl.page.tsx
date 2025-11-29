@@ -39,7 +39,7 @@ export const matchLengthControlPage = {
   },
 
   getRadio(length: MatchLength) {
-    return screen.getByRole('radio', { name: String(length) })
+    return screen.getByRole('radio', { name: `Best of ${length}` })
   },
 
   async selectLength(length: MatchLength) {
