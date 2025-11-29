@@ -70,10 +70,6 @@ export const newMatchPage = {
     return quickMatchButtonPage.button
   },
 
-  get quickMatchButtonLoading() {
-    return quickMatchButtonPage.loadingButton
-  },
-
   async clickQuickMatch() {
     await quickMatchButtonPage.click()
   },

@@ -4,6 +4,8 @@ import { HttpResponse, delay } from 'msw'
 import { server } from '../test/mocks/server'
 import { useCreateMatchPage } from './useCreateMatch.page'
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 describe('useCreateMatch', () => {
   describe('successful mutation', () => {
     it('sends payload to the correct endpoint', async () => {
@@ -24,17 +26,19 @@ describe('useCreateMatch', () => {
       )
 
       const { result } = useCreateMatchPage.render()
+      const slug = crypto.randomUUID()
 
-      result.current.mutate({ opponentId: null, matchLength: 5 })
+      result.current.mutate({ slug, opponentId: null, matchLength: 5 })
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(capturedPayload).toEqual({
+      expect(capturedPayload).toMatchObject({
         opponentId: null,
         matchLength: 5,
       })
+      expect(capturedPayload!.slug).toMatch(UUID_REGEX)
     })
 
     it('returns parsed response with createdAt as Date', async () => {
@@ -54,8 +58,9 @@ describe('useCreateMatch', () => {
       )
 
       const { result } = useCreateMatchPage.render()
+      const slug = crypto.randomUUID()
 
-      result.current.mutate({ opponentId: 'player-2', matchLength: 7 })
+      result.current.mutate({ slug, opponentId: 'player-2', matchLength: 7 })
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true)
@@ -79,7 +84,20 @@ describe('useCreateMatch', () => {
       const { result } = useCreateMatchPage.render()
 
       // @ts-expect-error - testing invalid payload
-      result.current.mutate({ opponentId: null, matchLength: 10 })
+      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 10 })
+
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true)
+      })
+
+      expect(result.current.error).toBeDefined()
+    })
+
+    it('validates slug is a valid UUID', async () => {
+      const { result } = useCreateMatchPage.render()
+
+      // Testing invalid UUID format - Zod will reject this at runtime
+      result.current.mutate({ slug: 'not-a-uuid', opponentId: null, matchLength: 5 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -102,7 +120,7 @@ describe('useCreateMatch', () => {
 
       const { result } = useCreateMatchPage.render()
 
-      result.current.mutate({ opponentId: null, matchLength: 5 })
+      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 5 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -120,7 +138,7 @@ describe('useCreateMatch', () => {
 
       const { result } = useCreateMatchPage.render()
 
-      result.current.mutate({ opponentId: null, matchLength: 3 })
+      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 3 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -155,7 +173,7 @@ describe('useCreateMatch', () => {
 
       const { result } = useCreateMatchPage.render()
 
-      result.current.mutate({ opponentId: null, matchLength: 1 })
+      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 1 })
 
       // Should transition to pending
       await waitFor(() => {

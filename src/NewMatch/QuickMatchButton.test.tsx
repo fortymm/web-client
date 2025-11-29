@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
-import { HttpResponse, delay } from 'msw'
+import { HttpResponse } from 'msw'
 import { server } from '../test/mocks/server'
 import { quickMatchButtonPage } from './QuickMatchButton.page'
 import { useCreateMatchPage } from './useCreateMatch.page'
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 describe('QuickMatchButton', () => {
   beforeEach(() => {
@@ -63,77 +65,9 @@ describe('QuickMatchButton', () => {
     })
   })
 
-  describe('loading state', () => {
-    it('shows loading spinner when creating match', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          await delay('infinite')
-          return HttpResponse.json({})
-        })
-      )
-
-      quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      await waitFor(() => {
-        expect(quickMatchButtonPage.spinner).toBeInTheDocument()
-      })
-    })
-
-    it('shows loading text when creating match', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          await delay('infinite')
-          return HttpResponse.json({})
-        })
-      )
-
-      quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      await waitFor(() => {
-        expect(quickMatchButtonPage.loadingText).toBeInTheDocument()
-      })
-    })
-
-    it('disables button when creating match', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          await delay('infinite')
-          return HttpResponse.json({})
-        })
-      )
-
-      quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      await waitFor(() => {
-        expect(quickMatchButtonPage.loadingButton).toBeDisabled()
-      })
-    })
-
-    it('sets aria-busy when creating match', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          await delay('infinite')
-          return HttpResponse.json({})
-        })
-      )
-
-      quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      await waitFor(() => {
-        expect(quickMatchButtonPage.loadingButton).toHaveAttribute(
-          'aria-busy',
-          'true'
-        )
-      })
-    })
-  })
 
   describe('match creation', () => {
-    it('calls API with correct payload', async () => {
+    it('calls API with correct payload including slug', async () => {
       let capturedPayload: Record<string, unknown> | null = null
 
       server.use(
@@ -154,14 +88,15 @@ describe('QuickMatchButton', () => {
       await quickMatchButtonPage.click()
 
       await waitFor(() => {
-        expect(capturedPayload).toEqual({
+        expect(capturedPayload).toMatchObject({
           opponentId: null,
           matchLength: 3,
         })
+        expect(capturedPayload?.slug).toMatch(UUID_REGEX)
       })
     })
 
-    it('calls onMatchCreated with match ID on success', async () => {
+    it('calls onMatchCreated immediately with generated slug', async () => {
       server.use(
         useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
@@ -178,9 +113,9 @@ describe('QuickMatchButton', () => {
       const { onMatchCreated } = quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
 
-      await waitFor(() => {
-        expect(onMatchCreated).toHaveBeenCalledWith('match-456')
-      })
+      // Should be called immediately (optimistically), not after API response
+      expect(onMatchCreated).toHaveBeenCalledTimes(1)
+      expect(onMatchCreated).toHaveBeenCalledWith(expect.stringMatching(UUID_REGEX))
     })
 
     it('uses the provided matchLength prop', async () => {
@@ -208,42 +143,37 @@ describe('QuickMatchButton', () => {
         expect(capturedMatchLength).toBe(7)
       })
     })
+
+    it('sends same slug to API that was passed to onMatchCreated', async () => {
+      let capturedSlug: string | null = null
+
+      server.use(
+        useCreateMatchPage.requestHandler(async ({ request }) => {
+          const body = await request.json() as Record<string, unknown>
+          capturedSlug = body.slug as string
+          return HttpResponse.json({
+            id: 'match-123',
+            playerId: null,
+            matchLength: 5,
+            opponentId: null,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+          })
+        })
+      )
+
+      const { onMatchCreated } = quickMatchButtonPage.render()
+      await quickMatchButtonPage.click()
+
+      const calledSlug = (onMatchCreated as ReturnType<typeof vi.fn>).mock.calls[0][0]
+
+      await waitFor(() => {
+        expect(capturedSlug).toBe(calledSlug)
+      })
+    })
   })
 
   describe('error handling', () => {
-    it('re-enables button on API error', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(() => {
-          return HttpResponse.json(
-            { error: 'Internal Server Error' },
-            { status: 500 }
-          )
-        })
-      )
-
-      quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      await waitFor(() => {
-        expect(quickMatchButtonPage.button).not.toBeDisabled()
-      })
-    })
-
-    it('re-enables button on network error', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(() => {
-          return HttpResponse.error()
-        })
-      )
-
-      quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      await waitFor(() => {
-        expect(quickMatchButtonPage.button).not.toBeDisabled()
-      })
-    })
-
     it('logs error on failure', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -265,36 +195,20 @@ describe('QuickMatchButton', () => {
 
       consoleSpy.mockRestore()
     })
-  })
 
-  describe('double-tap prevention', () => {
-    it('prevents multiple clicks while creating', async () => {
-      let callCount = 0
-
+    it('still calls onMatchCreated even if API fails', async () => {
       server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          callCount++
-          await delay('infinite')
-          return HttpResponse.json({})
+        useCreateMatchPage.requestHandler(() => {
+          return HttpResponse.error()
         })
       )
 
-      quickMatchButtonPage.render()
+      const { onMatchCreated } = quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
 
-      // Wait for button to enter loading state
-      await waitFor(() => {
-        expect(quickMatchButtonPage.loadingButton).toBeDisabled()
-      })
-
-      // Try to click again while loading - should be ignored
-      const loadingButton = quickMatchButtonPage.loadingButton
-      await loadingButton.click()
-      await loadingButton.click()
-      await loadingButton.click()
-
-      // Should still only have one API call
-      expect(callCount).toBe(1)
+      // onMatchCreated is called optimistically before API response
+      expect(onMatchCreated).toHaveBeenCalledTimes(1)
+      expect(onMatchCreated).toHaveBeenCalledWith(expect.stringMatching(UUID_REGEX))
     })
   })
 
