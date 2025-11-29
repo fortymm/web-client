@@ -1,27 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, it, expect } from 'vitest'
-import App from './App'
-
-const appPage = {
-  render() {
-    render(<App />)
-  },
-
-  get increaseCountButton() {
-    return screen.getByRole('button')
-  },
-
-  get currentCount() {
-    const text = appPage.increaseCountButton.textContent ?? ''
-    const match = text.match(/count is (\d+)/)
-    return match ? parseInt(match[1], 10) : 0
-  },
-
-  async clickIncreaseCount() {
-    await userEvent.click(appPage.increaseCountButton)
-  },
-}
+import { appPage } from './App.page'
 
 describe('App', () => {
   it('renders the counter button', () => {
@@ -33,7 +11,12 @@ describe('App', () => {
     appPage.render()
 
     await appPage.clickIncreaseCount()
-
     expect(appPage.currentCount).toBe(1)
+
+    await appPage.clickIncreaseCount()
+    expect(appPage.currentCount).toBe(2)
+
+    await appPage.clickIncreaseCount()
+    expect(appPage.currentCount).toBe(3)
   })
 })
