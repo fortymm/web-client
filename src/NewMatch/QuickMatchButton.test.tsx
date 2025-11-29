@@ -92,11 +92,11 @@ describe('QuickMatchButton', () => {
           opponentId: null,
           matchLength: 3,
         })
-        expect(capturedPayload?.slug).toMatch(UUID_REGEX)
+        expect(capturedPayload?.id).toMatch(UUID_REGEX)
       })
     })
 
-    it('calls onMatchCreated immediately with generated slug', async () => {
+    it('calls onMatchCreated immediately with generated id', async () => {
       server.use(
         useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
@@ -144,15 +144,15 @@ describe('QuickMatchButton', () => {
       })
     })
 
-    it('sends same slug to API that was passed to onMatchCreated', async () => {
-      let capturedSlug: string | null = null
+    it('sends same id to API that was passed to onMatchCreated', async () => {
+      let capturedId: string | null = null
 
       server.use(
         useCreateMatchPage.requestHandler(async ({ request }) => {
           const body = await request.json() as Record<string, unknown>
-          capturedSlug = body.slug as string
+          capturedId = body.id as string
           return HttpResponse.json({
-            id: 'match-123',
+            id: capturedId,
             playerId: null,
             matchLength: 5,
             opponentId: null,
@@ -165,10 +165,10 @@ describe('QuickMatchButton', () => {
       const { onMatchCreated } = quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
 
-      const calledSlug = (onMatchCreated as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      const calledId = (onMatchCreated as ReturnType<typeof vi.fn>).mock.calls[0][0]
 
       await waitFor(() => {
-        expect(capturedSlug).toBe(calledSlug)
+        expect(capturedId).toBe(calledId)
       })
     })
   })

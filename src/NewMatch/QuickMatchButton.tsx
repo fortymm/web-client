@@ -5,7 +5,7 @@ import { useCreateMatch } from './useCreateMatch'
 
 interface QuickMatchButtonProps {
   matchLength: MatchLength
-  onMatchCreated: (matchSlug: string) => void
+  onMatchCreated: (matchId: string) => void
   disabled?: boolean
 }
 
@@ -24,15 +24,15 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
       navigator.vibrate(10)
     }
 
-    const slug = crypto.randomUUID()
+    const id = crypto.randomUUID()
 
     // Optimistically redirect immediately
-    onMatchCreated(slug)
+    onMatchCreated(id)
 
     // Fire the API call in the background
     createMatch.mutate(
       {
-        slug,
+        id,
         opponentId: null,
         matchLength,
       },

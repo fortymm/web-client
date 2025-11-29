@@ -101,7 +101,7 @@ describe('NewMatch', () => {
           opponentId: null,
           matchLength: 5,
         })
-        expect(capturedPayload?.slug).toMatch(UUID_REGEX)
+        expect(capturedPayload?.id).toMatch(UUID_REGEX)
       })
     })
 
@@ -131,11 +131,11 @@ describe('NewMatch', () => {
           opponentId: null,
           matchLength: 7,
         })
-        expect(capturedPayload?.slug).toMatch(UUID_REGEX)
+        expect(capturedPayload?.id).toMatch(UUID_REGEX)
       })
     })
 
-    it('navigates to score page immediately with generated slug', async () => {
+    it('navigates to score page immediately with generated id', async () => {
       server.use(
         useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
@@ -186,7 +186,7 @@ describe('NewMatch', () => {
           opponentId: null,
           matchLength: 1,
         })
-        expect(capturedPayloads[0]?.slug).toMatch(UUID_REGEX)
+        expect(capturedPayloads[0]?.id).toMatch(UUID_REGEX)
       })
     })
   })

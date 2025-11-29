@@ -26,9 +26,9 @@ describe('useCreateMatch', () => {
       )
 
       const { result } = useCreateMatchPage.render()
-      const slug = crypto.randomUUID()
+      const id = crypto.randomUUID()
 
-      result.current.mutate({ slug, opponentId: null, matchLength: 5 })
+      result.current.mutate({ id, opponentId: null, matchLength: 5 })
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true)
@@ -38,7 +38,7 @@ describe('useCreateMatch', () => {
         opponentId: null,
         matchLength: 5,
       })
-      expect(capturedPayload!.slug).toMatch(UUID_REGEX)
+      expect(capturedPayload!.id).toMatch(UUID_REGEX)
     })
 
     it('returns parsed response with createdAt as Date', async () => {
@@ -58,9 +58,9 @@ describe('useCreateMatch', () => {
       )
 
       const { result } = useCreateMatchPage.render()
-      const slug = crypto.randomUUID()
+      const id = crypto.randomUUID()
 
-      result.current.mutate({ slug, opponentId: 'player-2', matchLength: 7 })
+      result.current.mutate({ id, opponentId: 'player-2', matchLength: 7 })
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true)
@@ -84,7 +84,7 @@ describe('useCreateMatch', () => {
       const { result } = useCreateMatchPage.render()
 
       // @ts-expect-error - testing invalid payload
-      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 10 })
+      result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 10 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -93,11 +93,11 @@ describe('useCreateMatch', () => {
       expect(result.current.error).toBeDefined()
     })
 
-    it('validates slug is a valid UUID', async () => {
+    it('validates id is a valid UUID', async () => {
       const { result } = useCreateMatchPage.render()
 
       // Testing invalid UUID format - Zod will reject this at runtime
-      result.current.mutate({ slug: 'not-a-uuid', opponentId: null, matchLength: 5 })
+      result.current.mutate({ id: 'not-a-uuid', opponentId: null, matchLength: 5 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -120,7 +120,7 @@ describe('useCreateMatch', () => {
 
       const { result } = useCreateMatchPage.render()
 
-      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 5 })
+      result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 5 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -138,7 +138,7 @@ describe('useCreateMatch', () => {
 
       const { result } = useCreateMatchPage.render()
 
-      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 3 })
+      result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 3 })
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
@@ -173,7 +173,7 @@ describe('useCreateMatch', () => {
 
       const { result } = useCreateMatchPage.render()
 
-      result.current.mutate({ slug: crypto.randomUUID(), opponentId: null, matchLength: 1 })
+      result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 1 })
 
       // Should transition to pending
       await waitFor(() => {
