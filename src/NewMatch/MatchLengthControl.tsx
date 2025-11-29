@@ -26,7 +26,7 @@ const MatchLengthControl: FC<MatchLengthControlProps> = ({
         {MATCH_LENGTHS.map((length) => (
           <input
             key={length}
-            className={`join-item btn btn-sm flex-1 min-h-[44px] ${
+            className={`join-item btn btn-sm btn-accent flex-1 min-h-[44px] ${
               disabled ? 'btn-disabled' : ''
             }`}
             type="radio"
