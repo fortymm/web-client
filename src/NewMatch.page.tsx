@@ -1,6 +1,10 @@
-import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { appPage } from './App.page'
+import { newMatchHeroPage } from './NewMatch/NewMatchHero.page'
+import { newMatchSearchPage } from './NewMatch/NewMatchSearch.page'
+import { sectionHeaderPage } from './NewMatch/SectionHeader.page'
+import { matchLengthControlPage } from './NewMatch/MatchLengthControl.page'
+import { quickMatchButtonPage } from './NewMatch/QuickMatchButton.page'
 
 export const newMatchPage = {
   render() {
@@ -22,31 +26,29 @@ export const newMatchPage = {
 
   // Hero section
   get heroHeading() {
-    return screen.getByRole('heading', { name: 'New match', level: 1 })
+    return newMatchHeroPage.heading
   },
 
   get heroDescription() {
-    return screen.getByText(
-      'Select a player, search, or start a Quick Match and assign a player later.'
-    )
+    return newMatchHeroPage.description
   },
 
   // Search section
   get searchPlaceholder() {
-    return screen.getByText('Search players…')
+    return newMatchSearchPage.placeholder
   },
 
   // Section header
   get recentPlayersHeader() {
-    return screen.getByRole('heading', { name: 'RECENT PLAYERS', level: 2 })
+    return sectionHeaderPage.recentPlayersHeader
   },
 
   // Bottom panel
   get matchLengthControl() {
-    return screen.getByText('Match length control placeholder')
+    return matchLengthControlPage.control
   },
 
   get quickMatchButton() {
-    return screen.getByRole('button', { name: 'Quick Match' })
+    return quickMatchButtonPage.button
   },
 }
