@@ -66,25 +66,30 @@ describe('MatchLengthControl', () => {
 
     it('applies btn-disabled class when disabled', () => {
       matchLengthControlPage.render({ disabled: true })
-      matchLengthControlPage.allRadios.forEach((radio) => {
-        expect(radio).toHaveClass('btn-disabled')
+      matchLengthControlPage.allButtons.forEach((button) => {
+        expect(button).toHaveClass('btn-disabled')
       })
     })
   })
 
   describe('styling', () => {
-    it('has join styling on all radios', () => {
+    it('has join styling on all buttons', () => {
       matchLengthControlPage.render()
-      matchLengthControlPage.allRadios.forEach((radio) => {
-        expect(radio).toHaveClass('join-item', 'btn', 'btn-sm', 'flex-1')
+      matchLengthControlPage.allButtons.forEach((button) => {
+        expect(button).toHaveClass('join-item', 'btn', 'btn-sm', 'flex-1')
       })
     })
 
     it('has minimum touch target height', () => {
       matchLengthControlPage.render()
-      matchLengthControlPage.allRadios.forEach((radio) => {
-        expect(radio).toHaveClass('min-h-[44px]')
+      matchLengthControlPage.allButtons.forEach((button) => {
+        expect(button).toHaveClass('min-h-[44px]')
       })
+    })
+
+    it('highlights selected button with accent color', () => {
+      matchLengthControlPage.render({ value: 3 })
+      expect(matchLengthControlPage.getButton(3)).toHaveClass('has-[:checked]:btn-accent')
     })
   })
 

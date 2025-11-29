@@ -38,8 +38,16 @@ export const matchLengthControlPage = {
     return screen.getAllByRole('radio')
   },
 
+  get allButtons() {
+    return screen.getAllByText(/^Best of \d$/).map((span) => span.closest('label')!)
+  },
+
   getRadio(length: MatchLength) {
     return screen.getByRole('radio', { name: `Best of ${length}` })
+  },
+
+  getButton(length: MatchLength) {
+    return screen.getByText(`Best of ${length}`).closest('label')!
   },
 
   async selectLength(length: MatchLength) {

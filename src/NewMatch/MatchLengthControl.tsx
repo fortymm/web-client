@@ -24,18 +24,22 @@ const MatchLengthControl: FC<MatchLengthControlProps> = ({
         aria-label="Match length selection"
       >
         {MATCH_LENGTHS.map((length) => (
-          <input
+          <label
             key={length}
-            className={`join-item btn btn-sm flex-1 min-h-[44px] ${
+            className={`join-item btn btn-sm flex-1 min-h-[44px] has-[:checked]:btn-accent ${
               disabled ? 'btn-disabled' : ''
             }`}
-            type="radio"
-            name="match-length"
-            aria-label={`Best of ${length}`}
-            checked={value === length}
-            onChange={() => !disabled && onChange(length)}
-            disabled={disabled}
-          />
+          >
+            <input
+              type="radio"
+              name="match-length"
+              className="sr-only"
+              checked={value === length}
+              onChange={() => !disabled && onChange(length)}
+              disabled={disabled}
+            />
+            <span>Best of {length}</span>
+          </label>
         ))}
       </div>
     </div>
