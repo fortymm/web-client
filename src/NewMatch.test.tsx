@@ -6,7 +6,7 @@ describe('NewMatch', () => {
   describe('routing', () => {
     it('renders when navigating to /matches/new', () => {
       newMatchPage.render()
-      expect(newMatchPage.hero.heading).toBeInTheDocument()
+      expect(newMatchPage.heroHeading).toBeInTheDocument()
     })
 
     it('includes the shared navbar', () => {
@@ -27,18 +27,18 @@ describe('NewMatch', () => {
       newMatchPage.render()
 
       // Hero
-      expect(newMatchPage.hero.heading).toBeInTheDocument()
-      expect(newMatchPage.hero.description).toBeInTheDocument()
+      expect(newMatchPage.heroHeading).toBeInTheDocument()
+      expect(newMatchPage.heroDescription).toBeInTheDocument()
 
       // Search
-      expect(newMatchPage.search.placeholder).toBeInTheDocument()
+      expect(newMatchPage.searchPlaceholder).toBeInTheDocument()
 
       // Section header
-      expect(newMatchPage.sectionHeader.recentPlayersHeader).toBeInTheDocument()
+      expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
 
       // Bottom panel
-      expect(newMatchPage.matchLengthControl.control).toBeInTheDocument()
-      expect(newMatchPage.quickMatchButton.button).toBeInTheDocument()
+      expect(newMatchPage.matchLengthControl).toBeInTheDocument()
+      expect(newMatchPage.quickMatchButton).toBeInTheDocument()
     })
   })
 })

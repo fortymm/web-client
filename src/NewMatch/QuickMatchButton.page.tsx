@@ -1,10 +1,10 @@
-import { screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { appPage } from '../App.page'
+import QuickMatchButton from './QuickMatchButton'
 
 export const quickMatchButtonPage = {
   render() {
-    appPage.render('/matches/new')
+    render(<QuickMatchButton />)
   },
 
   get button() {

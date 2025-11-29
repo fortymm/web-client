@@ -1,9 +1,9 @@
-import { screen } from '@testing-library/react'
-import { appPage } from '../App.page'
+import { render, screen } from '@testing-library/react'
+import MatchLengthControl from './MatchLengthControl'
 
 export const matchLengthControlPage = {
   render() {
-    appPage.render('/matches/new')
+    render(<MatchLengthControl />)
   },
 
   get control() {

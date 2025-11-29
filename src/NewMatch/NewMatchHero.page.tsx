@@ -1,9 +1,9 @@
-import { screen } from '@testing-library/react'
-import { appPage } from '../App.page'
+import { render, screen } from '@testing-library/react'
+import NewMatchHero from './NewMatchHero'
 
 export const newMatchHeroPage = {
   render() {
-    appPage.render('/matches/new')
+    render(<NewMatchHero />)
   },
 
   get heading() {
