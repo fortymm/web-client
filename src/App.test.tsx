@@ -4,8 +4,6 @@ import { describe, it, expect } from 'vitest'
 import App from './App'
 
 const appPage = {
-  user: userEvent.setup(),
-
   render() {
     render(<App />)
   },
@@ -21,7 +19,7 @@ const appPage = {
   },
 
   async clickIncreaseCount() {
-    await appPage.user.click(appPage.increaseCountButton)
+    await userEvent.click(appPage.increaseCountButton)
   },
 }
 
