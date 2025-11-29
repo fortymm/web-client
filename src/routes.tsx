@@ -1,6 +1,7 @@
 import Layout from './Layout'
 import LandingPage from './LandingPage'
 import MatchDetailPage from './MatchDetailPage'
+import NewMatchPage from './pages/NewMatchPage'
 
 export const routes = [
   {
@@ -16,5 +17,9 @@ export const routes = [
         element: <MatchDetailPage />,
       },
     ],
+  },
+  {
+    path: '/match/new',
+    element: <NewMatchPage />,
   },
 ]
