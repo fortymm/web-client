@@ -1,4 +1,5 @@
 import userEvent from '@testing-library/user-event'
+import { screen } from '@testing-library/react'
 import { appPage } from './App.page'
 import { newMatchHeroPage } from './NewMatch/NewMatchHero.page'
 import { newMatchSearchPage } from './NewMatch/NewMatchSearch.page'
@@ -64,7 +65,21 @@ export const newMatchPage = {
     await matchLengthControlPage.selectLength(length)
   },
 
+  // Quick match button
   get quickMatchButton() {
     return quickMatchButtonPage.button
+  },
+
+  get quickMatchButtonLoading() {
+    return quickMatchButtonPage.loadingButton
+  },
+
+  async clickQuickMatch() {
+    await quickMatchButtonPage.click()
+  },
+
+  // Score page detection (after navigation)
+  getScorePageHeading() {
+    return screen.queryByRole('heading', { name: /score/i })
   },
 }
