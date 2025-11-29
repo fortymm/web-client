@@ -3,11 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import QuickMatchButton from './QuickMatchButton'
 import { type MatchLength } from './MatchLengthControl'
+import { TestQueryProvider, createTestQueryClient } from '../test/utils'
+import { type QueryClient } from '@tanstack/react-query'
 
 interface RenderOptions {
   matchLength?: MatchLength
   onMatchCreated?: (matchId: string) => void
   disabled?: boolean
+  queryClient?: QueryClient
 }
 
 export const quickMatchButtonPage = {
@@ -16,17 +19,20 @@ export const quickMatchButtonPage = {
       matchLength = 5,
       onMatchCreated = vi.fn(),
       disabled = false,
+      queryClient = createTestQueryClient(),
     } = options
 
     render(
-      <QuickMatchButton
-        matchLength={matchLength}
-        onMatchCreated={onMatchCreated}
-        disabled={disabled}
-      />
+      <TestQueryProvider client={queryClient}>
+        <QuickMatchButton
+          matchLength={matchLength}
+          onMatchCreated={onMatchCreated}
+          disabled={disabled}
+        />
+      </TestQueryProvider>
     )
 
-    return { onMatchCreated }
+    return { onMatchCreated, queryClient }
   },
 
   get button() {

@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
+import { http, HttpResponse, delay } from 'msw'
+import { server } from '../test/mocks/server'
 import { quickMatchButtonPage } from './QuickMatchButton.page'
 
 describe('QuickMatchButton', () => {
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn())
+    vi.stubGlobal('navigator', { vibrate: vi.fn() })
   })
 
   afterEach(() => {
@@ -62,8 +64,11 @@ describe('QuickMatchButton', () => {
 
   describe('loading state', () => {
     it('shows loading spinner when creating match', async () => {
-      vi.mocked(fetch).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+      server.use(
+        http.post('/api/v1/matches', async () => {
+          await delay('infinite')
+          return HttpResponse.json({})
+        })
       )
 
       quickMatchButtonPage.render()
@@ -75,8 +80,11 @@ describe('QuickMatchButton', () => {
     })
 
     it('shows loading text when creating match', async () => {
-      vi.mocked(fetch).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+      server.use(
+        http.post('/api/v1/matches', async () => {
+          await delay('infinite')
+          return HttpResponse.json({})
+        })
       )
 
       quickMatchButtonPage.render()
@@ -88,8 +96,11 @@ describe('QuickMatchButton', () => {
     })
 
     it('disables button when creating match', async () => {
-      vi.mocked(fetch).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+      server.use(
+        http.post('/api/v1/matches', async () => {
+          await delay('infinite')
+          return HttpResponse.json({})
+        })
       )
 
       quickMatchButtonPage.render()
@@ -101,8 +112,11 @@ describe('QuickMatchButton', () => {
     })
 
     it('sets aria-busy when creating match', async () => {
-      vi.mocked(fetch).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+      server.use(
+        http.post('/api/v1/matches', async () => {
+          await delay('infinite')
+          return HttpResponse.json({})
+        })
       )
 
       quickMatchButtonPage.render()
@@ -119,34 +133,45 @@ describe('QuickMatchButton', () => {
 
   describe('match creation', () => {
     it('calls API with correct payload', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: 'match-123' }),
-      } as Response)
+      let capturedPayload: Record<string, unknown> | null = null
+
+      server.use(
+        http.post('/api/v1/matches', async ({ request }) => {
+          capturedPayload = await request.json() as Record<string, unknown>
+          return HttpResponse.json({
+            id: 'match-123',
+            matchLength: capturedPayload.matchLength,
+            opponentId: capturedPayload.opponentId,
+            status: capturedPayload.status,
+            createdAt: new Date().toISOString(),
+          })
+        })
+      )
 
       quickMatchButtonPage.render({ matchLength: 3 })
       await quickMatchButtonPage.click()
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith('/api/matches', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            opponentId: null,
-            matchLength: 3,
-            status: 'in_progress',
-          }),
+        expect(capturedPayload).toEqual({
+          opponentId: null,
+          matchLength: 3,
+          status: 'in_progress',
         })
       })
     })
 
     it('calls onMatchCreated with match ID on success', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: 'match-456' }),
-      } as Response)
+      server.use(
+        http.post('/api/v1/matches', () => {
+          return HttpResponse.json({
+            id: 'match-456',
+            matchLength: 5,
+            opponentId: null,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+          })
+        })
+      )
 
       const { onMatchCreated } = quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
@@ -157,31 +182,41 @@ describe('QuickMatchButton', () => {
     })
 
     it('uses the provided matchLength prop', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: 'match-789' }),
-      } as Response)
+      let capturedMatchLength: number | null = null
+
+      server.use(
+        http.post('/api/v1/matches', async ({ request }) => {
+          const body = await request.json() as Record<string, unknown>
+          capturedMatchLength = body.matchLength as number
+          return HttpResponse.json({
+            id: 'match-789',
+            matchLength: capturedMatchLength,
+            opponentId: null,
+            status: 'in_progress',
+            createdAt: new Date().toISOString(),
+          })
+        })
+      )
 
       quickMatchButtonPage.render({ matchLength: 7 })
       await quickMatchButtonPage.click()
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith(
-          '/api/matches',
-          expect.objectContaining({
-            body: expect.stringContaining('"matchLength":7'),
-          })
-        )
+        expect(capturedMatchLength).toBe(7)
       })
     })
   })
 
   describe('error handling', () => {
     it('re-enables button on API error', async () => {
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-      } as Response)
+      server.use(
+        http.post('/api/v1/matches', () => {
+          return HttpResponse.json(
+            { error: 'Internal Server Error' },
+            { status: 500 }
+          )
+        })
+      )
 
       quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
@@ -192,7 +227,11 @@ describe('QuickMatchButton', () => {
     })
 
     it('re-enables button on network error', async () => {
-      vi.mocked(fetch).mockRejectedValueOnce(new Error('Network error'))
+      server.use(
+        http.post('/api/v1/matches', () => {
+          return HttpResponse.error()
+        })
+      )
 
       quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
@@ -204,7 +243,12 @@ describe('QuickMatchButton', () => {
 
     it('logs error on failure', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      vi.mocked(fetch).mockRejectedValueOnce(new Error('Network error'))
+
+      server.use(
+        http.post('/api/v1/matches', () => {
+          return HttpResponse.error()
+        })
+      )
 
       quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
@@ -222,8 +266,14 @@ describe('QuickMatchButton', () => {
 
   describe('double-tap prevention', () => {
     it('prevents multiple clicks while creating', async () => {
-      vi.mocked(fetch).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+      let callCount = 0
+
+      server.use(
+        http.post('/api/v1/matches', async () => {
+          callCount++
+          await delay('infinite')
+          return HttpResponse.json({})
+        })
       )
 
       quickMatchButtonPage.render()
@@ -235,7 +285,7 @@ describe('QuickMatchButton', () => {
         expect(quickMatchButtonPage.loadingButton).toBeDisabled()
       })
 
-      expect(fetch).toHaveBeenCalledTimes(1)
+      expect(callCount).toBe(1)
     })
   })
 
@@ -243,10 +293,6 @@ describe('QuickMatchButton', () => {
     it('triggers vibration on click when available', async () => {
       const vibrateSpy = vi.fn()
       vi.stubGlobal('navigator', { vibrate: vibrateSpy })
-      vi.mocked(fetch).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ id: 'match-123' }),
-      } as Response)
 
       quickMatchButtonPage.render()
       await quickMatchButtonPage.click()

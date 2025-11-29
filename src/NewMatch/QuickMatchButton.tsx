@@ -1,5 +1,6 @@
-import { type FC, useState } from 'react'
+import { type FC } from 'react'
 import { type MatchLength } from './MatchLengthControl'
+import { useCreateMatch } from '../hooks/useCreateMatch'
 
 interface QuickMatchButtonProps {
   matchLength: MatchLength
@@ -12,42 +13,32 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
   onMatchCreated,
   disabled = false,
 }) => {
-  const [isCreating, setIsCreating] = useState(false)
+  const createMatch = useCreateMatch()
+  const isCreating = createMatch.isPending
 
-  const handleClick = async () => {
+  const handleClick = () => {
     if (isCreating || disabled) return
-
-    setIsCreating(true)
 
     // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(10)
     }
 
-    try {
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/matches', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    createMatch.mutate(
+      {
+        opponentId: null,
+        matchLength,
+        status: 'in_progress',
+      },
+      {
+        onSuccess: (data) => {
+          onMatchCreated(data.id)
         },
-        body: JSON.stringify({
-          opponentId: null,
-          matchLength,
-          status: 'in_progress',
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create match')
+        onError: (error) => {
+          console.error('Failed to create match:', error)
+        },
       }
-
-      const match = await response.json()
-      onMatchCreated(match.id)
-    } catch (error) {
-      console.error('Failed to create match:', error)
-      setIsCreating(false)
-    }
+    )
   }
 
   return (
