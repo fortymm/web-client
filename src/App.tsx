@@ -1,20 +1,24 @@
-import { useState } from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Layout from './Layout'
+import LandingPage from './LandingPage'
+
+export const routes = [
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+    ],
+  },
+]
+
+const router = createBrowserRouter(routes)
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div className="navbar bg-base-100 shadow-sm">
-        <a href="/" className="btn btn-ghost text-xl">FortyMM</a>
-      </div>
-      <main className="p-4">
-        <button className="btn btn-primary" onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </main>
-    </>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
