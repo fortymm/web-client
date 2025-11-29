@@ -1,11 +1,10 @@
 import { Outlet } from 'react-router-dom'
+import Navbar from './Navbar'
 
 function Layout() {
   return (
     <>
-      <nav className="navbar bg-base-100 shadow-sm">
-        <a href="/" className="btn btn-ghost text-xl">FortyMM</a>
-      </nav>
+      <Navbar />
       <main className="p-4">
         <Outlet />
       </main>

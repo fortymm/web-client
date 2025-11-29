@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Layout'
+import { navbarPage } from './Navbar.page'
 
 export const layoutPage = {
   render(outletContent: React.ReactNode = null) {
@@ -21,11 +22,11 @@ export const layoutPage = {
   },
 
   get navbar() {
-    return screen.getByRole('navigation')
+    return navbarPage.navbar
   },
 
   get brandLink() {
-    return screen.getByRole('link', { name: 'FortyMM' })
+    return navbarPage.brandLink
   },
 
   get main() {
