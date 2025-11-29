@@ -13,13 +13,13 @@ export const routes = [
         element: <LandingPage />,
       },
       {
+        path: 'matches/new',
+        element: <NewMatch />,
+      },
+      {
         path: 'matches/:id',
         element: <MatchDetailPage />,
       },
     ],
-  },
-  {
-    path: '/matches/new',
-    element: <NewMatch />,
   },
 ]
