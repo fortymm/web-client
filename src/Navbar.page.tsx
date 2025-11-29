@@ -1,10 +1,15 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import Navbar from './Navbar'
 
 export const navbarPage = {
   render() {
-    render(<Navbar />)
+    render(
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    )
   },
 
   get navbar() {

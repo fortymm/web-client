@@ -3,8 +3,6 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Layout'
 import { navbarPage } from './Navbar.page'
 
-export { navbarPage } from './Navbar.page'
-
 export const layoutPage = {
   render(outletContent: React.ReactNode = null) {
     const routes = [
