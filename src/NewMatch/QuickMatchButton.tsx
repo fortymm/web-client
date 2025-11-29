@@ -1,6 +1,6 @@
 import { type FC } from 'react'
 import { type MatchLength } from './MatchLengthControl'
-import { useCreateMatch } from '../hooks/useCreateMatch'
+import { useCreateMatch } from './useCreateMatch'
 
 interface QuickMatchButtonProps {
   matchLength: MatchLength
@@ -28,7 +28,6 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
       {
         opponentId: null,
         matchLength,
-        status: 'in_progress',
       },
       {
         onSuccess: (data) => {

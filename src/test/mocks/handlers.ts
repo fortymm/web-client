@@ -1,7 +1,8 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
+import { useCreateMatchPage } from '../../NewMatch/useCreateMatch.page'
 
 export const handlers = [
-  http.post('/api/v1/matches', async ({ request }) => {
+  useCreateMatchPage.requestHandler(async ({ request }) => {
     const body = await request.json() as Record<string, unknown>
 
     return HttpResponse.json({
@@ -9,7 +10,7 @@ export const handlers = [
       playerId: body.playerId ?? null,
       opponentId: body.opponentId ?? null,
       matchLength: body.matchLength,
-      status: body.status,
+      status: 'in_progress',
       createdAt: new Date().toISOString(),
     })
   }),

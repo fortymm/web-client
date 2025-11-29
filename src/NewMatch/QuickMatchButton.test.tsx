@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
-import { http, HttpResponse, delay } from 'msw'
+import { HttpResponse, delay } from 'msw'
 import { server } from '../test/mocks/server'
 import { quickMatchButtonPage } from './QuickMatchButton.page'
+import { useCreateMatchPage } from './useCreateMatch.page'
 
 describe('QuickMatchButton', () => {
   beforeEach(() => {
@@ -65,7 +66,7 @@ describe('QuickMatchButton', () => {
   describe('loading state', () => {
     it('shows loading spinner when creating match', async () => {
       server.use(
-        http.post('/api/v1/matches', async () => {
+        useCreateMatchPage.requestHandler(async () => {
           await delay('infinite')
           return HttpResponse.json({})
         })
@@ -81,7 +82,7 @@ describe('QuickMatchButton', () => {
 
     it('shows loading text when creating match', async () => {
       server.use(
-        http.post('/api/v1/matches', async () => {
+        useCreateMatchPage.requestHandler(async () => {
           await delay('infinite')
           return HttpResponse.json({})
         })
@@ -97,7 +98,7 @@ describe('QuickMatchButton', () => {
 
     it('disables button when creating match', async () => {
       server.use(
-        http.post('/api/v1/matches', async () => {
+        useCreateMatchPage.requestHandler(async () => {
           await delay('infinite')
           return HttpResponse.json({})
         })
@@ -113,7 +114,7 @@ describe('QuickMatchButton', () => {
 
     it('sets aria-busy when creating match', async () => {
       server.use(
-        http.post('/api/v1/matches', async () => {
+        useCreateMatchPage.requestHandler(async () => {
           await delay('infinite')
           return HttpResponse.json({})
         })
@@ -136,13 +137,13 @@ describe('QuickMatchButton', () => {
       let capturedPayload: Record<string, unknown> | null = null
 
       server.use(
-        http.post('/api/v1/matches', async ({ request }) => {
+        useCreateMatchPage.requestHandler(async ({ request }) => {
           capturedPayload = await request.json() as Record<string, unknown>
           return HttpResponse.json({
             id: 'match-123',
             matchLength: capturedPayload.matchLength,
             opponentId: capturedPayload.opponentId,
-            status: capturedPayload.status,
+            status: 'in_progress',
             createdAt: new Date().toISOString(),
           })
         })
@@ -155,14 +156,13 @@ describe('QuickMatchButton', () => {
         expect(capturedPayload).toEqual({
           opponentId: null,
           matchLength: 3,
-          status: 'in_progress',
         })
       })
     })
 
     it('calls onMatchCreated with match ID on success', async () => {
       server.use(
-        http.post('/api/v1/matches', () => {
+        useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json({
             id: 'match-456',
             matchLength: 5,
@@ -185,7 +185,7 @@ describe('QuickMatchButton', () => {
       let capturedMatchLength: number | null = null
 
       server.use(
-        http.post('/api/v1/matches', async ({ request }) => {
+        useCreateMatchPage.requestHandler(async ({ request }) => {
           const body = await request.json() as Record<string, unknown>
           capturedMatchLength = body.matchLength as number
           return HttpResponse.json({
@@ -210,7 +210,7 @@ describe('QuickMatchButton', () => {
   describe('error handling', () => {
     it('re-enables button on API error', async () => {
       server.use(
-        http.post('/api/v1/matches', () => {
+        useCreateMatchPage.requestHandler(() => {
           return HttpResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }
@@ -228,7 +228,7 @@ describe('QuickMatchButton', () => {
 
     it('re-enables button on network error', async () => {
       server.use(
-        http.post('/api/v1/matches', () => {
+        useCreateMatchPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -245,7 +245,7 @@ describe('QuickMatchButton', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       server.use(
-        http.post('/api/v1/matches', () => {
+        useCreateMatchPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -269,7 +269,7 @@ describe('QuickMatchButton', () => {
       let callCount = 0
 
       server.use(
-        http.post('/api/v1/matches', async () => {
+        useCreateMatchPage.requestHandler(async () => {
           callCount++
           await delay('infinite')
           return HttpResponse.json({})
