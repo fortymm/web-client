@@ -2,16 +2,13 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import AppearanceSettings from './AppearanceSettings'
-import { ThemeProvider } from '../lib/ThemeProvider'
 
 export const appearanceSettingsPage = {
   render() {
     render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <AppearanceSettings />
-        </MemoryRouter>
-      </ThemeProvider>
+      <MemoryRouter>
+        <AppearanceSettings />
+      </MemoryRouter>
     )
   },
 

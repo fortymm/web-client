@@ -1,9 +1,9 @@
 import type { FC } from 'react'
-import { useTheme } from '../lib/useTheme'
+import { useAppearance } from '../lib/useAppearance'
 import AppearanceCard from './AppearanceCard'
 
 const AppearanceSettings: FC = () => {
-  const { appearance, setAppearance } = useTheme()
+  const { appearance, setAppearance } = useAppearance()
 
   return (
     <div className="max-w-3xl mx-auto">

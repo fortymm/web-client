@@ -24,16 +24,16 @@ describe('Navbar', () => {
 
   it('renders the user menu button', () => {
     navbarPage.render()
-    expect(navbarPage.userMenuButton).toBeInTheDocument()
+    expect(navbarPage.userMenu.menuButton).toBeInTheDocument()
   })
 
   it('has appearance link in user menu', () => {
     navbarPage.render()
-    expect(navbarPage.appearanceLink).toBeInTheDocument()
+    expect(navbarPage.userMenu.appearanceLink).toBeInTheDocument()
   })
 
   it('appearance link points to settings page', () => {
     navbarPage.render()
-    expect(navbarPage.appearanceLink).toHaveAttribute('href', '/settings/appearance')
+    expect(navbarPage.userMenu.appearanceHref).toBe('/settings/appearance')
   })
 })

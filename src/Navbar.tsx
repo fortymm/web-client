@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import UserMenu from './UserMenu'
+import UserMenu from './UserMenu/UserMenu'
 
 function Navbar() {
   return (

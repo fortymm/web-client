@@ -3,7 +3,7 @@ import LandingPage from './LandingPage'
 import MatchDetailPage from './MatchDetailPage'
 import NewMatch from './NewMatch'
 import MatchScorePage from './MatchScorePage'
-import AppearanceSettings from './AppearanceSettings'
+import AppearanceSettings from './AppearanceSettings/AppearanceSettings'
 
 export const routes = [
   {

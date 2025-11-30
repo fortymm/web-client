@@ -2,16 +2,14 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import Navbar from './Navbar'
-import { ThemeProvider } from './lib/ThemeProvider'
+import { userMenuPage } from './UserMenu/UserMenu.page'
 
 export const navbarPage = {
   render() {
     render(
-      <ThemeProvider>
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
-      </ThemeProvider>
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
     )
   },
 
@@ -35,15 +33,6 @@ export const navbarPage = {
     await userEvent.click(navbarPage.brandLink)
   },
 
-  get userMenuButton() {
-    return screen.getByRole('button', { name: 'User menu' })
-  },
-
-  async openUserMenu() {
-    await userEvent.click(navbarPage.userMenuButton)
-  },
-
-  get appearanceLink() {
-    return screen.getByRole('link', { name: /appearance/i })
-  },
+  // Delegate to userMenuPage
+  userMenu: userMenuPage,
 }
