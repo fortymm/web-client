@@ -1,8 +1,6 @@
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { api } from '../lib/api'
-
-const ENDPOINT = '/matches'
+import { saveMatch, type StoredMatch } from '../lib/matchesDb'
 
 export const createMatchPayloadSchema = z.object({
   id: z.string().uuid(),
@@ -12,25 +10,23 @@ export const createMatchPayloadSchema = z.object({
 
 export type CreateMatchPayload = z.infer<typeof createMatchPayloadSchema>
 
-export const createMatchResponseSchema = z.object({
-  id: z.string(),
-  playerId: z.string().nullable(),
-  opponentId: z.string().nullable(),
-  matchLength: z.number(),
-  status: z.string(),
-  createdAt: z.string().transform((val) => new Date(val)),
-})
-
-export type CreateMatchResponse = z.infer<typeof createMatchResponseSchema>
+export type CreateMatchResponse = StoredMatch
 
 export function useCreateMatch() {
   return useMutation({
     mutationFn: async (payload: CreateMatchPayload): Promise<CreateMatchResponse> => {
       const validatedPayload = createMatchPayloadSchema.parse(payload)
-      const response = await api.post(ENDPOINT, validatedPayload)
-      return createMatchResponseSchema.parse(response.data)
+
+      const match: StoredMatch = {
+        id: validatedPayload.id,
+        playerId: null,
+        opponentId: validatedPayload.opponentId,
+        matchLength: validatedPayload.matchLength,
+        status: 'in_progress',
+        createdAt: new Date(),
+      }
+
+      return saveMatch(match)
     },
   })
 }
-
-export { ENDPOINT as CREATE_MATCH_ENDPOINT }

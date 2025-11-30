@@ -1,30 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { waitFor } from '@testing-library/react'
-import { HttpResponse, delay } from 'msw'
-import { server } from '../test/mocks/server'
 import { useCreateMatchPage } from './useCreateMatch.page'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 describe('useCreateMatch', () => {
+
   describe('successful mutation', () => {
-    it('sends payload to the correct endpoint', async () => {
-      let capturedPayload: Record<string, unknown> | null = null
-
-      server.use(
-        useCreateMatchPage.requestHandler(async ({ request }) => {
-          capturedPayload = await request.json() as Record<string, unknown>
-          return HttpResponse.json({
-            id: 'match-123',
-            playerId: null,
-            opponentId: null,
-            matchLength: 5,
-            status: 'in_progress',
-            createdAt: '2024-01-15T10:30:00.000Z',
-          })
-        })
-      )
-
+    it('saves match to IndexedDB', async () => {
       const { result } = useCreateMatchPage.render()
       const id = crypto.randomUUID()
 
@@ -34,29 +17,15 @@ describe('useCreateMatch', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(capturedPayload).toMatchObject({
-        opponentId: null,
-        matchLength: 5,
-      })
-      expect(capturedPayload!.id).toMatch(UUID_REGEX)
+      const storedMatch = await useCreateMatchPage.getStoredMatch(id)
+      expect(storedMatch).toBeDefined()
+      expect(storedMatch!.id).toBe(id)
+      expect(storedMatch!.opponentId).toBeNull()
+      expect(storedMatch!.matchLength).toBe(5)
+      expect(storedMatch!.status).toBe('in_progress')
     })
 
-    it('returns parsed response with createdAt as Date', async () => {
-      const isoDate = '2024-01-15T10:30:00.000Z'
-
-      server.use(
-        useCreateMatchPage.requestHandler(() => {
-          return HttpResponse.json({
-            id: 'match-456',
-            playerId: 'player-1',
-            opponentId: 'player-2',
-            matchLength: 7,
-            status: 'in_progress',
-            createdAt: isoDate,
-          })
-        })
-      )
-
+    it('returns match data with createdAt as Date', async () => {
       const { result } = useCreateMatchPage.render()
       const id = crypto.randomUUID()
 
@@ -66,16 +35,29 @@ describe('useCreateMatch', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data).toEqual({
-        id: 'match-456',
-        playerId: 'player-1',
+      expect(result.current.data).toMatchObject({
+        id,
+        playerId: null,
         opponentId: 'player-2',
         matchLength: 7,
         status: 'in_progress',
-        createdAt: new Date(isoDate),
       })
 
       expect(result.current.data?.createdAt).toBeInstanceOf(Date)
+    })
+
+    it('stores match with correct id format', async () => {
+      const { result } = useCreateMatchPage.render()
+      const id = crypto.randomUUID()
+
+      result.current.mutate({ id, opponentId: null, matchLength: 3 })
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      const storedMatch = await useCreateMatchPage.getStoredMatch(id)
+      expect(storedMatch!.id).toMatch(UUID_REGEX)
     })
   })
 
@@ -107,45 +89,6 @@ describe('useCreateMatch', () => {
     })
   })
 
-  describe('error handling', () => {
-    it('handles server errors', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(() => {
-          return HttpResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-          )
-        })
-      )
-
-      const { result } = useCreateMatchPage.render()
-
-      result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 5 })
-
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true)
-      })
-
-      expect(result.current.error).toBeDefined()
-    })
-
-    it('handles network errors', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(() => {
-          return HttpResponse.error()
-        })
-      )
-
-      const { result } = useCreateMatchPage.render()
-
-      result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 3 })
-
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true)
-      })
-    })
-  })
-
   describe('mutation states', () => {
     it('starts in idle state', () => {
       const { result } = useCreateMatchPage.render()
@@ -156,31 +99,11 @@ describe('useCreateMatch', () => {
       expect(result.current.isError).toBe(false)
     })
 
-    it('transitions through pending state', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(async () => {
-          await delay(50)
-          return HttpResponse.json({
-            id: 'match-789',
-            playerId: null,
-            opponentId: null,
-            matchLength: 1,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-          })
-        })
-      )
-
+    it('transitions to success state after mutation', async () => {
       const { result } = useCreateMatchPage.render()
 
       result.current.mutate({ id: crypto.randomUUID(), opponentId: null, matchLength: 1 })
 
-      // Should transition to pending
-      await waitFor(() => {
-        expect(result.current.isPending).toBe(true)
-      })
-
-      // Should eventually succeed
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true)
       })

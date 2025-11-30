@@ -29,7 +29,7 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
     // Optimistically redirect immediately
     onMatchCreated(id)
 
-    // Fire the API call in the background
+    // Persist the match in the background
     createMatch.mutate(
       {
         id,

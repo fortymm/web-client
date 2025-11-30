@@ -1,11 +1,8 @@
 import { renderHook } from '@testing-library/react'
-import { http, type HttpResponseResolver } from 'msw'
 import { type QueryClient } from '@tanstack/react-query'
-import { useCreateMatch, CREATE_MATCH_ENDPOINT } from './useCreateMatch'
+import { useCreateMatch } from './useCreateMatch'
 import { createTestQueryClient, createWrapper } from '../test/utils'
-
-const API_BASE = '/api/v1'
-const FULL_ENDPOINT = `${API_BASE}${CREATE_MATCH_ENDPOINT}`
+import { getMatch } from '../lib/matchesDb'
 
 interface RenderOptions {
   queryClient?: QueryClient
@@ -20,7 +17,7 @@ export const useCreateMatchPage = {
     return { result, queryClient }
   },
 
-  requestHandler(handler: HttpResponseResolver) {
-    return http.post(FULL_ENDPOINT, handler)
+  async getStoredMatch(id: string) {
+    return getMatch(id)
   },
 }
