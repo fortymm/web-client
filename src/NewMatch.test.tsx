@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
-import { HttpResponse } from 'msw'
-import { server } from './test/mocks/server'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
-import { useCreateMatchPage } from './NewMatch/useCreateMatch.page'
 import { matchScorePagePage } from './MatchScorePage.page'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -76,79 +73,39 @@ describe('NewMatch', () => {
   })
 
   describe('quick match integration', () => {
-    it('sends default match length when clicking quick match', async () => {
-      let capturedPayload: Record<string, unknown> | null = null
-
-      server.use(
-        useCreateMatchPage.requestHandler(async ({ request }) => {
-          capturedPayload = await request.json() as Record<string, unknown>
-          return HttpResponse.json({
-            id: 'match-123',
-            playerId: null,
-            matchLength: capturedPayload.matchLength,
-            opponentId: null,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-          })
-        })
-      )
-
+    it('saves default match length to IndexedDB when clicking quick match', async () => {
       newMatchPage.render()
       await newMatchPage.clickQuickMatch()
 
-      await waitFor(() => {
-        expect(capturedPayload).toMatchObject({
+      // Get all matches from IndexedDB
+      await waitFor(async () => {
+        const matches = await import('./lib/matchesDb').then(m => m.getAllMatches())
+        expect(matches).toHaveLength(1)
+        expect(matches[0]).toMatchObject({
           opponentId: null,
           matchLength: 5,
         })
-        expect(capturedPayload?.id).toMatch(UUID_REGEX)
+        expect(matches[0].id).toMatch(UUID_REGEX)
       })
     })
 
-    it('sends selected match length when clicking quick match', async () => {
-      let capturedPayload: Record<string, unknown> | null = null
-
-      server.use(
-        useCreateMatchPage.requestHandler(async ({ request }) => {
-          capturedPayload = await request.json() as Record<string, unknown>
-          return HttpResponse.json({
-            id: 'match-456',
-            playerId: null,
-            matchLength: capturedPayload.matchLength,
-            opponentId: null,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-          })
-        })
-      )
-
+    it('saves selected match length to IndexedDB when clicking quick match', async () => {
       newMatchPage.render()
       await newMatchPage.selectMatchLength(7)
       await newMatchPage.clickQuickMatch()
 
-      await waitFor(() => {
-        expect(capturedPayload).toMatchObject({
+      await waitFor(async () => {
+        const matches = await import('./lib/matchesDb').then(m => m.getAllMatches())
+        expect(matches).toHaveLength(1)
+        expect(matches[0]).toMatchObject({
           opponentId: null,
           matchLength: 7,
         })
-        expect(capturedPayload?.id).toMatch(UUID_REGEX)
+        expect(matches[0].id).toMatch(UUID_REGEX)
       })
     })
 
     it('navigates to score page immediately with generated id', async () => {
-      server.use(
-        useCreateMatchPage.requestHandler(() => {
-          return HttpResponse.json({
-            id: 'match-789',
-            playerId: null,
-            matchLength: 5,
-            opponentId: null,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-          })
-        })
-      )
-
       newMatchPage.render()
       await newMatchPage.clickQuickMatch()
 
@@ -157,23 +114,6 @@ describe('NewMatch', () => {
     })
 
     it('can change match length and create match in sequence', async () => {
-      const capturedPayloads: Record<string, unknown>[] = []
-
-      server.use(
-        useCreateMatchPage.requestHandler(async ({ request }) => {
-          const payload = await request.json() as Record<string, unknown>
-          capturedPayloads.push(payload)
-          return HttpResponse.json({
-            id: `match-${capturedPayloads.length}`,
-            playerId: null,
-            matchLength: payload.matchLength,
-            opponentId: null,
-            status: 'in_progress',
-            createdAt: new Date().toISOString(),
-          })
-        })
-      )
-
       newMatchPage.render()
 
       // Select best of 1 and create match
@@ -181,12 +121,14 @@ describe('NewMatch', () => {
       expect(newMatchPage.getMatchLengthRadio(1)).toBeChecked()
       await newMatchPage.clickQuickMatch()
 
-      await waitFor(() => {
-        expect(capturedPayloads[0]).toMatchObject({
+      await waitFor(async () => {
+        const matches = await import('./lib/matchesDb').then(m => m.getAllMatches())
+        expect(matches).toHaveLength(1)
+        expect(matches[0]).toMatchObject({
           opponentId: null,
           matchLength: 1,
         })
-        expect(capturedPayloads[0]?.id).toMatch(UUID_REGEX)
+        expect(matches[0].id).toMatch(UUID_REGEX)
       })
     })
   })
