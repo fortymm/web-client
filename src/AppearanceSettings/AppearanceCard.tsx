@@ -22,8 +22,8 @@ const AppearanceCard: FC<AppearanceCardProps> = ({
     <label
       className={`cursor-pointer block rounded-lg border-2 transition-all ${
         selected
-          ? 'border-primary bg-base-200 shadow-lg scale-[1.02]'
-          : 'border-base-300 opacity-75 hover:opacity-100 hover:border-base-content/30'
+          ? 'border-primary bg-primary/10 shadow-lg scale-[1.02]'
+          : 'border-base-300 bg-base-100 opacity-75 hover:opacity-100 hover:border-base-content/30'
       }`}
     >
       <input

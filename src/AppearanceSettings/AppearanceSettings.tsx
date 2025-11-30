@@ -40,7 +40,7 @@ const AppearanceSettings: FC = () => {
             variant="system"
           />
         </div>
-        <p className="text-xs text-base-content/50 mt-4">
+        <p className="text-xs text-base-content/40 mt-6 text-center">
           With Use system theme, FortyMM switches automatically when your device switches between Light and Dark.
         </p>
       </fieldset>
