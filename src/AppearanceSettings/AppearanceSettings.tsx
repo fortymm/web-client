@@ -9,11 +9,11 @@ const AppearanceSettings: FC = () => {
     <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-2">Theme preferences</h1>
       <p className="text-base-content/70 mb-8">
-        Choose how FortyMM looks. Select light, dark, or follow your system theme.
+        Choose how FortyMM looks: light, dark, or follow your system theme.
       </p>
 
       <fieldset>
-        <legend className="text-sm font-medium mb-4">Appearance</legend>
+        <legend className="text-sm font-medium mb-6">Appearance</legend>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <AppearanceCard
             value="light"
@@ -34,12 +34,15 @@ const AppearanceSettings: FC = () => {
           <AppearanceCard
             value="system"
             label="Use system theme"
-            description="Match your device's setting."
+            description="Match your device's theme."
             selected={appearance === 'system'}
             onSelect={() => setAppearance('system')}
             variant="system"
           />
         </div>
+        <p className="text-xs text-base-content/50 mt-4">
+          If you choose "Use system theme", FortyMM will switch when your device switches between light and dark.
+        </p>
       </fieldset>
     </div>
   )
