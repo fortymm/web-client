@@ -2,13 +2,16 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import Navbar from './Navbar'
+import { ThemeProvider } from './lib/ThemeProvider'
 
 export const navbarPage = {
   render() {
     render(
-      <MemoryRouter>
-        <Navbar />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter>
+          <Navbar />
+        </MemoryRouter>
+      </ThemeProvider>
     )
   },
 
@@ -30,5 +33,17 @@ export const navbarPage = {
 
   async clickBrand() {
     await userEvent.click(navbarPage.brandLink)
+  },
+
+  get userMenuButton() {
+    return screen.getByRole('button', { name: 'User menu' })
+  },
+
+  async openUserMenu() {
+    await userEvent.click(navbarPage.userMenuButton)
+  },
+
+  get appearanceLink() {
+    return screen.getByRole('link', { name: /appearance/i })
   },
 }
