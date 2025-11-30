@@ -7,10 +7,35 @@ import SectionHeader from './NewMatch/SectionHeader'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import StickyBottomPanel from './NewMatch/StickyBottomPanel'
+import { useRecentOpponents } from './hooks/useRecentOpponents'
 
 function NewMatch() {
+  // UI state
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
+  const [inputQuery, setInputQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const navigate = useNavigate()
+
+  // Recent opponents data
+  const recents = useRecentOpponents()
+
+  // Derived state for recents
+  const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
+  const hasEmptyRecents = recents.opponents !== null && recents.opponents.length === 0
+  const recentsError = recents.status === 'error'
+
+  // Mode derived from debounced query
+  const mode = debouncedQuery.trim() === '' ? 'recents' : 'search'
+
+  // Expose state for future integration (FM-301, FM-302)
+  void inputQuery
+  void setInputQuery
+  void setDebouncedQuery
+  void hasRecentsData
+  void hasEmptyRecents
+  void recentsError
+  void mode
+  void recents
 
   const handleMatchCreated = (matchId: string) => {
     navigate(`/matches/${matchId}/score`)
