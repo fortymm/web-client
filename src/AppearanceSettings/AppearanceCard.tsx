@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import type { Appearance } from './lib/theme'
+import type { Appearance } from '../lib/theme'
 
 interface AppearanceCardProps {
   value: Appearance

@@ -177,19 +177,18 @@ import AppearanceSettings from './AppearanceSettings'
 
 ## Feature Folder Structure
 
-Components live at the root of `src/`. If a component has dependencies (child components, hooks), create a folder:
+Components and their tests live at the root of `src/`. If a component has child dependencies, create a folder for them:
 
 ```
 src/
 ├── Navbar.tsx                    # Simple component, no folder needed
 ├── Navbar.page.tsx
 ├── Navbar.test.tsx
-├── AppearanceSettings/           # Component with dependencies
-│   ├── AppearanceSettings.tsx    # Main component
-│   ├── AppearanceSettings.page.tsx
-│   ├── AppearanceSettings.test.tsx
-│   ├── AppearanceCard.tsx        # Child component
-│   └── useAppearance.ts          # Hook used by this component
+├── AppearanceSettings.tsx        # Main component at root
+├── AppearanceSettings.page.tsx   # Page object at root
+├── AppearanceSettings.test.tsx   # Tests at root
+├── AppearanceSettings/           # Folder only for child dependencies
+│   └── AppearanceCard.tsx        # Child component
 ```
 
 ## Page Object Composition
@@ -198,7 +197,7 @@ src/
 
 ```typescript
 // ✅ Good - Navbar.page.tsx delegates to UserMenu.page.tsx
-import { userMenuPage } from './UserMenu/UserMenu.page'
+import { userMenuPage } from './UserMenu.page'
 
 export const navbarPage = {
   render() { /* ... */ },
