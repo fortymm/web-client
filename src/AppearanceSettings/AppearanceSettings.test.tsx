@@ -46,7 +46,7 @@ describe('AppearanceSettings', () => {
 
   it('can select a theme', async () => {
     appearanceSettingsPage.render()
-    await appearanceSettingsPage.selectTheme('Dark default')
-    expect(appearanceSettingsPage.getThemeCard('Dark default')).toBeChecked()
+    await appearanceSettingsPage.selectTheme('Dark')
+    expect(appearanceSettingsPage.getThemeCard('Dark')).toBeChecked()
   })
 })

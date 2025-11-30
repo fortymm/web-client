@@ -12,21 +12,6 @@ interface ThemeCardProps {
 const themeColors: Record<Theme, { primary: string; secondary: string }> = {
   light: { primary: 'bg-emerald-500', secondary: 'bg-emerald-200' },
   dark: { primary: 'bg-emerald-500', secondary: 'bg-emerald-900' },
-  cupcake: { primary: 'bg-pink-400', secondary: 'bg-pink-200' },
-  emerald: { primary: 'bg-emerald-600', secondary: 'bg-emerald-200' },
-  corporate: { primary: 'bg-blue-600', secondary: 'bg-blue-200' },
-  forest: { primary: 'bg-green-600', secondary: 'bg-green-900' },
-  lofi: { primary: 'bg-gray-800', secondary: 'bg-gray-200' },
-  pastel: { primary: 'bg-purple-400', secondary: 'bg-purple-200' },
-  wireframe: { primary: 'bg-gray-600', secondary: 'bg-gray-300' },
-  black: { primary: 'bg-gray-100', secondary: 'bg-gray-800' },
-  luxury: { primary: 'bg-amber-500', secondary: 'bg-amber-900' },
-  dracula: { primary: 'bg-pink-500', secondary: 'bg-purple-900' },
-  night: { primary: 'bg-blue-400', secondary: 'bg-blue-900' },
-  coffee: { primary: 'bg-amber-600', secondary: 'bg-amber-900' },
-  dim: { primary: 'bg-orange-400', secondary: 'bg-gray-700' },
-  nord: { primary: 'bg-cyan-400', secondary: 'bg-slate-700' },
-  sunset: { primary: 'bg-orange-500', secondary: 'bg-rose-900' },
 }
 
 const ThemeCard: FC<ThemeCardProps> = ({ theme, label, selected, onSelect, variant }) => {

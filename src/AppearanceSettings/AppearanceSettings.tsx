@@ -4,23 +4,8 @@ import { useTheme } from '../lib/useTheme'
 import ThemeCard from './ThemeCard'
 
 const themeLabels: Record<Theme, string> = {
-  light: 'Light default',
-  dark: 'Dark default',
-  cupcake: 'Cupcake',
-  emerald: 'Emerald',
-  corporate: 'Corporate',
-  forest: 'Forest',
-  lofi: 'Lo-fi',
-  pastel: 'Pastel',
-  wireframe: 'Wireframe',
-  black: 'Black',
-  luxury: 'Luxury',
-  dracula: 'Dracula',
-  night: 'Night',
-  coffee: 'Coffee',
-  dim: 'Dim',
-  nord: 'Nord',
-  sunset: 'Sunset',
+  light: 'Light',
+  dark: 'Dark',
 }
 
 const AppearanceSettings: FC = () => {
