@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { lightThemes, darkThemes, type Theme, type ThemeMode } from '../lib/theme'
 import { useTheme } from '../lib/useTheme'
 import ThemeCard from './ThemeCard'
+import ThemePreview from './ThemePreview'
 
 const themeLabels: Record<Theme, string> = {
   light: 'Light',
@@ -9,7 +10,7 @@ const themeLabels: Record<Theme, string> = {
 }
 
 const AppearanceSettings: FC = () => {
-  const { config, setMode, setSingleTheme, setLightTheme, setDarkTheme } = useTheme()
+  const { config, setMode, setSingleTheme } = useTheme()
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setMode(e.target.value as ThemeMode)
@@ -81,18 +82,7 @@ const AppearanceSettings: FC = () => {
             <p className="text-base-content/60 text-sm mb-4">
               This theme will be active when your system is set to "light mode"
             </p>
-            <div className="space-y-3">
-              {lightThemes.map((theme) => (
-                <ThemeCard
-                  key={theme}
-                  theme={theme}
-                  label={themeLabels[theme]}
-                  selected={config.lightTheme === theme}
-                  onSelect={() => setLightTheme(theme)}
-                  variant="light"
-                />
-              ))}
-            </div>
+            <ThemePreview theme="light" label="Light" variant="light" />
           </div>
 
           <div>
@@ -105,18 +95,7 @@ const AppearanceSettings: FC = () => {
             <p className="text-base-content/60 text-sm mb-4">
               This theme will be active when your system is set to "dark mode"
             </p>
-            <div className="space-y-3">
-              {darkThemes.map((theme) => (
-                <ThemeCard
-                  key={theme}
-                  theme={theme}
-                  label={themeLabels[theme]}
-                  selected={config.darkTheme === theme}
-                  onSelect={() => setDarkTheme(theme)}
-                  variant="dark"
-                />
-              ))}
-            </div>
+            <ThemePreview theme="dark" label="Dark" variant="dark" />
           </div>
         </div>
       )}
