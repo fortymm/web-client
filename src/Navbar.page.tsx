@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import Navbar from './Navbar'
-import { userMenuPage } from './UserMenu/UserMenu.page'
+import { userMenuPage } from './UserMenu.page'
 
 export const navbarPage = {
   render() {

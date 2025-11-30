@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useAppearance } from '../lib/useAppearance'
+import { useAppearance } from './lib/useAppearance'
 import AppearanceCard from './AppearanceCard'
 
 const AppearanceSettings: FC = () => {
