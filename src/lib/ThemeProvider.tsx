@@ -1,25 +1,25 @@
 import { useEffect, useState, type FC, type ReactNode } from 'react'
-import { type Theme, type ThemeConfig, DEFAULT_CONFIG, STORAGE_KEY } from './theme'
+import { type Appearance, type Theme, DEFAULT_APPEARANCE, STORAGE_KEY } from './theme'
 import { ThemeContext } from './themeContext'
 
 function getSystemPrefersDark(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-function loadConfig(): ThemeConfig {
+function loadAppearance(): Appearance {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      return { ...DEFAULT_CONFIG, ...JSON.parse(stored) }
+    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+      return stored
     }
   } catch {
-    // Ignore parse errors
+    // Ignore errors
   }
-  return DEFAULT_CONFIG
+  return DEFAULT_APPEARANCE
 }
 
-function saveConfig(config: ThemeConfig): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+function saveAppearance(appearance: Appearance): void {
+  localStorage.setItem(STORAGE_KEY, appearance)
 }
 
 function applyTheme(theme: Theme): void {
@@ -31,14 +31,12 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
-  const [config, setConfig] = useState<ThemeConfig>(loadConfig)
+  const [appearance, setAppearanceState] = useState<Appearance>(loadAppearance)
   const [systemDark, setSystemDark] = useState(getSystemPrefersDark)
 
-  const activeTheme = config.mode === 'single'
-    ? config.singleTheme
-    : systemDark
-      ? config.darkTheme
-      : config.lightTheme
+  const activeTheme: Theme = appearance === 'system'
+    ? (systemDark ? 'dark' : 'light')
+    : appearance
 
   useEffect(() => {
     applyTheme(activeTheme)
@@ -51,21 +49,15 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
 
-  const updateConfig = (updates: Partial<ThemeConfig>) => {
-    setConfig(prev => {
-      const newConfig = { ...prev, ...updates }
-      saveConfig(newConfig)
-      return newConfig
-    })
+  const setAppearance = (newAppearance: Appearance) => {
+    setAppearanceState(newAppearance)
+    saveAppearance(newAppearance)
   }
 
   const value = {
-    config,
+    appearance,
     activeTheme,
-    setMode: (mode: ThemeConfig['mode']) => updateConfig({ mode }),
-    setSingleTheme: (singleTheme: Theme) => updateConfig({ singleTheme }),
-    setLightTheme: (lightTheme: Theme) => updateConfig({ lightTheme }),
-    setDarkTheme: (darkTheme: Theme) => updateConfig({ darkTheme }),
+    setAppearance,
   }
 
   return (

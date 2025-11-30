@@ -16,37 +16,40 @@ describe('AppearanceSettings', () => {
     expect(appearanceSettingsPage.description).toBeInTheDocument()
   })
 
-  it('renders theme mode select', () => {
+  it('renders three appearance options', () => {
     appearanceSettingsPage.render()
-    expect(appearanceSettingsPage.themeModeSelect).toBeInTheDocument()
+    expect(appearanceSettingsPage.allAppearanceRadios).toHaveLength(3)
   })
 
-  it('defaults to single theme mode', () => {
+  it('renders light option', () => {
     appearanceSettingsPage.render()
-    expect(appearanceSettingsPage.themeModeSelect).toHaveValue('single')
+    expect(appearanceSettingsPage.lightOption).toBeInTheDocument()
   })
 
-  it('renders theme options in single theme mode', () => {
+  it('renders dark option', () => {
     appearanceSettingsPage.render()
-    expect(appearanceSettingsPage.allThemeRadios.length).toBeGreaterThan(0)
+    expect(appearanceSettingsPage.darkOption).toBeInTheDocument()
   })
 
-  it('shows light and dark sections in sync mode', async () => {
+  it('renders system option', () => {
     appearanceSettingsPage.render()
-    await appearanceSettingsPage.selectThemeMode('Sync with system')
-    expect(appearanceSettingsPage.lightThemeSection).toBeInTheDocument()
-    expect(appearanceSettingsPage.darkThemeSection).toBeInTheDocument()
+    expect(appearanceSettingsPage.systemOption).toBeInTheDocument()
   })
 
-  it('hides sync sections in single theme mode', () => {
+  it('defaults to system theme', () => {
     appearanceSettingsPage.render()
-    expect(appearanceSettingsPage.lightThemeSection).not.toBeInTheDocument()
-    expect(appearanceSettingsPage.darkThemeSection).not.toBeInTheDocument()
+    expect(appearanceSettingsPage.systemOption).toBeChecked()
   })
 
-  it('can select a theme', async () => {
+  it('can select light theme', async () => {
     appearanceSettingsPage.render()
-    await appearanceSettingsPage.selectTheme('Dark')
-    expect(appearanceSettingsPage.getThemeCard('Dark')).toBeChecked()
+    await appearanceSettingsPage.selectAppearance('Light')
+    expect(appearanceSettingsPage.lightOption).toBeChecked()
+  })
+
+  it('can select dark theme', async () => {
+    appearanceSettingsPage.render()
+    await appearanceSettingsPage.selectAppearance('Dark')
+    expect(appearanceSettingsPage.darkOption).toBeChecked()
   })
 })

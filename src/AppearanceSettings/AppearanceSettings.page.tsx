@@ -20,35 +20,35 @@ export const appearanceSettingsPage = {
   },
 
   get description() {
-    return screen.getByText(/choose how fortymm looks to you/i)
+    return screen.getByText(/choose how fortymm looks/i)
   },
 
-  get themeModeSelect() {
-    return screen.getByRole('combobox', { name: 'Theme mode' })
+  get appearanceFieldset() {
+    return screen.getByRole('group', { name: /appearance/i })
   },
 
-  async selectThemeMode(mode: 'Single theme' | 'Sync with system') {
-    await userEvent.selectOptions(appearanceSettingsPage.themeModeSelect, mode)
-  },
-
-  getThemeCard(name: string) {
+  getAppearanceOption(name: string) {
     return screen.getByRole('radio', { name: new RegExp(name, 'i') })
   },
 
-  async selectTheme(name: string) {
+  async selectAppearance(name: string) {
     const radio = screen.getByRole('radio', { name: new RegExp(name, 'i') })
     await userEvent.click(radio)
   },
 
-  get lightThemeSection() {
-    return screen.queryByRole('heading', { name: 'Light theme' })
-  },
-
-  get darkThemeSection() {
-    return screen.queryByRole('heading', { name: 'Dark theme' })
-  },
-
-  get allThemeRadios() {
+  get allAppearanceRadios() {
     return screen.getAllByRole('radio')
+  },
+
+  get lightOption() {
+    return screen.getByRole('radio', { name: /^light/i })
+  },
+
+  get darkOption() {
+    return screen.getByRole('radio', { name: /^dark/i })
+  },
+
+  get systemOption() {
+    return screen.getByRole('radio', { name: /use system theme/i })
   },
 }

@@ -1,13 +1,10 @@
 import { createContext } from 'react'
-import type { Theme, ThemeMode, ThemeConfig } from './theme'
+import type { Appearance, Theme } from './theme'
 
 export interface ThemeContextValue {
-  config: ThemeConfig
+  appearance: Appearance
   activeTheme: Theme
-  setMode: (mode: ThemeMode) => void
-  setSingleTheme: (theme: Theme) => void
-  setLightTheme: (theme: Theme) => void
-  setDarkTheme: (theme: Theme) => void
+  setAppearance: (appearance: Appearance) => void
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
