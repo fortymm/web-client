@@ -10,7 +10,7 @@ const themeLabels: Record<Theme, string> = {
 }
 
 const AppearanceSettings: FC = () => {
-  const { config, setMode, setSingleTheme } = useTheme()
+  const { config, activeTheme, setMode, setSingleTheme } = useTheme()
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setMode(e.target.value as ThemeMode)
@@ -72,8 +72,8 @@ const AppearanceSettings: FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
+          <div className={`rounded-lg border-2 p-4 ${activeTheme === 'light' ? 'border-primary' : 'border-base-300'}`}>
+            <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
@@ -82,11 +82,11 @@ const AppearanceSettings: FC = () => {
             <p className="text-base-content/60 text-sm mb-4">
               This theme will be active when your system is set to "light mode"
             </p>
-            <ThemePreview theme="light" label="Light" variant="light" />
+            <ThemePreview theme="light" variant="light" />
           </div>
 
-          <div>
-            <div className="flex items-center gap-2 mb-4">
+          <div className={`rounded-lg border-2 p-4 ${activeTheme === 'dark' ? 'border-primary' : 'border-base-300'}`}>
+            <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
@@ -95,7 +95,7 @@ const AppearanceSettings: FC = () => {
             <p className="text-base-content/60 text-sm mb-4">
               This theme will be active when your system is set to "dark mode"
             </p>
-            <ThemePreview theme="dark" label="Dark" variant="dark" />
+            <ThemePreview theme="dark" variant="dark" />
           </div>
         </div>
       )}
