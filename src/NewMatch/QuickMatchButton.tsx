@@ -1,21 +1,15 @@
 import { type FC } from 'react'
 import { BoltIcon } from '@heroicons/react/24/solid'
-import { type MatchLength } from './MatchLengthControl'
-import { useCreateMatch } from './useCreateMatch'
 
 interface QuickMatchButtonProps {
-  matchLength: MatchLength
-  onMatchCreated: (matchId: string) => void
+  onClick: () => void
   disabled?: boolean
 }
 
 const QuickMatchButton: FC<QuickMatchButtonProps> = ({
-  matchLength,
-  onMatchCreated,
+  onClick,
   disabled = false,
 }) => {
-  const createMatch = useCreateMatch()
-
   const handleClick = () => {
     if (disabled) return
 
@@ -24,24 +18,7 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
       navigator.vibrate(10)
     }
 
-    const id = crypto.randomUUID()
-
-    // Optimistically redirect immediately
-    onMatchCreated(id)
-
-    // Persist the match in the background
-    createMatch.mutate(
-      {
-        id,
-        opponentId: null,
-        matchLength,
-      },
-      {
-        onError: (error) => {
-          console.error('Failed to create match:', error)
-        },
-      }
-    )
+    onClick()
   }
 
   return (

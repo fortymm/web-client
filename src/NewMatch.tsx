@@ -10,6 +10,7 @@ import StickyBottomPanel from './NewMatch/StickyBottomPanel'
 import PlayerList from './NewMatch/PlayerList'
 import { mockPlayers } from './NewMatch/mockPlayers'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
+import { useCreateMatch } from './NewMatch/useCreateMatch'
 
 function NewMatch() {
   // UI state
@@ -18,6 +19,9 @@ function NewMatch() {
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [loadingPlayerId, setLoadingPlayerId] = useState<string | null>(null)
   const navigate = useNavigate()
+
+  // Match creation
+  const createMatch = useCreateMatch()
 
   // Recent opponents data
   const recents = useRecentOpponents()
@@ -40,17 +44,34 @@ function NewMatch() {
   void mode
   void recents
 
-  const handleMatchCreated = (matchId: string) => {
-    navigate(`/matches/${matchId}/score`)
+  const handleCreateMatch = (opponentId: string | null) => {
+    const id = crypto.randomUUID()
+
+    // Optimistically redirect immediately
+    navigate(`/matches/${id}/score`)
+
+    // Persist the match in the background
+    createMatch.mutate(
+      {
+        id,
+        opponentId,
+        matchLength,
+      },
+      {
+        onError: (error) => {
+          console.error('Failed to create match:', error)
+        },
+      }
+    )
+  }
+
+  const handleQuickMatch = () => {
+    handleCreateMatch(null)
   }
 
   const handleSelectPlayer = (playerId: string) => {
     setLoadingPlayerId(playerId)
-    // Simulate match creation delay, then navigate
-    setTimeout(() => {
-      const matchId = crypto.randomUUID()
-      navigate(`/matches/${matchId}/score`)
-    }, 1000)
+    handleCreateMatch(playerId)
   }
 
   return (
@@ -72,10 +93,7 @@ function NewMatch() {
 
       <StickyBottomPanel>
         <MatchLengthControl value={matchLength} onChange={setMatchLength} />
-        <QuickMatchButton
-          matchLength={matchLength}
-          onMatchCreated={handleMatchCreated}
-        />
+        <QuickMatchButton onClick={handleQuickMatch} />
       </StickyBottomPanel>
     </div>
   )

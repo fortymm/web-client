@@ -1,9 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { waitFor } from '@testing-library/react'
 import { quickMatchButtonPage } from './QuickMatchButton.page'
-import { useCreateMatchPage } from './useCreateMatch.page'
-
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 describe('QuickMatchButton', () => {
   beforeEach(() => {
@@ -63,55 +59,19 @@ describe('QuickMatchButton', () => {
     })
   })
 
-
-  describe('match creation', () => {
-    it('saves match to IndexedDB with correct payload', async () => {
-      const { onMatchCreated } = quickMatchButtonPage.render({ matchLength: 3 })
+  describe('click behavior', () => {
+    it('calls onClick when clicked', async () => {
+      const { onClick } = quickMatchButtonPage.render()
       await quickMatchButtonPage.click()
 
-      const calledId = (onMatchCreated as ReturnType<typeof vi.fn>).mock.calls[0][0]
-
-      await waitFor(async () => {
-        const storedMatch = await useCreateMatchPage.getStoredMatch(calledId)
-        expect(storedMatch).toMatchObject({
-          opponentId: null,
-          matchLength: 3,
-        })
-        expect(storedMatch?.id).toMatch(UUID_REGEX)
-      })
+      expect(onClick).toHaveBeenCalledTimes(1)
     })
 
-    it('calls onMatchCreated immediately with generated id', async () => {
-      const { onMatchCreated } = quickMatchButtonPage.render()
+    it('does not call onClick when disabled', async () => {
+      const { onClick } = quickMatchButtonPage.render({ disabled: true })
       await quickMatchButtonPage.click()
 
-      // Should be called immediately (optimistically)
-      expect(onMatchCreated).toHaveBeenCalledTimes(1)
-      expect(onMatchCreated).toHaveBeenCalledWith(expect.stringMatching(UUID_REGEX))
-    })
-
-    it('uses the provided matchLength prop', async () => {
-      const { onMatchCreated } = quickMatchButtonPage.render({ matchLength: 7 })
-      await quickMatchButtonPage.click()
-
-      const calledId = (onMatchCreated as ReturnType<typeof vi.fn>).mock.calls[0][0]
-
-      await waitFor(async () => {
-        const storedMatch = await useCreateMatchPage.getStoredMatch(calledId)
-        expect(storedMatch?.matchLength).toBe(7)
-      })
-    })
-
-    it('stores match with same id that was passed to onMatchCreated', async () => {
-      const { onMatchCreated } = quickMatchButtonPage.render()
-      await quickMatchButtonPage.click()
-
-      const calledId = (onMatchCreated as ReturnType<typeof vi.fn>).mock.calls[0][0]
-
-      await waitFor(async () => {
-        const storedMatch = await useCreateMatchPage.getStoredMatch(calledId)
-        expect(storedMatch?.id).toBe(calledId)
-      })
+      expect(onClick).not.toHaveBeenCalled()
     })
   })
 
