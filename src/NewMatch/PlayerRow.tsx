@@ -1,4 +1,4 @@
-import { type FC } from 'react'
+import { type FC, type ReactNode } from 'react'
 import PlayerAvatar from './PlayerAvatar'
 import { formatRelativeTime } from '../lib/formatRelativeTime'
 
@@ -24,24 +24,28 @@ export interface PlayerRowProps {
   isLoading?: boolean
 }
 
-function formatSecondaryText(
+function formatSecondaryContent(
   hasHistory: boolean,
   headToHead?: { wins: number; losses: number },
   lastMatch?: { result: 'win' | 'loss'; score: string; playedAt: string }
-): string {
-  if (!hasHistory) {
-    return 'No matches yet'
-  }
-
-  if (!headToHead || !lastMatch) {
+): ReactNode {
+  if (!hasHistory || !headToHead || !lastMatch) {
     return 'No matches yet'
   }
 
   const record = `${headToHead.wins}-${headToHead.losses}`
-  const resultText = lastMatch.result === 'win' ? 'Won' : 'Lost'
   const timeAgo = formatRelativeTime(lastMatch.playedAt)
+  const isWin = lastMatch.result === 'win'
 
-  return `${record} · Last: ${resultText} ${lastMatch.score} · ${timeAgo}`
+  return (
+    <>
+      Last:{' '}
+      <span className={isWin ? 'text-success font-medium' : 'text-base-content/60'}>
+        {isWin ? 'Won' : 'Lost'}
+      </span>{' '}
+      {lastMatch.score} · {timeAgo} · Record {record}
+    </>
+  )
 }
 
 const PlayerRow: FC<PlayerRowProps> = ({
@@ -57,7 +61,7 @@ const PlayerRow: FC<PlayerRowProps> = ({
       ? 'Anonymous'
       : player.username
 
-  const secondaryText = formatSecondaryText(hasHistory, headToHead, lastMatch)
+  const secondaryContent = formatSecondaryContent(hasHistory, headToHead, lastMatch)
 
   return (
     <button
@@ -71,7 +75,7 @@ const PlayerRow: FC<PlayerRowProps> = ({
       <div className="flex-1 min-w-0">
         <div className="font-medium truncate">{displayName}</div>
         <div className="text-sm text-base-content/60 truncate">
-          {secondaryText}
+          {secondaryContent}
         </div>
       </div>
 

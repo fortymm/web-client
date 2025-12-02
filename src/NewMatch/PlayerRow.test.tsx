@@ -136,7 +136,7 @@ describe('PlayerRow', () => {
       })
 
       expect(playerRowPage.secondaryText).toHaveTextContent(
-        '5-3 · Last: Won 11–7 · 2h ago'
+        'Last: Won 11–7 · 2h ago · Record 5-3'
       )
     })
 
@@ -153,7 +153,7 @@ describe('PlayerRow', () => {
       })
 
       expect(playerRowPage.secondaryText).toHaveTextContent(
-        '2-4 · Last: Lost 7–11 · 1h ago'
+        'Last: Lost 7–11 · 1h ago · Record 2-4'
       )
     })
 
@@ -169,7 +169,7 @@ describe('PlayerRow', () => {
         },
       })
 
-      expect(playerRowPage.secondaryText).toHaveTextContent('0-0 · Last: Won 11–5')
+      expect(playerRowPage.secondaryText).toHaveTextContent('Last: Won 11–5 · 5m ago · Record 0-0')
     })
 
     it('has truncation styling', () => {
