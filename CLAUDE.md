@@ -160,8 +160,62 @@ export type CreateMatchPayload = z.infer<typeof createMatchPayloadSchema>
 - **Styling**: Tailwind utilities + DaisyUI classes directly in JSX
 - **Props**: Use TypeScript interfaces; discriminated unions for restricted strings
 - **Tests**: Always use page objects; never query DOM directly in tests
-- **Composition**: Page objects delegate to child page objects
 - **API Mocking**: Use hook page objects' `requestHandler` method - never hardcode URLs in tests
+
+## No Barrel Files
+
+**Never use `index.ts` barrel files.** Import components directly by their full path.
+
+```typescript
+// ✅ Good - direct import
+import AppearanceSettings from './AppearanceSettings/AppearanceSettings'
+import UserMenu from './UserMenu/UserMenu'
+
+// ❌ Bad - barrel file import
+import AppearanceSettings from './AppearanceSettings'
+```
+
+## Feature Folder Structure
+
+Components and their tests live at the root of `src/`. If a component has child dependencies, create a folder for them:
+
+```
+src/
+├── Navbar.tsx                    # Simple component, no folder needed
+├── Navbar.page.tsx
+├── Navbar.test.tsx
+├── AppearanceSettings.tsx        # Main component at root
+├── AppearanceSettings.page.tsx   # Page object at root
+├── AppearanceSettings.test.tsx   # Tests at root
+├── AppearanceSettings/           # Folder only for child dependencies
+│   └── AppearanceCard.tsx        # Child component
+```
+
+## Page Object Composition
+
+**Page objects MUST delegate to child page objects.** Never duplicate selectors.
+
+```typescript
+// ✅ Good - Navbar.page.tsx delegates to UserMenu.page.tsx
+import { userMenuPage } from './UserMenu.page'
+
+export const navbarPage = {
+  render() { /* ... */ },
+  get brandLink() { return screen.getByRole('link', { name: 'FortyMM' }) },
+
+  // Delegate to child page object
+  userMenu: userMenuPage,
+}
+
+// In tests:
+navbarPage.userMenu.appearanceLink
+
+// ❌ Bad - duplicating selectors from child
+export const navbarPage = {
+  get userMenuButton() { return screen.getByRole('button', { name: 'User menu' }) },
+  get appearanceLink() { return screen.getByRole('link', { name: /appearance/i }) },
+}
+```
 
 ## CI Pipeline
 
