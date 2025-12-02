@@ -22,8 +22,8 @@ export function NewMatchButton({ onClick }: NewMatchButtonProps) {
         </div>
         <div className="flex flex-col items-start">
           <span className="text-sm font-semibold">New match</span>
-          <span className="text-xs text-primary-content/80">
-            Log a result or start Quick Match
+          <span className="text-xs text-primary-content/70">
+            Log a result or Quick Match
           </span>
         </div>
       </div>
