@@ -15,7 +15,7 @@ describe('NewMatchButton', () => {
   it('displays subtitle text', () => {
     newMatchButtonPage.render()
     expect(newMatchButtonPage.button).toHaveTextContent(
-      'Log a result or start a Quick Match'
+      'Log a result or Quick Match'
     )
   })
 
