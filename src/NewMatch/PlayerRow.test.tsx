@@ -196,37 +196,6 @@ describe('PlayerRow', () => {
     })
   })
 
-  describe('loading state', () => {
-    it('shows loading spinner when isLoading is true', () => {
-      playerRowPage.render({ isLoading: true })
-      expect(playerRowPage.loadingSpinner).toBeInTheDocument()
-    })
-
-    it('hides loading spinner when isLoading is false', () => {
-      playerRowPage.render({ isLoading: false })
-      expect(playerRowPage.loadingSpinner).not.toBeInTheDocument()
-    })
-
-    it('disables button when isLoading is true', () => {
-      playerRowPage.render({ isLoading: true })
-      expect(playerRowPage.row).toBeDisabled()
-    })
-
-    it('enables button when isLoading is false', () => {
-      playerRowPage.render({ isLoading: false })
-      expect(playerRowPage.row).not.toBeDisabled()
-    })
-
-    it('has correct loading spinner styling', () => {
-      playerRowPage.render({ isLoading: true })
-      expect(playerRowPage.loadingSpinner).toHaveClass(
-        'loading',
-        'loading-spinner',
-        'loading-sm'
-      )
-    })
-  })
-
   describe('avatar integration', () => {
     it('renders avatar component', () => {
       playerRowPage.render({

@@ -11,7 +11,6 @@ interface RenderOptions {
   lastMatch?: PlayerRowProps['lastMatch']
   hasHistory?: PlayerRowProps['hasHistory']
   onSelect?: PlayerRowProps['onSelect']
-  isLoading?: PlayerRowProps['isLoading']
 }
 
 export const playerRowPage = {
@@ -28,7 +27,6 @@ export const playerRowPage = {
       lastMatch,
       hasHistory = false,
       onSelect = vi.fn(),
-      isLoading = false,
     } = options
 
     const user = userEvent.setup()
@@ -41,7 +39,6 @@ export const playerRowPage = {
         lastMatch={lastMatch}
         hasHistory={hasHistory}
         onSelect={onSelect}
-        isLoading={isLoading}
       />
     )
 
@@ -62,10 +59,6 @@ export const playerRowPage = {
 
   get secondaryText() {
     return document.querySelector('.text-base-content\\/60')
-  },
-
-  get loadingSpinner() {
-    return document.querySelector('.loading.loading-spinner')
   },
 
   avatar: playerAvatarPage,

@@ -6,6 +6,7 @@ import { newMatchSearchPage } from './NewMatch/NewMatchSearch.page'
 import { sectionHeaderPage } from './NewMatch/SectionHeader.page'
 import { matchLengthControlPage } from './NewMatch/MatchLengthControl.page'
 import { quickMatchButtonPage } from './NewMatch/QuickMatchButton.page'
+import { playerListPage } from './NewMatch/PlayerList.page'
 
 export const newMatchPage = {
   render() {
@@ -42,6 +43,25 @@ export const newMatchPage = {
   // Section header
   get recentPlayersHeader() {
     return sectionHeaderPage.recentPlayersHeader
+  },
+
+  // Player list
+  get playerList() {
+    return playerListPage.list
+  },
+
+  get playerRows() {
+    return playerListPage.playerRows
+  },
+
+  getPlayerRowByIndex(index: number) {
+    return playerListPage.playerRows[index]
+  },
+
+  async clickPlayerByIndex(index: number) {
+    const user = userEvent.setup()
+    const row = playerListPage.playerRows[index]
+    await user.click(row)
   },
 
   // Bottom panel - Match length control

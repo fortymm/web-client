@@ -17,7 +17,6 @@ function NewMatch() {
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
   const [inputQuery, setInputQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
-  const [loadingPlayerId, setLoadingPlayerId] = useState<string | null>(null)
   const navigate = useNavigate()
 
   // Match creation
@@ -70,7 +69,6 @@ function NewMatch() {
   }
 
   const handleSelectPlayer = (playerId: string) => {
-    setLoadingPlayerId(playerId)
     handleCreateMatch(playerId)
   }
 
@@ -86,7 +84,6 @@ function NewMatch() {
             players={mockPlayers}
             context="recents"
             onSelectPlayer={handleSelectPlayer}
-            loadingPlayerId={loadingPlayerId}
           />
         </NewMatchContent>
       </div>

@@ -10,7 +10,6 @@ interface RenderOptions {
   players?: PlayerListPlayer[]
   context?: PlayerListProps['context']
   onSelectPlayer?: PlayerListProps['onSelectPlayer']
-  loadingPlayerId?: PlayerListProps['loadingPlayerId']
 }
 
 const defaultPlayers: PlayerListPlayer[] = [
@@ -46,7 +45,6 @@ export const playerListPage = {
       players = defaultPlayers,
       context = 'recents',
       onSelectPlayer = vi.fn(),
-      loadingPlayerId = null,
     } = options
 
     const user = userEvent.setup()
@@ -56,7 +54,6 @@ export const playerListPage = {
         players={players}
         context={context}
         onSelectPlayer={onSelectPlayer}
-        loadingPlayerId={loadingPlayerId}
       />
     )
 
@@ -64,19 +61,27 @@ export const playerListPage = {
   },
 
   get list() {
-    return screen.getByRole('list')
+    return screen.getByTestId('player-list')
   },
 
   get listItems() {
-    return screen.getAllByRole('listitem')
+    const list = this.list
+    return Array.from(list.querySelectorAll(':scope > li'))
   },
 
   get playerRows() {
-    return screen.queryAllByRole('button')
+    const list = this.list
+    return Array.from(list.querySelectorAll('button'))
   },
 
   getPlayerRowByName(name: string) {
-    return screen.getByRole('button', { name: new RegExp(name, 'i') })
+    const list = this.list
+    const buttons = Array.from(list.querySelectorAll('button'))
+    const match = buttons.find((btn) => new RegExp(name, 'i').test(btn.textContent || ''))
+    if (!match) {
+      throw new Error(`Unable to find player row with name matching: ${name}`)
+    }
+    return match
   },
 
   getListItemByIndex(index: number) {

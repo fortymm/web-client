@@ -21,7 +21,6 @@ export interface PlayerRowProps {
   }
   hasHistory: boolean
   onSelect: (playerId: string) => void
-  isLoading?: boolean
 }
 
 function formatSecondaryContent(
@@ -54,7 +53,6 @@ const PlayerRow: FC<PlayerRowProps> = ({
   lastMatch,
   hasHistory,
   onSelect,
-  isLoading = false,
 }) => {
   const displayName =
     player.isEphemeral && player.username === 'Anonymous'
@@ -68,7 +66,6 @@ const PlayerRow: FC<PlayerRowProps> = ({
       type="button"
       className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-base-200 active:bg-base-300 focus-visible:outline-2 focus-visible:outline-primary transition-colors min-h-[56px]"
       onClick={() => onSelect(player.id)}
-      disabled={isLoading}
     >
       <PlayerAvatar player={player} />
 
@@ -78,10 +75,6 @@ const PlayerRow: FC<PlayerRowProps> = ({
           {secondaryContent}
         </div>
       </div>
-
-      {isLoading && (
-        <span className="loading loading-spinner loading-sm" />
-      )}
     </button>
   )
 }

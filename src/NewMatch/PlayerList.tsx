@@ -22,17 +22,15 @@ export interface PlayerListProps {
   players: PlayerListPlayer[] | RecentOpponent[]
   context: 'recents' | 'search'
   onSelectPlayer: (playerId: string) => void
-  loadingPlayerId: string | null
 }
 
 const PlayerList: FC<PlayerListProps> = ({
   players,
   context,
   onSelectPlayer,
-  loadingPlayerId,
 }) => {
   return (
-    <ul role="list" className="divide-y divide-base-200">
+    <ul role="list" data-testid="player-list" className="divide-y divide-base-200">
       {players.map((player) => (
         <li key={player.id}>
           <PlayerRow
@@ -42,7 +40,6 @@ const PlayerList: FC<PlayerListProps> = ({
             lastMatch={player.lastMatch}
             hasHistory={!!player.headToHead}
             onSelect={onSelectPlayer}
-            isLoading={loadingPlayerId === player.id}
           />
         </li>
       ))}
