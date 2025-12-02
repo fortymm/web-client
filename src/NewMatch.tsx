@@ -7,7 +7,10 @@ import SectionHeader from './NewMatch/SectionHeader'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import StickyBottomPanel from './NewMatch/StickyBottomPanel'
+import PlayerList from './NewMatch/PlayerList'
+import { mockPlayers } from './NewMatch/mockPlayers'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
+import { useCreateMatch } from './NewMatch/useCreateMatch'
 
 function NewMatch() {
   // UI state
@@ -15,6 +18,9 @@ function NewMatch() {
   const [inputQuery, setInputQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const navigate = useNavigate()
+
+  // Match creation
+  const createMatch = useCreateMatch()
 
   // Recent opponents data
   const recents = useRecentOpponents()
@@ -37,8 +43,33 @@ function NewMatch() {
   void mode
   void recents
 
-  const handleMatchCreated = (matchId: string) => {
-    navigate(`/matches/${matchId}/score`)
+  const handleCreateMatch = (opponentId: string | null) => {
+    const id = crypto.randomUUID()
+
+    // Optimistically redirect immediately
+    navigate(`/matches/${id}/score`)
+
+    // Persist the match in the background
+    createMatch.mutate(
+      {
+        id,
+        opponentId,
+        matchLength,
+      },
+      {
+        onError: (error) => {
+          console.error('Failed to create match:', error)
+        },
+      }
+    )
+  }
+
+  const handleQuickMatch = () => {
+    handleCreateMatch(null)
+  }
+
+  const handleSelectPlayer = (playerId: string) => {
+    handleCreateMatch(playerId)
   }
 
   return (
@@ -49,18 +80,17 @@ function NewMatch() {
         <NewMatchSearch />
         <NewMatchContent>
           <SectionHeader title="RECENT PLAYERS" />
-          <div className="px-4 py-8 text-center text-base-content/60">
-            Content area
-          </div>
+          <PlayerList
+            players={mockPlayers}
+            context="recents"
+            onSelectPlayer={handleSelectPlayer}
+          />
         </NewMatchContent>
       </div>
 
       <StickyBottomPanel>
         <MatchLengthControl value={matchLength} onChange={setMatchLength} />
-        <QuickMatchButton
-          matchLength={matchLength}
-          onMatchCreated={handleMatchCreated}
-        />
+        <QuickMatchButton onClick={handleQuickMatch} />
       </StickyBottomPanel>
     </div>
   )

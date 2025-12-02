@@ -72,6 +72,53 @@ describe('NewMatch', () => {
     })
   })
 
+  describe('player list', () => {
+    it('renders the player list with mock players', () => {
+      newMatchPage.render()
+      expect(newMatchPage.playerList).toBeInTheDocument()
+      expect(newMatchPage.playerRows.length).toBeGreaterThan(0)
+    })
+
+    it('displays 50 player rows', () => {
+      newMatchPage.render()
+      expect(newMatchPage.playerRows).toHaveLength(50)
+    })
+  })
+
+  describe('player selection', () => {
+    it('navigates to score page when clicking a player', async () => {
+      newMatchPage.render()
+      await newMatchPage.clickPlayerByIndex(0)
+
+      expect(matchScorePagePage.heading).toBeInTheDocument()
+    })
+
+    it('saves match with opponentId when clicking a player', async () => {
+      newMatchPage.render()
+      await newMatchPage.clickPlayerByIndex(0)
+
+      await waitFor(async () => {
+        const matches = await import('./lib/matchesDb').then(m => m.getAllMatches())
+        expect(matches).toHaveLength(1)
+        expect(matches[0].opponentId).toBe('player-1')
+        expect(matches[0].matchLength).toBe(5)
+        expect(matches[0].id).toMatch(UUID_REGEX)
+      })
+    })
+
+    it('uses selected match length when clicking a player', async () => {
+      newMatchPage.render()
+      await newMatchPage.selectMatchLength(3)
+      await newMatchPage.clickPlayerByIndex(0)
+
+      await waitFor(async () => {
+        const matches = await import('./lib/matchesDb').then(m => m.getAllMatches())
+        expect(matches).toHaveLength(1)
+        expect(matches[0].matchLength).toBe(3)
+      })
+    })
+  })
+
   describe('quick match integration', () => {
     it('saves default match length to IndexedDB when clicking quick match', async () => {
       newMatchPage.render()
