@@ -7,20 +7,6 @@ export const landingPagePage = {
     appPage.render('/')
   },
 
-  get increaseCountButton() {
-    return within(appPage.main).getByRole('button', { name: /count is \d+/ })
-  },
-
-  get currentCount() {
-    const text = landingPagePage.increaseCountButton.textContent ?? ''
-    const match = text.match(/count is (\d+)/)
-    return match ? parseInt(match[1], 10) : 0
-  },
-
-  async clickIncreaseCount() {
-    await userEvent.click(landingPagePage.increaseCountButton)
-  },
-
   get newMatchLink() {
     return within(appPage.main).getByRole('link', { name: 'New Match' })
   },
