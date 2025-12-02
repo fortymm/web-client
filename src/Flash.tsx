@@ -22,7 +22,21 @@ function Flash() {
           role="alert"
           className={`alert ${alertClasses[flash.type]} shadow-lg min-w-80 flex justify-between`}
         >
-          <span>{flash.message}</span>
+          <span>
+            {flash.message}
+            {flash.action && (
+              <>
+                {' '}
+                <button
+                  type="button"
+                  className="link link-hover font-medium"
+                  onClick={flash.action.onClick}
+                >
+                  {flash.action.label}
+                </button>
+              </>
+            )}
+          </span>
           <button
             type="button"
             className="btn btn-ghost btn-sm flex-shrink-0"

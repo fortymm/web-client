@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import Flash from './Flash'
 import { FlashTestWrapper } from './test/FlashTestWrapper'
 import { flashStateRef } from './test/flashStateRef'
+import type { ShowFlashOptions } from './useFlash'
 
 export const flashPage = {
   render() {
@@ -17,8 +18,8 @@ export const flashPage = {
     return flashStateRef.current
   },
 
-  showFlash(message: string, type?: 'info' | 'success' | 'warning' | 'error', timeout?: number) {
-    flashStateRef.current?.showFlash(message, type, timeout)
+  showFlash(message: string, options?: ShowFlashOptions) {
+    return flashStateRef.current?.showFlash(message, options)
   },
 
   get alerts() {
