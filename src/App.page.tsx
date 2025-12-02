@@ -3,6 +3,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { routes } from './routes'
 import { TestQueryProvider, createTestQueryClient } from './test/utils'
 import { type QueryClient } from '@tanstack/react-query'
+import FlashProvider from './FlashProvider'
 
 interface RenderOptions {
   queryClient?: QueryClient
@@ -14,7 +15,9 @@ export const appPage = {
     const router = createMemoryRouter(routes, { initialEntries: [initialRoute] })
     render(
       <TestQueryProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <FlashProvider>
+          <RouterProvider router={router} />
+        </FlashProvider>
       </TestQueryProvider>
     )
     return { queryClient }
