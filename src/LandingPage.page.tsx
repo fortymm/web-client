@@ -7,11 +7,11 @@ export const landingPagePage = {
     appPage.render('/')
   },
 
-  get newMatchLink() {
-    return within(appPage.main).getByRole('link', { name: 'New Match' })
+  get newMatchButton() {
+    return within(appPage.main).getByRole('button', { name: /new match/i })
   },
 
-  async clickNewMatchLink() {
-    await userEvent.click(landingPagePage.newMatchLink)
+  async clickNewMatchButton() {
+    await userEvent.click(landingPagePage.newMatchButton)
   },
 }
