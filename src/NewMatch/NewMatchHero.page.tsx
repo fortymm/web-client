@@ -12,7 +12,7 @@ export const newMatchHeroPage = {
 
   get description() {
     return screen.getByText(
-      'Select a player, search, or start a Quick Match and assign a player later.'
+      'Select a player, search, or start a Quick Match and assign an opponent later.'
     )
   },
 }
