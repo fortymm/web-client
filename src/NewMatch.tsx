@@ -7,6 +7,8 @@ import SectionHeader from './NewMatch/SectionHeader'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import StickyBottomPanel from './NewMatch/StickyBottomPanel'
+import PlayerList from './NewMatch/PlayerList'
+import { mockPlayers } from './NewMatch/mockPlayers'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 
 function NewMatch() {
@@ -14,6 +16,7 @@ function NewMatch() {
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
   const [inputQuery, setInputQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [loadingPlayerId, setLoadingPlayerId] = useState<string | null>(null)
   const navigate = useNavigate()
 
   // Recent opponents data
@@ -41,6 +44,15 @@ function NewMatch() {
     navigate(`/matches/${matchId}/score`)
   }
 
+  const handleSelectPlayer = (playerId: string) => {
+    setLoadingPlayerId(playerId)
+    // Simulate match creation delay, then navigate
+    setTimeout(() => {
+      const matchId = crypto.randomUUID()
+      navigate(`/matches/${matchId}/score`)
+    }, 1000)
+  }
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
@@ -49,9 +61,12 @@ function NewMatch() {
         <NewMatchSearch />
         <NewMatchContent>
           <SectionHeader title="RECENT PLAYERS" />
-          <div className="px-4 py-8 text-center text-base-content/60">
-            Content area
-          </div>
+          <PlayerList
+            players={mockPlayers}
+            context="recents"
+            onSelectPlayer={handleSelectPlayer}
+            loadingPlayerId={loadingPlayerId}
+          />
         </NewMatchContent>
       </div>
 
