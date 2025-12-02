@@ -17,9 +17,7 @@ export function NewMatchButton({ onClick }: NewMatchButtonProps) {
       "
     >
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-content/20">
-          <span className="text-lg font-bold">+</span>
-        </div>
+        <span className="text-lg font-bold">+</span>
         <div className="flex flex-col items-start">
           <span className="text-sm font-semibold">New match</span>
           <span className="text-xs text-primary-content/70">
