@@ -14,6 +14,10 @@ export const skeletonRowsPage = {
     return screen.getByRole('status', { name: 'Loading recent players' })
   },
 
+  queryContainer() {
+    return screen.queryByRole('status', { name: 'Loading recent players' })
+  },
+
   get rows() {
     const container = this.container
     return Array.from(container.querySelectorAll(':scope > div'))

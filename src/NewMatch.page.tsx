@@ -97,7 +97,7 @@ export const newMatchPage = {
 
   // Loading states
   get skeletonContainer() {
-    return screen.queryByRole('status', { name: 'Loading recent players' })
+    return skeletonRowsPage.queryContainer()
   },
 
   get isShowingSkeleton() {
@@ -107,7 +107,7 @@ export const newMatchPage = {
   skeletonRows: skeletonRowsPage,
 
   async waitForPlayersToLoad() {
-    const skeleton = screen.queryByRole('status', { name: 'Loading recent players' })
+    const skeleton = skeletonRowsPage.queryContainer()
     if (skeleton) {
       await waitForElementToBeRemoved(skeleton)
     }
