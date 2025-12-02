@@ -30,7 +30,7 @@ describe('NewMatch', () => {
     it('can navigate back to home via brand link', async () => {
       newMatchPage.render()
       await newMatchPage.clickBrandLink()
-      expect(landingPagePage.newMatchLink).toBeInTheDocument()
+      expect(landingPagePage.newMatchButton).toBeInTheDocument()
     })
   })
 

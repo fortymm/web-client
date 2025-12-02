@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useFlash } from './useFlash'
+import { NewMatchButton } from './NewMatchButton'
 
 function LandingPage() {
   const { showFlash } = useFlash()
+  const navigate = useNavigate()
 
   return (
     <div className="flex flex-col gap-4">
-      <Link to="/matches/new" className="btn btn-secondary">
-        New Match
-      </Link>
+      <NewMatchButton onClick={() => navigate('/matches/new')} />
 
       <div className="divider">Flash Test Controls</div>
 
