@@ -73,14 +73,16 @@ describe('NewMatch', () => {
   })
 
   describe('player list', () => {
-    it('renders the player list with mock players', () => {
+    it('renders the player list with mock players', async () => {
       newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
       expect(newMatchPage.playerList).toBeInTheDocument()
       expect(newMatchPage.playerRows.length).toBeGreaterThan(0)
     })
 
-    it('displays 50 player rows', () => {
+    it('displays 50 player rows', async () => {
       newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
       expect(newMatchPage.playerRows).toHaveLength(50)
     })
   })
@@ -88,6 +90,7 @@ describe('NewMatch', () => {
   describe('player selection', () => {
     it('navigates to score page when clicking a player', async () => {
       newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
       await newMatchPage.clickPlayerByIndex(0)
 
       expect(matchScorePagePage.heading).toBeInTheDocument()
@@ -95,6 +98,7 @@ describe('NewMatch', () => {
 
     it('saves match with opponentId when clicking a player', async () => {
       newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
       await newMatchPage.clickPlayerByIndex(0)
 
       await waitFor(async () => {
@@ -108,6 +112,7 @@ describe('NewMatch', () => {
 
     it('uses selected match length when clicking a player', async () => {
       newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
       await newMatchPage.selectMatchLength(3)
       await newMatchPage.clickPlayerByIndex(0)
 

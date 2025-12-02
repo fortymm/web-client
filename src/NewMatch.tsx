@@ -4,6 +4,7 @@ import NewMatchHero from './NewMatch/NewMatchHero'
 import NewMatchSearch from './NewMatch/NewMatchSearch'
 import NewMatchContent from './NewMatch/NewMatchContent'
 import SectionHeader from './NewMatch/SectionHeader'
+import SkeletonRows from './NewMatch/SkeletonRows'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import StickyBottomPanel from './NewMatch/StickyBottomPanel'
@@ -79,12 +80,22 @@ function NewMatch() {
         <NewMatchHero />
         <NewMatchSearch />
         <NewMatchContent>
-          <SectionHeader title="RECENT PLAYERS" />
-          <PlayerList
-            players={mockPlayers}
-            context="recents"
-            onSelectPlayer={handleSelectPlayer}
-          />
+          {mode === 'recents' && recents.isInitialLoading && (
+            <>
+              <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+              <SkeletonRows count={6} />
+            </>
+          )}
+          {mode === 'recents' && !recents.isInitialLoading && (
+            <>
+              <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
+              <PlayerList
+                players={mockPlayers}
+                context="recents"
+                onSelectPlayer={handleSelectPlayer}
+              />
+            </>
+          )}
         </NewMatchContent>
       </div>
 
