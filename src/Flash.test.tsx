@@ -48,7 +48,7 @@ describe('Flash', () => {
     flashPage.render()
 
     act(() => {
-      flashPage.showFlash('Success message', 'success')
+      flashPage.showFlash('Success message', { type: 'success' })
     })
 
     expect(flashPage.alerts[0]).toHaveClass('alert-success')
@@ -58,7 +58,7 @@ describe('Flash', () => {
     flashPage.render()
 
     act(() => {
-      flashPage.showFlash('Warning message', 'warning')
+      flashPage.showFlash('Warning message', { type: 'warning' })
     })
 
     expect(flashPage.alerts[0]).toHaveClass('alert-warning')
@@ -68,7 +68,7 @@ describe('Flash', () => {
     flashPage.render()
 
     act(() => {
-      flashPage.showFlash('Error message', 'error')
+      flashPage.showFlash('Error message', { type: 'error' })
     })
 
     expect(flashPage.alerts[0]).toHaveClass('alert-error')
@@ -93,7 +93,7 @@ describe('Flash', () => {
     flashPage.render()
 
     act(() => {
-      flashPage.showFlash('Auto dismiss', 'info', 3000)
+      flashPage.showFlash('Auto dismiss', { type: 'info', timeout: 3000 })
     })
 
     expect(flashPage.alerts).toHaveLength(1)

@@ -2,16 +2,16 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi, type Mock } from 'vitest'
 import UpdateFlash from './UpdateFlash'
+import { FlashTestWrapper } from './test/FlashTestWrapper'
+import Flash from './Flash'
 
 let mockNeedRefresh = false
 let mockRefresh: Mock
-let mockDismiss: Mock
 
 vi.mock('./useServiceWorkerUpdate', () => ({
   useServiceWorkerUpdate: () => ({
     needRefresh: mockNeedRefresh,
     refresh: mockRefresh,
-    dismiss: mockDismiss,
   }),
 }))
 
@@ -23,19 +23,19 @@ export const updateFlashPage = {
   resetMocks() {
     mockNeedRefresh = false
     mockRefresh = vi.fn()
-    mockDismiss = vi.fn()
   },
 
   getMockRefresh() {
     return mockRefresh
   },
 
-  getMockDismiss() {
-    return mockDismiss
-  },
-
   render() {
-    render(<UpdateFlash />)
+    render(
+      <FlashTestWrapper>
+        <UpdateFlash />
+        <Flash />
+      </FlashTestWrapper>
+    )
   },
 
   get alert() {

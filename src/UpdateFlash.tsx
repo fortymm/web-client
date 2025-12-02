@@ -1,53 +1,28 @@
+import { useEffect, useRef } from 'react'
 import { useServiceWorkerUpdate } from './useServiceWorkerUpdate'
+import { useFlash } from './useFlash'
 
 function UpdateFlash() {
-  const { needRefresh, refresh, dismiss } = useServiceWorkerUpdate()
+  const { needRefresh, refresh } = useServiceWorkerUpdate()
+  const { showFlash, dismissFlash } = useFlash()
+  const flashIdRef = useRef<string | null>(null)
 
-  if (!needRefresh) {
-    return null
-  }
+  useEffect(() => {
+    if (needRefresh && !flashIdRef.current) {
+      flashIdRef.current = showFlash('A new version is available.', {
+        type: 'info',
+        action: {
+          label: 'Refresh',
+          onClick: refresh,
+        },
+      })
+    } else if (!needRefresh && flashIdRef.current) {
+      dismissFlash(flashIdRef.current)
+      flashIdRef.current = null
+    }
+  }, [needRefresh, refresh, showFlash, dismissFlash])
 
-  return (
-    <div className="toast toast-top toast-center z-50">
-      <div
-        role="alert"
-        className="alert alert-info shadow-lg min-w-80 flex justify-between"
-      >
-        <span>
-          A new version is available.{' '}
-          <button
-            type="button"
-            className="link link-hover font-medium"
-            onClick={refresh}
-          >
-            Refresh
-          </button>{' '}
-          to update.
-        </span>
-        <button
-          type="button"
-          className="btn btn-ghost btn-sm flex-shrink-0"
-          onClick={dismiss}
-          aria-label="Dismiss"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-  )
+  return null
 }
 
 export default UpdateFlash

@@ -32,12 +32,14 @@ describe('UpdateFlash', () => {
     expect(updateFlashPage.getMockRefresh()).toHaveBeenCalled()
   })
 
-  it('calls dismiss when dismiss button is clicked', async () => {
+  it('dismisses the flash when dismiss button is clicked', async () => {
     updateFlashPage.setNeedRefresh(true)
     updateFlashPage.render()
 
+    expect(updateFlashPage.alert).toBeInTheDocument()
+
     await updateFlashPage.clickDismiss()
 
-    expect(updateFlashPage.getMockDismiss()).toHaveBeenCalled()
+    expect(updateFlashPage.alert).not.toBeInTheDocument()
   })
 })
