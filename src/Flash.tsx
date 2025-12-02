@@ -20,12 +20,12 @@ function Flash() {
         <div
           key={flash.id}
           role="alert"
-          className={`alert ${alertClasses[flash.type]} shadow-lg`}
+          className={`alert ${alertClasses[flash.type]} shadow-lg min-w-80 flex justify-between`}
         >
           <span>{flash.message}</span>
           <button
             type="button"
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm flex-shrink-0"
             onClick={() => dismissFlash(flash.id)}
             aria-label="Dismiss"
           >
