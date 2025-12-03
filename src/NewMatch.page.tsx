@@ -43,6 +43,10 @@ export const newMatchPage = {
     return newMatchSearchPage.placeholder
   },
 
+  querySearchOfflineBadge() {
+    return newMatchSearchPage.queryOfflineBadge()
+  },
+
   // Section header
   get recentPlayersHeader() {
     return sectionHeaderPage.recentPlayersHeader

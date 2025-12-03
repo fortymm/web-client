@@ -90,7 +90,7 @@ function NewMatch() {
       {/* Main Content Wrapper */}
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
         <NewMatchHero />
-        <NewMatchSearch />
+        <NewMatchSearch disabled={showRecentsError} />
         <NewMatchContent>
           {mode === 'recents' && recents.isInitialLoading && (
             <>

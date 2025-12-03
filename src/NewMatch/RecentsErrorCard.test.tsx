@@ -10,11 +10,6 @@ describe('RecentsErrorCard', () => {
       expect(recentsErrorCardPage.headingText).toBe("Couldn't load players")
     })
 
-    it('renders description text', () => {
-      recentsErrorCardPage.render()
-      expect(recentsErrorCardPage.description).toBeInTheDocument()
-    })
-
     it('renders retry button', () => {
       recentsErrorCardPage.render()
       expect(recentsErrorCardPage.retryButton).toBeInTheDocument()

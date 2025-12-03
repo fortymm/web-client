@@ -24,15 +24,12 @@ const RecentsErrorCard: FC<RecentsErrorCardProps> = ({ onRetry, retryCount }) =>
       : "Couldn't load players"
 
   return (
-    <div className="flex flex-col items-center justify-center px-8 py-12 text-center">
-      <ExclamationTriangleIcon className="w-12 h-12 text-warning mb-4" />
-      <h3 className="text-lg font-semibold text-base-content mb-1">{message}</h3>
-      <p className="text-sm text-base-content/60 mb-4">
-        You can still start a Quick Match below
-      </p>
+    <div className="flex flex-col items-center px-8 py-6 text-center">
+      <ExclamationTriangleIcon className="w-10 h-10 text-warning mb-3" />
+      <h3 className="text-base font-semibold text-base-content mb-3">{message}</h3>
       <button
         onClick={handleRetry}
-        className={`btn btn-outline btn-sm ${isRetrying ? 'loading' : ''}`}
+        className={`btn btn-primary btn-sm ${isRetrying ? 'loading' : ''}`}
         disabled={isRetrying}
       >
         {isRetrying ? 'Retrying...' : 'Try again'}

@@ -23,10 +23,6 @@ export const recentsErrorCardPage = {
     return screen.getByRole('heading', { level: 3 })
   },
 
-  get description() {
-    return screen.getByText('You can still start a Quick Match below')
-  },
-
   get retryButton() {
     return screen.getByRole('button', { name: /try again|retrying/i })
   },

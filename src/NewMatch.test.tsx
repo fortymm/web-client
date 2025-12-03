@@ -253,6 +253,19 @@ describe('NewMatch', () => {
       expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
     })
 
+    it('disables search bar when error card is displayed', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      expect(newMatchPage.querySearchOfflineBadge()).toBeInTheDocument()
+    })
+
     it('transitions from error to player list on successful retry', async () => {
       let requestCount = 0
       server.use(
