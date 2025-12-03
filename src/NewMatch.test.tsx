@@ -1,8 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
+import { HttpResponse } from 'msw'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { matchScorePagePage } from './MatchScorePage.page'
+import { useRecentOpponentsPage } from './hooks/useRecentOpponents.page'
+import { server } from './test/mocks/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -182,6 +185,129 @@ describe('NewMatch', () => {
         })
         expect(matches[0].id).toMatch(UUID_REGEX)
       })
+    })
+  })
+
+  describe('recents error handling', () => {
+    it('shows error card when initial load fails', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      expect(newMatchPage.errorCard.heading).toBeInTheDocument()
+      expect(newMatchPage.errorCard.headingText).toBe("Couldn't load players")
+      expect(newMatchPage.errorCard.retryButton).toBeInTheDocument()
+    })
+
+    it('still shows section header when error card is displayed', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
+    })
+
+    it('transitions from error to player list on successful retry', async () => {
+      let requestCount = 0
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          requestCount++
+          if (requestCount === 1) {
+            return HttpResponse.error()
+          }
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'TestPlayer' }),
+            ])
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Click retry
+      await newMatchPage.clickRetry()
+
+      // Should now show player list
+      await waitFor(() => {
+        expect(newMatchPage.playerList).toBeInTheDocument()
+      })
+      expect(newMatchPage.hasErrorCard).toBe(false)
+    })
+
+    it('stays on error card when retry also fails', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Click retry - should still show error
+      await newMatchPage.clickRetry()
+
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.heading).toBeInTheDocument()
+      })
+    })
+
+    it('shows network-focused message after 3 retries', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Retry 3 times
+      await newMatchPage.clickRetry()
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
+      })
+
+      await newMatchPage.clickRetry()
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
+      })
+
+      await newMatchPage.clickRetry()
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
+      })
+
+      expect(newMatchPage.errorCard.headingText).toBe(
+        'Still having trouble. Check your connection.'
+      )
+    })
+
+    it('allows quick match when error card is displayed', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Quick match should still work
+      await newMatchPage.clickQuickMatch()
+      expect(matchScorePagePage.heading).toBeInTheDocument()
     })
   })
 })

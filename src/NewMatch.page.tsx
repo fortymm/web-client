@@ -1,5 +1,6 @@
 import userEvent from '@testing-library/user-event'
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react'
+import { expect } from 'vitest'
 import { appPage } from './App.page'
 import { newMatchHeroPage } from './NewMatch/NewMatchHero.page'
 import { newMatchSearchPage } from './NewMatch/NewMatchSearch.page'
@@ -8,6 +9,7 @@ import { matchLengthControlPage } from './NewMatch/MatchLengthControl.page'
 import { quickMatchButtonPage } from './NewMatch/QuickMatchButton.page'
 import { playerListPage } from './NewMatch/PlayerList.page'
 import { skeletonRowsPage } from './NewMatch/SkeletonRows.page'
+import { recentsErrorCardPage } from './NewMatch/RecentsErrorCard.page'
 
 export const newMatchPage = {
   render() {
@@ -116,5 +118,28 @@ export const newMatchPage = {
   // Score page detection (after navigation)
   getScorePageHeading() {
     return screen.queryByRole('heading', { name: /score/i })
+  },
+
+  // Error card delegation
+  get errorCard() {
+    return recentsErrorCardPage
+  },
+
+  queryErrorCardHeading() {
+    return screen.queryByRole('heading', { level: 3 })
+  },
+
+  get hasErrorCard() {
+    return this.queryErrorCardHeading() !== null
+  },
+
+  async waitForErrorCard() {
+    await waitFor(() => {
+      expect(this.queryErrorCardHeading()).toBeInTheDocument()
+    })
+  },
+
+  async clickRetry() {
+    await recentsErrorCardPage.clickRetry()
   },
 }

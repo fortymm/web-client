@@ -9,6 +9,7 @@ import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthCont
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
 import PlayerList from './NewMatch/PlayerList'
+import RecentsErrorCard from './NewMatch/RecentsErrorCard'
 import { mockPlayers } from './NewMatch/mockPlayers'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
@@ -18,6 +19,7 @@ function NewMatch() {
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
   const [inputQuery, setInputQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
   const navigate = useNavigate()
 
   // Match creation
@@ -29,10 +31,15 @@ function NewMatch() {
   // Derived state for recents
   const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
   const hasEmptyRecents = recents.opponents !== null && recents.opponents.length === 0
-  const recentsError = recents.status === 'error'
 
   // Mode derived from debounced query
   const mode = debouncedQuery.trim() === '' ? 'recents' : 'search'
+
+  // Error states
+  const showRecentsError =
+    mode === 'recents' && recents.status === 'error' && recents.opponents === null
+  const showRefetchError =
+    mode === 'recents' && recents.status === 'error' && recents.opponents !== null
 
   // Expose state for future integration (FM-301, FM-302)
   void inputQuery
@@ -40,9 +47,7 @@ function NewMatch() {
   void setDebouncedQuery
   void hasRecentsData
   void hasEmptyRecents
-  void recentsError
-  void mode
-  void recents
+  void showRefetchError
 
   const handleCreateMatch = (opponentId: string | null) => {
     const id = crypto.randomUUID()
@@ -73,6 +78,14 @@ function NewMatch() {
     handleCreateMatch(playerId)
   }
 
+  const handleRetry = async () => {
+    setRetryCount((prev) => prev + 1)
+    const result = await recents.refetch()
+    if (result.status === 'success') {
+      setRetryCount(0)
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
@@ -86,16 +99,25 @@ function NewMatch() {
               <SkeletonRows count={6} />
             </>
           )}
-          {mode === 'recents' && !recents.isInitialLoading && (
+          {mode === 'recents' && showRecentsError && (
             <>
-              <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
-              <PlayerList
-                players={mockPlayers}
-                context="recents"
-                onSelectPlayer={handleSelectPlayer}
-              />
+              <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+              <RecentsErrorCard onRetry={handleRetry} retryCount={retryCount} />
             </>
           )}
+          {mode === 'recents' &&
+            !recents.isInitialLoading &&
+            !showRecentsError &&
+            recents.opponents !== null && (
+              <>
+                <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
+                <PlayerList
+                  players={mockPlayers}
+                  context="recents"
+                  onSelectPlayer={handleSelectPlayer}
+                />
+              </>
+            )}
         </NewMatchContent>
       </div>
 
