@@ -1,5 +1,5 @@
 import userEvent from '@testing-library/user-event'
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { appPage } from './App.page'
 import { newMatchHeroPage } from './NewMatch/NewMatchHero.page'
 import { newMatchSearchPage } from './NewMatch/NewMatchSearch.page'
@@ -7,6 +7,7 @@ import { sectionHeaderPage } from './NewMatch/SectionHeader.page'
 import { matchLengthControlPage } from './NewMatch/MatchLengthControl.page'
 import { quickMatchButtonPage } from './NewMatch/QuickMatchButton.page'
 import { playerListPage } from './NewMatch/PlayerList.page'
+import { skeletonRowsPage } from './NewMatch/SkeletonRows.page'
 
 export const newMatchPage = {
   render() {
@@ -92,6 +93,24 @@ export const newMatchPage = {
 
   async clickQuickMatch() {
     await quickMatchButtonPage.click()
+  },
+
+  // Loading states
+  get skeletonContainer() {
+    return skeletonRowsPage.queryContainer()
+  },
+
+  get isShowingSkeleton() {
+    return this.skeletonContainer !== null
+  },
+
+  skeletonRows: skeletonRowsPage,
+
+  async waitForPlayersToLoad() {
+    const skeleton = skeletonRowsPage.queryContainer()
+    if (skeleton) {
+      await waitForElementToBeRemoved(skeleton)
+    }
   },
 
   // Score page detection (after navigation)
