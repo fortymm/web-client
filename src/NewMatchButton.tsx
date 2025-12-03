@@ -10,7 +10,6 @@ export function NewMatchButton({ onClick }: NewMatchButtonProps) {
       className="
         btn btn-primary btn-lg w-full
         normal-case
-        rounded-2xl
         justify-between
         px-4
         shadow-md
