@@ -10,7 +10,6 @@ import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
 import PlayerList from './NewMatch/PlayerList'
 import RecentsErrorCard from './NewMatch/RecentsErrorCard'
-import { mockPlayers } from './NewMatch/mockPlayers'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 
@@ -112,7 +111,7 @@ function NewMatch() {
               <>
                 <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
                 <PlayerList
-                  players={mockPlayers}
+                  players={recents.opponents}
                   context="recents"
                   onSelectPlayer={handleSelectPlayer}
                 />

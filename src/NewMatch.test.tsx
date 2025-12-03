@@ -76,21 +76,57 @@ describe('NewMatch', () => {
   })
 
   describe('player list', () => {
-    it('renders the player list with mock players', async () => {
+    it('renders the player list with recent opponents', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            ])
+          )
+        })
+      )
+
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
       expect(newMatchPage.playerList).toBeInTheDocument()
       expect(newMatchPage.playerRows.length).toBeGreaterThan(0)
     })
 
-    it('displays 50 player rows', async () => {
+    it('displays correct number of player rows', async () => {
+      const mockOpponents = Array.from({ length: 5 }, (_, i) =>
+        useRecentOpponentsPage.createMockOpponent({
+          id: `player-${i + 1}`,
+          username: `Player${i + 1}`,
+        })
+      )
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(useRecentOpponentsPage.createMockResponse(mockOpponents))
+        })
+      )
+
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
-      expect(newMatchPage.playerRows).toHaveLength(50)
+      expect(newMatchPage.playerRows).toHaveLength(5)
     })
   })
 
   describe('player selection', () => {
+    beforeEach(() => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            ])
+          )
+        })
+      )
+    })
+
     it('navigates to score page when clicking a player', async () => {
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
