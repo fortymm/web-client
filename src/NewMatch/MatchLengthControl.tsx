@@ -16,8 +16,8 @@ const MatchLengthControl: FC<MatchLengthControlProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-base-content/60">Match length</span>
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-base-content/50">Match length</span>
       <div
         className="join w-full"
         role="group"
@@ -26,7 +26,7 @@ const MatchLengthControl: FC<MatchLengthControlProps> = ({
         {MATCH_LENGTHS.map((length) => (
           <label
             key={length}
-            className={`join-item btn btn-sm flex-1 min-h-[44px] has-[:checked]:btn-accent ${
+            className={`join-item btn btn-sm flex-1 min-h-[44px] has-[:checked]:btn-primary has-[:checked]:text-primary-content ${
               disabled ? 'btn-disabled' : ''
             }`}
           >

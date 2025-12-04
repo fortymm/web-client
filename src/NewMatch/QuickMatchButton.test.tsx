@@ -36,9 +36,9 @@ describe('QuickMatchButton', () => {
       expect(quickMatchButtonPage.subtitleText).toBeInTheDocument()
     })
 
-    it('has fixed touch height of 56px', () => {
+    it('has fixed touch height', () => {
       quickMatchButtonPage.render()
-      expect(quickMatchButtonPage.button).toHaveClass('h-[56px]')
+      expect(quickMatchButtonPage.button).toHaveClass('h-14')
     })
 
     it('is full width', () => {

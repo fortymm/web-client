@@ -24,7 +24,7 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
   return (
     <button
       type="button"
-      className="btn btn-primary btn-block h-[56px] py-3 flex-col gap-0"
+      className="btn btn-primary btn-block h-14 flex-col gap-0"
       onClick={handleClick}
       disabled={disabled}
     >
@@ -33,7 +33,7 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
         <span>Quick Match</span>
       </span>
       <span className="text-xs font-normal opacity-80">
-        Start now · Choose player later
+        Start now · Add players and scores later
       </span>
     </button>
   )

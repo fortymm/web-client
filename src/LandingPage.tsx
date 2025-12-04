@@ -1,29 +1,30 @@
 import { useNavigate } from 'react-router-dom'
 import { NewMatchButton } from './NewMatchButton'
+import CTAPanel from './CTAPanel'
 
 function LandingPage() {
   const navigate = useNavigate()
 
   return (
     <>
-      <div className="fixed inset-0 top-16 bottom-28 flex items-center justify-center pb-16">
-        <div className="card max-w-xs bg-base-200 p-6 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <span className="text-3xl">🏓</span>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px-120px)] -mx-4 -mt-4 px-4 pb-8">
+        <div className="-mt-16 card max-w-xs bg-base-200 p-6 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+            <span className="text-2xl">🏓</span>
           </div>
-          <h2 className="text-xl font-semibold">No matches yet</h2>
-          <p className="mt-2 text-base-content/70">
+          <h2 className="text-lg font-bold">No matches yet</h2>
+          <p className="mt-2 text-sm text-base-content/70">
             Your match history will appear here.
           </p>
-          <p className="mt-1 text-xs text-base-content/50">
-            Tap <span className="font-semibold">New match</span> below to get started.
+          <p className="mt-3 text-xs text-base-content/50">
+            Tap <span className="font-medium">New match</span> to log your first result.
           </p>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-8 pt-4">
+      <CTAPanel>
         <NewMatchButton onClick={() => navigate('/matches/new')} />
-      </div>
+      </CTAPanel>
     </>
   )
 }

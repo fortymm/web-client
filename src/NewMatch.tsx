@@ -7,7 +7,7 @@ import SectionHeader from './NewMatch/SectionHeader'
 import SkeletonRows from './NewMatch/SkeletonRows'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
-import StickyBottomPanel from './NewMatch/StickyBottomPanel'
+import CTAPanel from './CTAPanel'
 import PlayerList from './NewMatch/PlayerList'
 import { mockPlayers } from './NewMatch/mockPlayers'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
@@ -99,10 +99,10 @@ function NewMatch() {
         </NewMatchContent>
       </div>
 
-      <StickyBottomPanel>
+      <CTAPanel>
         <MatchLengthControl value={matchLength} onChange={setMatchLength} />
         <QuickMatchButton onClick={handleQuickMatch} />
-      </StickyBottomPanel>
+      </CTAPanel>
     </div>
   )
 }

@@ -1,3 +1,5 @@
+import { PlusIcon } from '@heroicons/react/24/solid'
+
 type NewMatchButtonProps = {
   onClick?: () => void
 }
@@ -7,22 +9,15 @@ export function NewMatchButton({ onClick }: NewMatchButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className="
-        btn btn-primary btn-lg w-full
-        normal-case
-        justify-start
-        gap-3
-        px-4
-        shadow-md
-      "
+      className="btn btn-primary btn-block h-14 flex-col gap-0"
     >
-      <span className="text-lg font-bold">+</span>
-      <div className="flex flex-col items-start">
-        <span className="text-sm font-semibold">New match</span>
-        <span className="text-xs text-primary-content/60">
-          Log a result or Quick Match
-        </span>
-      </div>
+      <span className="flex items-center gap-1.5 text-base font-semibold h-6">
+        <PlusIcon className="h-5 w-5" />
+        <span>New match</span>
+      </span>
+      <span className="text-xs font-normal opacity-80">
+        Log a result or start a Quick Match
+      </span>
     </button>
   )
 }

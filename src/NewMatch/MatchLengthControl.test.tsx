@@ -87,9 +87,9 @@ describe('MatchLengthControl', () => {
       })
     })
 
-    it('highlights selected button with accent color', () => {
+    it('highlights selected button with primary color', () => {
       matchLengthControlPage.render({ value: 3 })
-      expect(matchLengthControlPage.getButton(3)).toHaveClass('has-[:checked]:btn-accent')
+      expect(matchLengthControlPage.getButton(3)).toHaveClass('has-[:checked]:btn-primary')
     })
   })
 
