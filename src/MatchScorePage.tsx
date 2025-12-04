@@ -171,29 +171,66 @@ function MatchScorePage() {
     )
   }
 
+  // Determine winner for match complete state
+  const matchWinner = isMatchComplete
+    ? gamesWon.player > gamesWon.opponent
+      ? 'player'
+      : 'opponent'
+    : null
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Screen reader only heading for accessibility */}
       <h1 className="sr-only">Score Match</h1>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-base-200">
-        <Link
-          to="/"
-          className="btn btn-ghost btn-sm gap-1"
-          aria-label="Back to home"
-        >
-          <ArrowLeftIcon className="h-4 w-4" />
-          Back
-        </Link>
-        <span className="text-sm font-medium text-base-content/70">
-          {isMatchComplete ? 'Match Complete' : `Game ${currentGameNumber} of ${matchLength}`}
-        </span>
-        <div className="w-16" /> {/* Spacer for centering */}
+      <div className="border-b border-base-200 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <Link
+            to="/"
+            className="btn btn-ghost btn-sm gap-1"
+            aria-label="Back to home"
+          >
+            <ArrowLeftIcon className="h-4 w-4" />
+            Back
+          </Link>
+          <span className="text-sm font-medium text-base-content/70">
+            {isMatchComplete ? 'Match Complete' : `Game ${currentGameNumber} of ${matchLength}`}
+          </span>
+          {/* Undo button in header for prominence */}
+          <button
+            type="button"
+            onClick={undoLastPoint}
+            disabled={!canUndo}
+            className="btn btn-ghost btn-sm gap-1 disabled:opacity-30"
+            aria-label="Undo last point"
+          >
+            <ArrowUturnLeftIcon className="h-4 w-4" />
+            {canUndo && undoLabel && (
+              <span className="text-xs tabular-nums">({undoLabel})</span>
+            )}
+          </button>
+        </div>
+        {/* Match format subline */}
+        <p className="text-center text-xs text-base-content/50 mt-1">
+          Best of {matchLength} · Games to 11 · Win by 2
+        </p>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col max-w-screen-sm mx-auto w-full px-4 py-6">
+      <div className="flex-1 flex flex-col max-w-screen-sm mx-auto w-full px-4 py-4">
+        {/* Match complete banner */}
+        {isMatchComplete && (
+          <div className="text-center py-3 mb-2">
+            <span className={`text-lg font-bold ${matchWinner === 'player' ? 'text-success' : 'text-error'}`}>
+              {matchWinner === 'player' ? 'You won!' : 'Opponent won'}
+            </span>
+            <span className="text-base-content/60 ml-2">
+              {gamesWon.player}–{gamesWon.opponent}
+            </span>
+          </div>
+        )}
+
         {/* Score Display */}
         <div className="flex-1 flex flex-col justify-center">
           <ScoreDisplay
@@ -202,43 +239,38 @@ function MatchScorePage() {
             servingPlayer={servingPlayer}
             onPlayerScore={() => addPoint('player')}
             onOpponentScore={() => addPoint('opponent')}
+            disabled={isMatchComplete}
           />
 
-          {/* Game Progress */}
+          {/* Game Progress - shows completed game scores */}
           <GameProgress
-            gamesWon={gamesWon}
-            matchLength={matchLength}
+            completedGames={completedGames}
             currentGame={currentGameNumber}
+            matchLength={matchLength}
+            isMatchComplete={isMatchComplete}
           />
-        </div>
-
-        {/* Actions Bar */}
-        <div className="flex items-center justify-between py-3">
-          <button
-            type="button"
-            onClick={undoLastPoint}
-            disabled={!canUndo}
-            className="btn btn-ghost btn-sm gap-1.5 disabled:opacity-40"
-            aria-label="Undo last point"
-          >
-            <ArrowUturnLeftIcon className="h-4 w-4" />
-            Undo
-            {undoLabel && (
-              <span className="text-base-content/50">({undoLabel})</span>
-            )}
-          </button>
         </div>
       </div>
 
       {/* CTA Panel */}
       <CTAPanel>
-        <button
-          type="button"
-          onClick={handleSaveMatch}
-          className="btn btn-primary btn-block h-12"
-        >
-          {isMatchComplete ? 'Save Match' : 'End & Save Match'}
-        </button>
+        {isMatchComplete ? (
+          <button
+            type="button"
+            onClick={handleSaveMatch}
+            className="btn btn-primary btn-block h-12"
+          >
+            Save Match
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSaveMatch}
+            className="btn btn-ghost btn-block h-10 text-base-content/60"
+          >
+            End match early…
+          </button>
+        )}
       </CTAPanel>
     </div>
   )

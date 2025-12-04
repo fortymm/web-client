@@ -1,51 +1,62 @@
 import { render, screen } from '@testing-library/react'
 import GameProgress from './GameProgress'
 
+interface GameScore {
+  player: number
+  opponent: number
+}
+
 interface RenderOptions {
-  gamesWon?: {
-    player: number
-    opponent: number
-  }
-  matchLength?: number
+  completedGames?: GameScore[]
   currentGame?: number
+  matchLength?: number
+  isMatchComplete?: boolean
 }
 
 export const gameProgressPage = {
   render(options: RenderOptions = {}) {
     const {
-      gamesWon = { player: 0, opponent: 0 },
-      matchLength = 5,
+      completedGames = [],
       currentGame = 1,
+      matchLength = 5,
+      isMatchComplete = false,
     } = options
 
     render(
       <GameProgress
-        gamesWon={gamesWon}
-        matchLength={matchLength}
+        completedGames={completedGames}
         currentGame={currentGame}
+        matchLength={matchLength}
+        isMatchComplete={isMatchComplete}
       />
     )
   },
 
-  get playerGamesIndicator() {
-    return screen.getByLabelText(/You: \d+ games/i)
+  get gameHistory() {
+    return screen.queryByRole('list', { name: /Game history/i })
   },
 
-  get opponentGamesIndicator() {
-    return screen.getByLabelText(/Opponent: \d+ games/i)
+  get gameChips() {
+    return screen.queryAllByRole('listitem')
   },
 
-  get gameCounter() {
-    return screen.getByText(/Game \d+ of \d+/i)
+  get currentGameChip() {
+    return screen.queryByText(/Now/i)
   },
 
-  getPlayerFilledDots() {
-    const container = this.playerGamesIndicator
-    return container.querySelectorAll('.bg-primary')
+  getGameChipScore(gameNumber: number) {
+    const chips = this.gameChips
+    const chip = chips.find((c) => c.textContent?.includes(`G${gameNumber}`))
+    return chip?.textContent ?? null
   },
 
-  getOpponentFilledDots() {
-    const container = this.opponentGamesIndicator
-    return container.querySelectorAll('.bg-error')
+  getPlayerWonGames() {
+    const chips = this.gameChips
+    return chips.filter((c) => c.classList.contains('text-success'))
+  },
+
+  getOpponentWonGames() {
+    const chips = this.gameChips
+    return chips.filter((c) => c.classList.contains('text-error'))
   },
 }

@@ -7,10 +7,11 @@ interface RenderOptions {
   playerScore?: number
   opponentScore?: number
   servingPlayer?: 'player' | 'opponent'
-  playerLabel?: string
-  opponentLabel?: string
+  playerName?: string
+  opponentName?: string
   onPlayerScore?: () => void
   onOpponentScore?: () => void
+  disabled?: boolean
 }
 
 export const scoreDisplayPage = {
@@ -19,10 +20,11 @@ export const scoreDisplayPage = {
       playerScore = 0,
       opponentScore = 0,
       servingPlayer = 'player',
-      playerLabel = 'You',
-      opponentLabel = 'Opponent',
+      playerName = 'You',
+      opponentName = 'Opponent',
       onPlayerScore = vi.fn(),
       onOpponentScore = vi.fn(),
+      disabled = false,
     } = options
 
     render(
@@ -30,10 +32,11 @@ export const scoreDisplayPage = {
         playerScore={playerScore}
         opponentScore={opponentScore}
         servingPlayer={servingPlayer}
-        playerLabel={playerLabel}
-        opponentLabel={opponentLabel}
+        playerName={playerName}
+        opponentName={opponentName}
         onPlayerScore={onPlayerScore}
         onOpponentScore={onOpponentScore}
+        disabled={disabled}
       />
     )
 

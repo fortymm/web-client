@@ -5,35 +5,39 @@ interface ScoreDisplayProps {
   playerScore: number
   opponentScore: number
   servingPlayer: 'player' | 'opponent'
-  playerLabel?: string
-  opponentLabel?: string
+  playerName?: string
+  opponentName?: string
   onPlayerScore: () => void
   onOpponentScore: () => void
+  disabled?: boolean
 }
 
 const ScoreDisplay: FC<ScoreDisplayProps> = ({
   playerScore,
   opponentScore,
   servingPlayer,
-  playerLabel = 'You',
-  opponentLabel = 'Opponent',
+  playerName = 'You',
+  opponentName = 'Opponent',
   onPlayerScore,
   onOpponentScore,
+  disabled = false,
 }) => {
   return (
-    <div className="flex rounded-xl overflow-hidden border border-base-300">
+    <div className="flex rounded-xl overflow-hidden border border-base-300 shadow-sm">
       <ScorePanel
-        label={playerLabel}
+        playerName={playerName}
         score={playerScore}
         isServing={servingPlayer === 'player'}
         onTap={onPlayerScore}
+        disabled={disabled}
       />
       <div className="w-px bg-base-300" />
       <ScorePanel
-        label={opponentLabel}
+        playerName={opponentName}
         score={opponentScore}
         isServing={servingPlayer === 'opponent'}
         onTap={onOpponentScore}
+        disabled={disabled}
       />
     </div>
   )

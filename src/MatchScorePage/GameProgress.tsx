@@ -1,51 +1,58 @@
 import { type FC } from 'react'
 
+interface GameScore {
+  player: number
+  opponent: number
+}
+
 interface GameProgressProps {
-  gamesWon: {
-    player: number
-    opponent: number
-  }
-  matchLength: number
+  completedGames: GameScore[]
   currentGame: number
+  matchLength: number
+  isMatchComplete: boolean
 }
 
 const GameProgress: FC<GameProgressProps> = ({
-  gamesWon,
-  matchLength,
+  completedGames,
   currentGame,
+  matchLength: _matchLength,
+  isMatchComplete,
 }) => {
-  const gamesToWin = Math.ceil(matchLength / 2)
+  if (completedGames.length === 0 && !isMatchComplete) {
+    return null // Don't show anything for game 1
+  }
 
   return (
-    <div className="flex items-center justify-center gap-6 py-4">
-      {/* Player games */}
-      <div className="flex items-center gap-1.5" aria-label={`You: ${gamesWon.player} games`}>
-        {Array.from({ length: gamesToWin }).map((_, i) => (
+    <div className="flex flex-wrap items-center justify-center gap-2 py-3" role="list" aria-label="Game history">
+      {completedGames.map((game, index) => {
+        const playerWon = game.player > game.opponent
+        return (
           <span
-            key={`player-${i}`}
-            className={`w-3 h-3 rounded-full ${
-              i < gamesWon.player ? 'bg-primary' : 'bg-base-300'
+            key={index}
+            role="listitem"
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+              playerWon
+                ? 'bg-success/15 text-success'
+                : 'bg-error/15 text-error'
             }`}
-          />
-        ))}
-      </div>
+          >
+            <span className="text-base-content/50">G{index + 1}</span>
+            <span className="font-bold tabular-nums">
+              {game.player}–{game.opponent}
+            </span>
+          </span>
+        )
+      })}
 
-      {/* Current game indicator */}
-      <span className="text-xs text-base-content/50 font-medium">
-        Game {currentGame} of {matchLength}
-      </span>
-
-      {/* Opponent games */}
-      <div className="flex items-center gap-1.5" aria-label={`Opponent: ${gamesWon.opponent} games`}>
-        {Array.from({ length: gamesToWin }).map((_, i) => (
-          <span
-            key={`opponent-${i}`}
-            className={`w-3 h-3 rounded-full ${
-              i < gamesWon.opponent ? 'bg-error' : 'bg-base-300'
-            }`}
-          />
-        ))}
-      </div>
+      {!isMatchComplete && (
+        <span
+          role="listitem"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary/15 text-primary ring-1 ring-primary/30"
+        >
+          <span className="text-primary/70">G{currentGame}</span>
+          <span className="font-bold">Now</span>
+        </span>
+      )}
     </div>
   )
 }

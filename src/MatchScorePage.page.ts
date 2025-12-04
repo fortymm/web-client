@@ -94,7 +94,11 @@ export const matchScorePagePage = {
     return screen.queryByText(/\(\d+-\d+\)/)
   },
 
-  // Save button
+  // End/Save button (text changes based on match state)
+  get endMatchButton() {
+    return screen.getByRole('button', { name: /end match|save match/i })
+  },
+
   get saveButton() {
     return screen.getByRole('button', { name: /save match/i })
   },

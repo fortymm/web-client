@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from 'vitest'
 import { scorePanelPage } from './ScorePanel.page'
 
 describe('ScorePanel', () => {
-  it('displays the player label', () => {
-    scorePanelPage.render({ label: 'You' })
-    expect(scorePanelPage.label).toHaveTextContent('You')
+  it('displays the player name', () => {
+    scorePanelPage.render({ playerName: 'Alice' })
+    expect(scorePanelPage.getPlayerNameElement()).toHaveTextContent('Alice')
   })
 
   it('displays the score', () => {
@@ -22,6 +22,16 @@ describe('ScorePanel', () => {
     expect(scorePanelPage.servingIndicator).not.toBeInTheDocument()
   })
 
+  it('shows tap to score hint when enabled', () => {
+    scorePanelPage.render({ disabled: false })
+    expect(scorePanelPage.tapToScoreHint).toBeInTheDocument()
+  })
+
+  it('hides tap to score hint when disabled', () => {
+    scorePanelPage.render({ disabled: true })
+    expect(scorePanelPage.tapToScoreHint).not.toBeInTheDocument()
+  })
+
   it('calls onTap when tapped', async () => {
     const onTap = vi.fn()
     scorePanelPage.render({ onTap })
@@ -32,7 +42,7 @@ describe('ScorePanel', () => {
   })
 
   it('has accessible label for screen readers', () => {
-    scorePanelPage.render({ label: 'Opponent' })
-    expect(scorePanelPage.getButtonForPlayer('Opponent')).toBeInTheDocument()
+    scorePanelPage.render({ playerName: 'Bob' })
+    expect(scorePanelPage.getButtonForPlayer('Bob')).toBeInTheDocument()
   })
 })

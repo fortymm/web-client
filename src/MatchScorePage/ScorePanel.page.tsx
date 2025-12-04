@@ -4,30 +4,33 @@ import { vi } from 'vitest'
 import ScorePanel from './ScorePanel'
 
 interface RenderOptions {
-  label?: string
+  playerName?: string
   score?: number
   isServing?: boolean
   isWinner?: boolean
   onTap?: () => void
+  disabled?: boolean
 }
 
 export const scorePanelPage = {
   render(options: RenderOptions = {}) {
     const {
-      label = 'You',
+      playerName = 'You',
       score = 0,
       isServing = false,
       isWinner = false,
       onTap = vi.fn(),
+      disabled = false,
     } = options
 
     render(
       <ScorePanel
-        label={label}
+        playerName={playerName}
         score={score}
         isServing={isServing}
         isWinner={isWinner}
         onTap={onTap}
+        disabled={disabled}
       />
     )
 
@@ -38,20 +41,26 @@ export const scorePanelPage = {
     return screen.getByRole('button')
   },
 
-  getButtonForPlayer(label: string) {
-    return screen.getByRole('button', { name: new RegExp(`Add point to ${label}`, 'i') })
+  getButtonForPlayer(name: string) {
+    return screen.getByRole('button', { name: new RegExp(`Add point to ${name}`, 'i') })
   },
 
   get score() {
     return screen.getByText(/^\d+$/)
   },
 
-  get label() {
-    return screen.getByText(/you|opponent/i)
+  getPlayerNameElement() {
+    // Find the player name by looking at the first span in the button (which has the name)
+    const button = this.button
+    return button.querySelector('span.text-sm')
   },
 
   get servingIndicator() {
-    return screen.queryByLabelText('Serving')
+    return screen.queryByText(/serving/i)
+  },
+
+  get tapToScoreHint() {
+    return screen.queryByText(/tap to score/i)
   },
 
   async tap() {

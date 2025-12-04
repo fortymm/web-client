@@ -36,9 +36,10 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.undoButton).toBeDisabled()
     })
 
-    it('displays save button', async () => {
+    it('displays end match button', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.saveButton).toBeInTheDocument()
+      expect(matchScorePagePage.endMatchButton).toBeInTheDocument()
+      expect(matchScorePagePage.endMatchButton).toHaveTextContent('End match early')
     })
 
     it('uses match length from stored match', async () => {
