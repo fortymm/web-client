@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { createElement } from 'react'
@@ -65,93 +65,98 @@ export const matchScorePagePage = {
   },
 
   get gameCounter() {
-    // Get all matching elements and return the one in the header (first one)
     const elements = screen.getAllByText(/Game \d+ of \d+|Match Complete/i)
     return elements[0]
   },
 
-  // Game score form
-  get gameList() {
-    return screen.getByRole('list', { name: /game scores/i })
+  // ScoreCard elements
+  get statusMessage() {
+    // Status message contains more than just "G1" - it has context like lead info
+    // Use getAllByText and filter to the one inside the ScoreCard (bg-base-200 container)
+    const matches = screen.getAllByText(/G\d|Match complete/i)
+    // Return the one that's inside the ScoreCard (the paragraph, not the badge)
+    return matches.find(el =>
+      el.tagName === 'P' || el.textContent?.includes('•') || el.textContent?.includes('complete')
+    ) || matches[0]
   },
 
-  get gameRows() {
-    return screen.getAllByRole('group')
+  get playerScore() {
+    const scores = document.querySelectorAll('.text-5xl')
+    return parseInt(scores[0]?.textContent || '0', 10)
   },
 
-  getGameRow(gameNumber: number) {
-    return screen.getByRole('group', { name: `Game ${gameNumber}` })
+  get opponentScore() {
+    const scores = document.querySelectorAll('.text-5xl')
+    return parseInt(scores[1]?.textContent || '0', 10)
   },
 
-  // End/Save button (text changes based on match state)
-  get endMatchButton() {
-    return screen.getByRole('button', { name: /end match|save match/i })
+  get playerAddButton() {
+    return screen.getByRole('button', { name: /add point for you/i })
   },
 
-  get saveButton() {
-    return screen.getByRole('button', { name: /save match/i })
+  get opponentAddButton() {
+    return screen.getByRole('button', { name: /add point for opponent/i })
   },
 
-  // Loading state
-  get loadingSpinner() {
-    return screen.queryByRole('status')
+  get playerSubtractButton() {
+    return screen.getByRole('button', { name: /decrease you score/i })
   },
 
-  // Actions for game scores
-  async incrementPlayerScore(gameNumber: number) {
-    const row = this.getGameRow(gameNumber)
-    const buttons = within(row).getAllByRole('button', { name: /increase score/i })
-    await userEvent.click(buttons[0])
+  get opponentSubtractButton() {
+    return screen.getByRole('button', { name: /decrease opponent score/i })
   },
 
-  async decrementPlayerScore(gameNumber: number) {
-    const row = this.getGameRow(gameNumber)
-    const buttons = within(row).getAllByRole('button', { name: /decrease score/i })
-    await userEvent.click(buttons[0])
+  get nextGameButton() {
+    return screen.queryByRole('button', { name: /save & start game/i })
   },
 
-  async incrementOpponentScore(gameNumber: number) {
-    const row = this.getGameRow(gameNumber)
-    const buttons = within(row).getAllByRole('button', { name: /increase score/i })
-    await userEvent.click(buttons[1])
+  get saveMatchButton() {
+    return screen.queryByRole('button', { name: /save match/i })
   },
 
-  async decrementOpponentScore(gameNumber: number) {
-    const row = this.getGameRow(gameNumber)
-    const buttons = within(row).getAllByRole('button', { name: /decrease score/i })
-    await userEvent.click(buttons[1])
+  get endMatchEarlyButton() {
+    return screen.queryByRole('button', { name: /end match early/i })
   },
 
-  async save() {
-    await userEvent.click(this.endMatchButton)
+  // Completed games badges
+  get completedGameBadges() {
+    // Find badges by their class, not by text content (which could match status message)
+    return document.querySelectorAll('.badge.badge-lg.badge-ghost')
+  },
+
+  // Actions
+  async addPlayerPoint() {
+    await userEvent.click(this.playerAddButton)
+  },
+
+  async addOpponentPoint() {
+    await userEvent.click(this.opponentAddButton)
+  },
+
+  async subtractPlayerPoint() {
+    await userEvent.click(this.playerSubtractButton)
+  },
+
+  async subtractOpponentPoint() {
+    await userEvent.click(this.opponentSubtractButton)
+  },
+
+  async clickNextGame() {
+    const btn = this.nextGameButton
+    if (btn) await userEvent.click(btn)
+  },
+
+  async clickSaveMatch() {
+    const btn = this.saveMatchButton
+    if (btn) await userEvent.click(btn)
+  },
+
+  async clickEndMatchEarly() {
+    const btn = this.endMatchEarlyButton
+    if (btn) await userEvent.click(btn)
   },
 
   async goBack() {
     await userEvent.click(this.backLink)
-  },
-
-  // Helpers
-  getGameScores(gameNumber: number) {
-    const row = this.getGameRow(gameNumber)
-    const scores = within(row).getAllByText(/^\d+$/)
-    return {
-      player: parseInt(scores[0]?.textContent || '0', 10),
-      opponent: parseInt(scores[1]?.textContent || '0', 10),
-    }
-  },
-
-  get matchCompleteMessage() {
-    return screen.queryByText(/wins!/i)
-  },
-
-  getMatchWins() {
-    // Find the .text-2xl elements in the match score header
-    const scores = screen.getAllByText(/^\d+$/).filter(
-      el => el.classList.contains('text-2xl')
-    )
-    return {
-      player: parseInt(scores[0]?.textContent || '0', 10),
-      opponent: parseInt(scores[1]?.textContent || '0', 10),
-    }
   },
 }

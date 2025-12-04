@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-import MatchScoreForm from './MatchScorePage/MatchScoreForm'
-import CTAPanel from './CTAPanel'
+import ScoreCard from './MatchScorePage/ScoreCard'
 import { getMatch } from './lib/matchesDb'
 
 interface GameScore {
@@ -18,10 +17,11 @@ function MatchScorePage() {
   const [matchLength, setMatchLength] = useState<number>(5)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Initialize games array based on match length
-  const [games, setGames] = useState<GameScore[]>(() =>
-    Array.from({ length: 5 }, () => ({ player: 0, opponent: 0 }))
-  )
+  // Current game score
+  const [currentGame, setCurrentGame] = useState<GameScore>({ player: 0, opponent: 0 })
+
+  // Completed games history
+  const [completedGames, setCompletedGames] = useState<GameScore[]>([])
 
   // Load match from IndexedDB
   useEffect(() => {
@@ -30,10 +30,6 @@ function MatchScorePage() {
       const match = await getMatch(id)
       if (match) {
         setMatchLength(match.matchLength)
-        // Initialize games array based on actual match length
-        setGames(
-          Array.from({ length: match.matchLength }, () => ({ player: 0, opponent: 0 }))
-        )
       }
       setIsLoading(false)
     }
@@ -42,34 +38,31 @@ function MatchScorePage() {
 
   // Calculate match state
   const gamesToWin = Math.ceil(matchLength / 2)
-  const playerWins = games.filter((g) => isGameComplete(g) && g.player > g.opponent).length
-  const opponentWins = games.filter((g) => isGameComplete(g) && g.opponent > g.player).length
-  const isMatchComplete = playerWins >= gamesToWin || opponentWins >= gamesToWin
+  const playerWins = completedGames.filter((g) => g.player > g.opponent).length
+  const opponentWins = completedGames.filter((g) => g.opponent > g.player).length
+  const currentGameNumber = completedGames.length + 1
+  const isCurrentGameComplete = isGameComplete(currentGame)
+  const isMatchComplete =
+    (isCurrentGameComplete &&
+      (playerWins + (currentGame.player > currentGame.opponent ? 1 : 0) >= gamesToWin ||
+        opponentWins + (currentGame.opponent > currentGame.player ? 1 : 0) >= gamesToWin)) ||
+    playerWins >= gamesToWin ||
+    opponentWins >= gamesToWin
 
-  // Find current game number (first incomplete game)
-  const currentGameNumber = games.findIndex((g) => !isGameComplete(g)) + 1 || matchLength
-
-  function handleGameScoreChange(
-    gameIndex: number,
-    player: 'player' | 'opponent',
-    delta: number
-  ) {
-    setGames((prev) => {
-      const newGames = [...prev]
-      const game = { ...newGames[gameIndex] }
-
-      if (player === 'player') {
-        game.player = Math.max(0, game.player + delta)
-      } else {
-        game.opponent = Math.max(0, game.opponent + delta)
-      }
-
-      newGames[gameIndex] = game
-      return newGames
-    })
+  function handleScoreChange(player: 'player' | 'opponent', delta: number) {
+    setCurrentGame((prev) => ({
+      ...prev,
+      [player]: Math.max(0, prev[player] + delta),
+    }))
   }
 
-  function handleSaveMatch() {
+  function handleNextGame() {
+    // Save current game and start new one
+    setCompletedGames((prev) => [...prev, currentGame])
+    setCurrentGame({ player: 0, opponent: 0 })
+  }
+
+  function handleEndMatch() {
     // TODO: Save match scores to IndexedDB and/or API
     navigate('/')
   }
@@ -110,31 +103,51 @@ function MatchScorePage() {
         </p>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col max-w-screen-sm mx-auto w-full px-4 py-4">
-        <MatchScoreForm
-          matchLength={matchLength}
-          games={games}
-          playerName="You"
-          opponentName="Opponent"
-          onGameScoreChange={handleGameScoreChange}
-        />
+      {/* Middle area - completed games history (if any) */}
+      <div className="flex-1 flex flex-col justify-end max-w-screen-sm mx-auto w-full px-4">
+        {completedGames.length > 0 && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-2 justify-center">
+              {completedGames.map((game, index) => (
+                <div
+                  key={index}
+                  className="badge badge-lg badge-ghost gap-1"
+                >
+                  <span className="text-xs text-base-content/50">G{index + 1}</span>
+                  <span className={game.player > game.opponent ? 'text-success font-semibold' : ''}>
+                    {game.player}
+                  </span>
+                  <span className="text-base-content/30">–</span>
+                  <span className={game.opponent > game.player ? 'text-success font-semibold' : ''}>
+                    {game.opponent}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {/* Match score summary */}
+            <p className="text-center text-sm text-base-content/60 mt-2">
+              Match: You {playerWins} – {opponentWins} Opponent
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* CTA Panel */}
-      <CTAPanel>
-        <button
-          type="button"
-          onClick={handleSaveMatch}
-          className={
-            isMatchComplete
-              ? 'btn btn-primary btn-block h-12'
-              : 'btn btn-ghost btn-block h-10 text-base-content/60'
-          }
-        >
-          {isMatchComplete ? 'Save Match' : 'End match early…'}
-        </button>
-      </CTAPanel>
+      {/* Bottom: Score Card - the main interaction area */}
+      <div className="sticky bottom-0 w-full max-w-screen-sm mx-auto safe-area-bottom">
+        <ScoreCard
+          gameNumber={currentGameNumber}
+          playerName="You"
+          opponentName="Opponent"
+          playerScore={currentGame.player}
+          opponentScore={currentGame.opponent}
+          isGameComplete={isCurrentGameComplete}
+          isMatchComplete={isMatchComplete}
+          onPlayerScoreChange={(delta) => handleScoreChange('player', delta)}
+          onOpponentScoreChange={(delta) => handleScoreChange('opponent', delta)}
+          onNextGame={handleNextGame}
+          onEndMatch={handleEndMatch}
+        />
+      </div>
     </div>
   )
 }

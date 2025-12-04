@@ -18,24 +18,26 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 1 of 5')
     })
 
-    it('displays all game rows', async () => {
+    it('displays initial score of 0-0', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.gameRows).toHaveLength(5)
+      expect(matchScorePagePage.playerScore).toBe(0)
+      expect(matchScorePagePage.opponentScore).toBe(0)
     })
 
-    it('displays initial scores of 0-0 for all games', async () => {
+    it('displays status message with current game', async () => {
       await matchScorePagePage.render()
-      for (let game = 1; game <= 5; game++) {
-        const scores = matchScorePagePage.getGameScores(game)
-        expect(scores.player).toBe(0)
-        expect(scores.opponent).toBe(0)
-      }
+      expect(matchScorePagePage.statusMessage).toHaveTextContent('G1')
     })
 
-    it('displays end match button', async () => {
+    it('displays big + buttons for scoring', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.endMatchButton).toBeInTheDocument()
-      expect(matchScorePagePage.endMatchButton).toHaveTextContent('End match early')
+      expect(matchScorePagePage.playerAddButton).toBeInTheDocument()
+      expect(matchScorePagePage.opponentAddButton).toBeInTheDocument()
+    })
+
+    it('displays end match early button', async () => {
+      await matchScorePagePage.render()
+      expect(matchScorePagePage.endMatchEarlyButton).toBeInTheDocument()
     })
 
     it('uses match length from stored match', async () => {
@@ -43,162 +45,147 @@ describe('MatchScorePage', () => {
         match: { matchLength: 7 },
       })
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 1 of 7')
-      expect(matchScorePagePage.gameRows).toHaveLength(7)
-    })
-
-    it('uses match length of 3 from stored match', async () => {
-      await matchScorePagePage.render({
-        match: { matchLength: 3 },
-      })
-      expect(matchScorePagePage.gameRows).toHaveLength(3)
     })
   })
 
-  describe('score entry', () => {
-    it('increments player score when + is clicked', async () => {
+  describe('scoring', () => {
+    it('increments player score when + clicked', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.incrementPlayerScore(1)
+      await matchScorePagePage.addPlayerPoint()
 
-      const scores = matchScorePagePage.getGameScores(1)
-      expect(scores.player).toBe(1)
-      expect(scores.opponent).toBe(0)
+      expect(matchScorePagePage.playerScore).toBe(1)
+      expect(matchScorePagePage.opponentScore).toBe(0)
     })
 
-    it('increments opponent score when + is clicked', async () => {
+    it('increments opponent score when + clicked', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.incrementOpponentScore(1)
+      await matchScorePagePage.addOpponentPoint()
 
-      const scores = matchScorePagePage.getGameScores(1)
-      expect(scores.player).toBe(0)
-      expect(scores.opponent).toBe(1)
+      expect(matchScorePagePage.playerScore).toBe(0)
+      expect(matchScorePagePage.opponentScore).toBe(1)
     })
 
-    it('decrements player score when - is clicked', async () => {
+    it('decrements player score when - clicked', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.incrementPlayerScore(1)
-      await matchScorePagePage.incrementPlayerScore(1)
-      await matchScorePagePage.decrementPlayerScore(1)
+      await matchScorePagePage.addPlayerPoint()
+      await matchScorePagePage.addPlayerPoint()
+      await matchScorePagePage.subtractPlayerPoint()
 
-      const scores = matchScorePagePage.getGameScores(1)
-      expect(scores.player).toBe(1)
+      expect(matchScorePagePage.playerScore).toBe(1)
     })
 
     it('does not decrement below 0', async () => {
       await matchScorePagePage.render()
-
-      // Try to decrement from 0 (button should be disabled)
-      const row = matchScorePagePage.getGameRow(1)
-      const decrementButtons = row.querySelectorAll('button[aria-label="Decrease score"]')
-      expect(decrementButtons[0]).toBeDisabled()
+      expect(matchScorePagePage.playerSubtractButton).toBeDisabled()
     })
 
-    it('allows scoring multiple games', async () => {
+    it('shows lead status when player ahead', async () => {
       await matchScorePagePage.render()
 
-      // Enter score for game 1: 11-7
-      for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
-      }
-      for (let i = 0; i < 7; i++) {
-        await matchScorePagePage.incrementOpponentScore(1)
-      }
+      await matchScorePagePage.addPlayerPoint()
+      await matchScorePagePage.addPlayerPoint()
+      await matchScorePagePage.addPlayerPoint()
 
-      // Enter score for game 2: 9-11
-      for (let i = 0; i < 9; i++) {
-        await matchScorePagePage.incrementPlayerScore(2)
-      }
-      for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementOpponentScore(2)
-      }
+      expect(matchScorePagePage.statusMessage).toHaveTextContent('You lead by 3')
+    })
 
-      const game1 = matchScorePagePage.getGameScores(1)
-      expect(game1.player).toBe(11)
-      expect(game1.opponent).toBe(7)
+    it('shows lead status when opponent ahead', async () => {
+      await matchScorePagePage.render()
 
-      const game2 = matchScorePagePage.getGameScores(2)
-      expect(game2.player).toBe(9)
-      expect(game2.opponent).toBe(11)
+      await matchScorePagePage.addOpponentPoint()
+      await matchScorePagePage.addOpponentPoint()
+
+      expect(matchScorePagePage.statusMessage).toHaveTextContent('Opponent leads by 2')
     })
   })
 
-  describe('game completion detection', () => {
-    it('marks game as complete at 11-0', async () => {
+  describe('game completion', () => {
+    it('shows next game button when game is complete', async () => {
       await matchScorePagePage.render()
 
-      // Enter 11-0
+      // Score 11-0
       for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
+        await matchScorePagePage.addPlayerPoint()
       }
 
-      const row = matchScorePagePage.getGameRow(1)
-      expect(row.querySelector('[aria-label="Game complete"]')).toBeInTheDocument()
+      expect(matchScorePagePage.nextGameButton).toBeInTheDocument()
+      expect(matchScorePagePage.nextGameButton).toHaveTextContent('Save & Start Game 2')
     })
 
-    it('does not mark game complete at 11-10 (no 2-point lead)', async () => {
+    it('disables scoring when game is complete', async () => {
       await matchScorePagePage.render()
 
-      // Enter 11-10
+      // Score 11-0
       for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
-      }
-      for (let i = 0; i < 10; i++) {
-        await matchScorePagePage.incrementOpponentScore(1)
+        await matchScorePagePage.addPlayerPoint()
       }
 
-      const row = matchScorePagePage.getGameRow(1)
-      expect(row.querySelector('[aria-label="Game complete"]')).not.toBeInTheDocument()
+      expect(matchScorePagePage.playerAddButton).toBeDisabled()
+      expect(matchScorePagePage.opponentAddButton).toBeDisabled()
     })
 
-    it('marks game complete at 12-10', async () => {
+    it('advances to next game when button clicked', async () => {
       await matchScorePagePage.render()
 
-      // Enter 12-10
-      for (let i = 0; i < 12; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
+      // Complete game 1
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.addPlayerPoint()
       }
-      for (let i = 0; i < 10; i++) {
-        await matchScorePagePage.incrementOpponentScore(1)
-      }
+      await matchScorePagePage.clickNextGame()
 
-      const row = matchScorePagePage.getGameRow(1)
-      expect(row.querySelector('[aria-label="Game complete"]')).toBeInTheDocument()
+      expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 2 of 5')
+      expect(matchScorePagePage.playerScore).toBe(0)
+      expect(matchScorePagePage.opponentScore).toBe(0)
+    })
+
+    it('shows completed game as badge', async () => {
+      await matchScorePagePage.render()
+
+      // Complete game 1
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.addPlayerPoint()
+      }
+      await matchScorePagePage.clickNextGame()
+
+      expect(matchScorePagePage.completedGameBadges.length).toBe(1)
     })
   })
 
-  describe('match score tracking', () => {
-    it('updates match wins when game is complete', async () => {
+  describe('deuce rules', () => {
+    it('requires 2-point lead to win at deuce', async () => {
       await matchScorePagePage.render()
 
-      // Enter 11-7 for game 1 (player wins)
-      for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
-      }
-      for (let i = 0; i < 7; i++) {
-        await matchScorePagePage.incrementOpponentScore(1)
+      // Get to 10-10
+      for (let i = 0; i < 10; i++) {
+        await matchScorePagePage.addPlayerPoint()
+        await matchScorePagePage.addOpponentPoint()
       }
 
-      const wins = matchScorePagePage.getMatchWins()
-      expect(wins.player).toBe(1)
-      expect(wins.opponent).toBe(0)
+      // Player goes to 11-10 (not enough to win)
+      await matchScorePagePage.addPlayerPoint()
+
+      expect(matchScorePagePage.playerScore).toBe(11)
+      expect(matchScorePagePage.opponentScore).toBe(10)
+      expect(matchScorePagePage.nextGameButton).not.toBeInTheDocument()
     })
 
-    it('tracks opponent wins', async () => {
+    it('wins game with 2-point lead at deuce', async () => {
       await matchScorePagePage.render()
 
-      // Enter 7-11 for game 1 (opponent wins)
-      for (let i = 0; i < 7; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
-      }
-      for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementOpponentScore(1)
+      // Get to 10-10
+      for (let i = 0; i < 10; i++) {
+        await matchScorePagePage.addPlayerPoint()
+        await matchScorePagePage.addOpponentPoint()
       }
 
-      const wins = matchScorePagePage.getMatchWins()
-      expect(wins.player).toBe(0)
-      expect(wins.opponent).toBe(1)
+      // Player wins 12-10
+      await matchScorePagePage.addPlayerPoint()
+      await matchScorePagePage.addPlayerPoint()
+
+      expect(matchScorePagePage.nextGameButton).toBeInTheDocument()
     })
   })
 
@@ -206,39 +193,38 @@ describe('MatchScorePage', () => {
     it('shows match complete when player wins majority', async () => {
       await matchScorePagePage.render({ match: { matchLength: 3 } })
 
-      // Enter 11-0 for games 1 and 2 (player wins 2 of 3)
-      for (let game = 1; game <= 2; game++) {
-        for (let i = 0; i < 11; i++) {
-          await matchScorePagePage.incrementPlayerScore(game)
+      // Win 2 games (majority of 3)
+      for (let game = 0; game < 2; game++) {
+        for (let point = 0; point < 11; point++) {
+          await matchScorePagePage.addPlayerPoint()
         }
+        if (game < 1) await matchScorePagePage.clickNextGame()
       }
 
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Match Complete')
-      expect(matchScorePagePage.matchCompleteMessage).toHaveTextContent('wins!')
     })
 
-    it('changes save button text when match complete', async () => {
+    it('shows save match button when match complete', async () => {
       await matchScorePagePage.render({ match: { matchLength: 1 } })
 
-      // Enter 11-0 for game 1 (best of 1)
+      // Win 1 game (best of 1)
       for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.incrementPlayerScore(1)
+        await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.saveButton).toHaveTextContent('Save Match')
+      expect(matchScorePagePage.saveMatchButton).toBeInTheDocument()
     })
 
-    it('shows opponent win message when opponent wins', async () => {
-      await matchScorePagePage.render({ match: { matchLength: 3 } })
+    it('shows match complete status message', async () => {
+      await matchScorePagePage.render({ match: { matchLength: 1 } })
 
-      // Enter 0-11 for games 1 and 2 (opponent wins 2 of 3)
-      for (let game = 1; game <= 2; game++) {
-        for (let i = 0; i < 11; i++) {
-          await matchScorePagePage.incrementOpponentScore(game)
-        }
+      // Win 1 game (best of 1)
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.matchCompleteMessage).toHaveTextContent('wins!')
+      expect(matchScorePagePage.statusMessage).toHaveTextContent('Match complete')
+      expect(matchScorePagePage.statusMessage).toHaveTextContent('You won')
     })
   })
 
@@ -248,17 +234,10 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.heading).toBeInTheDocument()
     })
 
-    it('has accessible game list', async () => {
+    it('score buttons have accessible labels', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.gameList).toHaveAccessibleName('Game scores')
-    })
-
-    it('each game row has accessible name', async () => {
-      await matchScorePagePage.render()
-      for (let game = 1; game <= 5; game++) {
-        const row = matchScorePagePage.getGameRow(game)
-        expect(row).toHaveAccessibleName(`Game ${game}`)
-      }
+      expect(matchScorePagePage.playerAddButton).toHaveAccessibleName(/add point for you/i)
+      expect(matchScorePagePage.opponentAddButton).toHaveAccessibleName(/add point for opponent/i)
     })
   })
 })
