@@ -6,8 +6,8 @@ function LandingPage() {
 
   return (
     <>
-      <div className="fixed inset-0 top-16 bottom-24 flex items-center justify-center">
-        <div className="card bg-base-200 p-8 text-center">
+      <div className="fixed inset-0 top-16 bottom-28 flex items-center justify-center pb-8">
+        <div className="card max-w-xs bg-base-200 p-6 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <span className="text-3xl">🏓</span>
           </div>
@@ -21,7 +21,7 @@ function LandingPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4">
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4">
         <NewMatchButton onClick={() => navigate('/matches/new')} />
       </div>
     </>
