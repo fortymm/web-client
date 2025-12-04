@@ -24,7 +24,7 @@ export const recentsErrorCardPage = {
   },
 
   get subtitle() {
-    return screen.getByText(/everything else still works|check your connection/i)
+    return screen.getByText(/still search or start a quick match|check your connection/i)
   },
 
   get retryButton() {

@@ -8,14 +8,16 @@ describe('RecentsErrorCard', () => {
       recentsErrorCardPage.render()
       expect(recentsErrorCardPage.alert).toBeInTheDocument()
       expect(recentsErrorCardPage.titleText).toBe("We couldn't load your recent players.")
-      expect(recentsErrorCardPage.subtitleText).toBe('Everything else still works.')
+      expect(recentsErrorCardPage.subtitleText).toBe(
+        'You can still search or start a Quick Match below.'
+      )
     })
 
-    it('renders retry button with warning styling', () => {
+    it('renders retry button with ghost styling', () => {
       recentsErrorCardPage.render()
       expect(recentsErrorCardPage.retryButton).toBeInTheDocument()
       expect(recentsErrorCardPage.retryButton).toHaveTextContent('Try again')
-      expect(recentsErrorCardPage.retryButton).toHaveClass('btn-warning')
+      expect(recentsErrorCardPage.retryButton).toHaveClass('btn-ghost', 'text-warning')
     })
   })
 
@@ -82,7 +84,9 @@ describe('RecentsErrorCard', () => {
     it('shows default message when retry count is 0', () => {
       recentsErrorCardPage.render({ retryCount: 0 })
       expect(recentsErrorCardPage.titleText).toBe("We couldn't load your recent players.")
-      expect(recentsErrorCardPage.subtitleText).toBe('Everything else still works.')
+      expect(recentsErrorCardPage.subtitleText).toBe(
+        'You can still search or start a Quick Match below.'
+      )
     })
 
     it('shows default message when retry count is 1', () => {
