@@ -4,11 +4,9 @@ import { expect } from 'vitest'
 import { appPage } from './App.page'
 import { newMatchHeroPage } from './NewMatch/NewMatchHero.page'
 import { newMatchSearchPage } from './NewMatch/NewMatchSearch.page'
-import { sectionHeaderPage } from './NewMatch/SectionHeader.page'
 import { matchLengthControlPage } from './NewMatch/MatchLengthControl.page'
 import { quickMatchButtonPage } from './NewMatch/QuickMatchButton.page'
-import { playerListPage } from './NewMatch/PlayerList.page'
-import { skeletonRowsPage } from './NewMatch/SkeletonRows.page'
+import { recentPlayersPanelPage } from './NewMatch/RecentPlayersPanel.page'
 import { recentsErrorCardPage } from './NewMatch/RecentsErrorCard.page'
 
 export const newMatchPage = {
@@ -43,27 +41,28 @@ export const newMatchPage = {
     return newMatchSearchPage.placeholder
   },
 
-  // Section header
+  // Recent players panel - delegate to child page object
+  recentPlayersPanel: recentPlayersPanelPage,
+
   get recentPlayersHeader() {
-    return sectionHeaderPage.recentPlayersHeader
+    return recentPlayersPanelPage.header
   },
 
-  // Player list
   get playerList() {
-    return playerListPage.list
+    return recentPlayersPanelPage.list
   },
 
   get playerRows() {
-    return playerListPage.playerRows
+    return recentPlayersPanelPage.playerRows
   },
 
   getPlayerRowByIndex(index: number) {
-    return playerListPage.playerRows[index]
+    return recentPlayersPanelPage.playerRows[index]
   },
 
   async clickPlayerByIndex(index: number) {
     const user = userEvent.setup()
-    const row = playerListPage.playerRows[index]
+    const row = recentPlayersPanelPage.playerRows[index]
     await user.click(row)
   },
 
@@ -99,17 +98,17 @@ export const newMatchPage = {
 
   // Loading states
   get skeletonContainer() {
-    return skeletonRowsPage.queryContainer()
+    return recentPlayersPanelPage.skeletonRows.queryContainer()
   },
 
   get isShowingSkeleton() {
-    return this.skeletonContainer !== null
+    return recentPlayersPanelPage.isShowingSkeleton
   },
 
-  skeletonRows: skeletonRowsPage,
+  skeletonRows: recentPlayersPanelPage.skeletonRows,
 
   async waitForPlayersToLoad() {
-    const skeleton = skeletonRowsPage.queryContainer()
+    const skeleton = recentPlayersPanelPage.skeletonRows.queryContainer()
     if (skeleton) {
       await waitForElementToBeRemoved(skeleton)
     }

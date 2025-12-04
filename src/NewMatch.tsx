@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import NewMatchHero from './NewMatch/NewMatchHero'
 import NewMatchSearch from './NewMatch/NewMatchSearch'
 import NewMatchContent from './NewMatch/NewMatchContent'
-import SectionHeader from './NewMatch/SectionHeader'
-import SkeletonRows from './NewMatch/SkeletonRows'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
-import PlayerList from './NewMatch/PlayerList'
-import RecentsErrorCard from './NewMatch/RecentsErrorCard'
+import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 
@@ -89,30 +86,15 @@ function NewMatch() {
         <NewMatchSearch />
         <NewMatchContent>
           {mode === 'recents' && (
-            <>
-              {recents.isInitialLoading && (
-                <>
-                  <SectionHeader title="RECENT PLAYERS" isLoading={false} />
-                  <SkeletonRows count={6} />
-                </>
-              )}
-              {hasInitialLoadError && (
-                <>
-                  <SectionHeader title="RECENT PLAYERS" isLoading={false} />
-                  <RecentsErrorCard onRetry={handleRetry} retryCount={retryCount} />
-                </>
-              )}
-              {!recents.isInitialLoading && !hasInitialLoadError && recents.opponents !== null && (
-                <>
-                  <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
-                  <PlayerList
-                    players={recents.opponents}
-                    context="recents"
-                    onSelectPlayer={handleSelectPlayer}
-                  />
-                </>
-              )}
-            </>
+            <RecentPlayersPanel
+              isInitialLoading={recents.isInitialLoading}
+              isRefetching={recents.isRefetching}
+              hasError={hasInitialLoadError}
+              players={recents.opponents}
+              onSelectPlayer={handleSelectPlayer}
+              onRetry={handleRetry}
+              retryCount={retryCount}
+            />
           )}
         </NewMatchContent>
       </div>
