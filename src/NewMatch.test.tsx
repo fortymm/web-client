@@ -236,7 +236,7 @@ describe('NewMatch', () => {
       await newMatchPage.waitForErrorCard()
 
       expect(newMatchPage.errorCard.alert).toBeInTheDocument()
-      expect(newMatchPage.errorCard.messageText).toBe("We couldn't load your recent players.")
+      expect(newMatchPage.errorCard.titleText).toBe("We couldn't load your recent players.")
       expect(newMatchPage.errorCard.retryButton).toBeInTheDocument()
     })
 
@@ -326,8 +326,8 @@ describe('NewMatch', () => {
         expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
       })
 
-      expect(newMatchPage.errorCard.messageText).toBe(
-        'Still having trouble. Check your connection.'
+      expect(newMatchPage.errorCard.titleText).toBe(
+        "Still couldn't load your recent players."
       )
     })
 

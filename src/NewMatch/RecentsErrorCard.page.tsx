@@ -19,16 +19,24 @@ export const recentsErrorCardPage = {
     return screen.getByRole('alert')
   },
 
-  get message() {
-    return screen.getByText(/couldn't load|having trouble/i)
+  get title() {
+    return screen.getByText(/couldn't load your recent players/i)
+  },
+
+  get subtitle() {
+    return screen.getByText(/you can still|check your connection/i)
   },
 
   get retryButton() {
     return screen.getByRole('button', { name: /try again|retrying/i })
   },
 
-  get messageText() {
-    return this.message.textContent
+  get titleText() {
+    return this.title.textContent
+  },
+
+  get subtitleText() {
+    return this.subtitle.textContent
   },
 
   get isRetrying() {

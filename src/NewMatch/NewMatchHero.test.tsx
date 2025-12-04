@@ -8,17 +8,10 @@ describe('NewMatchHero', () => {
     expect(newMatchHeroPage.heading).toHaveTextContent('New match')
   })
 
-  it('displays the default description', () => {
+  it('displays the description', () => {
     newMatchHeroPage.render()
     expect(newMatchHeroPage.descriptionText).toBe(
       'Choose a player, search, or start a Quick Match.'
-    )
-  })
-
-  it('displays error-aware description when recents fail', () => {
-    newMatchHeroPage.render({ hasRecentsError: true })
-    expect(newMatchHeroPage.descriptionText).toBe(
-      "Search or start a Quick Match – your recent players aren't available right now."
     )
   })
 
