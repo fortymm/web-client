@@ -30,7 +30,7 @@ export const quickMatchButtonPage = {
   },
 
   get subtitleText() {
-    return screen.queryByText(/Start now · Choose player later/i)
+    return screen.queryByText(/Start now · Add players and scores later/i)
   },
 
   async click() {
