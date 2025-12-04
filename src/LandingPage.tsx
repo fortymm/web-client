@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { NewMatchButton } from './NewMatchButton'
-import StickyBottomPanel from './NewMatch/StickyBottomPanel'
+import CTAPanel from './CTAPanel'
 
 function LandingPage() {
   const navigate = useNavigate()
@@ -22,9 +22,9 @@ function LandingPage() {
         </div>
       </div>
 
-      <StickyBottomPanel>
+      <CTAPanel>
         <NewMatchButton onClick={() => navigate('/matches/new')} />
-      </StickyBottomPanel>
+      </CTAPanel>
     </>
   )
 }
