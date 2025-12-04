@@ -70,14 +70,41 @@ export const matchScorePagePage = {
   },
 
   // ScoreCard elements
-  get statusMessage() {
-    // Status message contains more than just "G1" - it has context like lead info
-    // Use getAllByText and filter to the one inside the ScoreCard (bg-base-200 container)
-    const matches = screen.getAllByText(/G\d|Match complete/i)
-    // Return the one that's inside the ScoreCard (the paragraph, not the badge)
-    return matches.find(el =>
-      el.tagName === 'P' || el.textContent?.includes('•') || el.textContent?.includes('complete')
-    ) || matches[0]
+  get gamePill() {
+    return screen.getByText(/^G\d+$/)
+  },
+
+  get statusText() {
+    // Status text in center of card header - uses specific patterns to avoid helper text
+    const patterns = [
+      /^You lead by \d+$/i,
+      /^Opponent leads by \d+$/i,
+      /^Tied \d+–\d+$/i,
+      /^You win$/i,
+      /^Opponent wins$/i,
+    ]
+    for (const pattern of patterns) {
+      const el = screen.queryByText(pattern)
+      if (el) return el
+    }
+    return null
+  },
+
+  get helperText() {
+    // Helper text is in the ScoreCard, matches specific patterns
+    const patterns = [
+      /^To 11 · Win by 2$/,
+      /^Win by 2$/,
+      /^Game complete – You win$/,
+      /^Game complete – Opponent wins$/,
+      /^Match complete – You win!$/,
+      /^Match complete – Opponent wins$/,
+    ]
+    for (const pattern of patterns) {
+      const el = screen.queryByText(pattern)
+      if (el) return el
+    }
+    return screen.getByText(/To 11|Win by 2|Game complete|Match complete/i)
   },
 
   get playerScore() {
@@ -107,7 +134,7 @@ export const matchScorePagePage = {
   },
 
   get nextGameButton() {
-    return screen.queryByRole('button', { name: /save & start game/i })
+    return screen.queryByRole('button', { name: /save game & start next/i })
   },
 
   get saveMatchButton() {

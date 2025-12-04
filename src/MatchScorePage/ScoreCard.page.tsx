@@ -5,6 +5,7 @@ import ScoreCard from './ScoreCard'
 
 interface RenderOptions {
   gameNumber?: number
+  matchLength?: number
   playerName?: string
   opponentName?: string
   playerScore?: number
@@ -27,6 +28,7 @@ export const scoreCardPage = {
     render(
       <ScoreCard
         gameNumber={options.gameNumber ?? 1}
+        matchLength={options.matchLength ?? 5}
         playerName={options.playerName ?? 'You'}
         opponentName={options.opponentName ?? 'Opponent'}
         playerScore={options.playerScore ?? 0}
@@ -43,9 +45,31 @@ export const scoreCardPage = {
     return { onPlayerScoreChange, onOpponentScoreChange, onNextGame, onEndMatch }
   },
 
-  get statusMessage() {
-    // Status message is the first paragraph
-    return screen.getByText(/G\d|Match complete/i)
+  // Card header elements
+  get gamePill() {
+    return screen.getByText(/^G\d+$/)
+  },
+
+  get statusText() {
+    // Status text in center of card header - it's a span, not a paragraph
+    // Uses more specific patterns to avoid matching helper text
+    const patterns = [
+      /^You lead by \d+$/i,
+      /^Opponent leads by \d+$/i,
+      /^Tied \d+–\d+$/i,
+      /^You win$/i,
+      /^Opponent wins$/i,
+    ]
+    for (const pattern of patterns) {
+      const el = screen.queryByText(pattern)
+      if (el) return el
+    }
+    return null
+  },
+
+  // Helper text below scores
+  get helperText() {
+    return screen.getByText(/To 11|Win by 2|Game complete|Match complete/i)
   },
 
   get playerScore() {
@@ -76,11 +100,15 @@ export const scoreCardPage = {
   },
 
   get nextGameButton() {
-    return screen.queryByRole('button', { name: /save & start game/i })
+    return screen.queryByRole('button', { name: /save game & start next/i })
   },
 
   get saveMatchButton() {
     return screen.queryByRole('button', { name: /save match/i })
+  },
+
+  get finishMatchButton() {
+    return screen.queryByRole('button', { name: /save game & finish match/i })
   },
 
   get endMatchEarlyButton() {
@@ -110,6 +138,11 @@ export const scoreCardPage = {
 
   async clickSaveMatch() {
     const btn = this.saveMatchButton
+    if (btn) await userEvent.click(btn)
+  },
+
+  async clickFinishMatch() {
+    const btn = this.finishMatchButton
     if (btn) await userEvent.click(btn)
   },
 

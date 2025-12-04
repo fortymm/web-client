@@ -80,7 +80,7 @@ function MatchScorePage() {
       {/* Screen reader only heading for accessibility */}
       <h1 className="sr-only">Score Match</h1>
 
-      {/* Header */}
+      {/* Header - simplified, context only */}
       <div className="border-b border-base-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <Link
@@ -97,16 +97,17 @@ function MatchScorePage() {
           {/* Spacer for alignment */}
           <div className="w-16" />
         </div>
-        {/* Match format subline */}
-        <p className="text-center text-xs text-base-content/50 mt-1">
-          Best of {matchLength} · Games to 11 · Win by 2
-        </p>
       </div>
 
-      {/* Middle area - completed games history (if any) */}
-      <div className="flex-1 flex flex-col justify-end max-w-screen-sm mx-auto w-full px-4">
-        {completedGames.length > 0 && (
-          <div className="mb-4">
+      {/* Middle area - completed games history */}
+      <div className="flex-1 flex flex-col justify-center max-w-screen-sm mx-auto w-full px-4 pb-[280px]">
+        {completedGames.length > 0 ? (
+          <div className="text-center">
+            {/* Match score summary */}
+            <p className="text-lg font-semibold text-base-content mb-3">
+              You {playerWins} – {opponentWins} Opponent
+            </p>
+            {/* Completed game chips */}
             <div className="flex flex-wrap gap-2 justify-center">
               {completedGames.map((game, index) => (
                 <div
@@ -124,30 +125,29 @@ function MatchScorePage() {
                 </div>
               ))}
             </div>
-            {/* Match score summary */}
-            <p className="text-center text-sm text-base-content/60 mt-2">
-              Match: You {playerWins} – {opponentWins} Opponent
-            </p>
+          </div>
+        ) : (
+          <div className="text-center text-base-content/40">
+            <p className="text-sm">Best of {matchLength}</p>
           </div>
         )}
       </div>
 
       {/* Bottom: Score Card - the main interaction area */}
-      <div className="sticky bottom-0 w-full max-w-screen-sm mx-auto safe-area-bottom">
-        <ScoreCard
-          gameNumber={currentGameNumber}
-          playerName="You"
-          opponentName="Opponent"
-          playerScore={currentGame.player}
-          opponentScore={currentGame.opponent}
-          isGameComplete={isCurrentGameComplete}
-          isMatchComplete={isMatchComplete}
-          onPlayerScoreChange={(delta) => handleScoreChange('player', delta)}
-          onOpponentScoreChange={(delta) => handleScoreChange('opponent', delta)}
-          onNextGame={handleNextGame}
-          onEndMatch={handleEndMatch}
-        />
-      </div>
+      <ScoreCard
+        gameNumber={currentGameNumber}
+        matchLength={matchLength}
+        playerName="You"
+        opponentName="Opponent"
+        playerScore={currentGame.player}
+        opponentScore={currentGame.opponent}
+        isGameComplete={isCurrentGameComplete}
+        isMatchComplete={isMatchComplete}
+        onPlayerScoreChange={(delta) => handleScoreChange('player', delta)}
+        onOpponentScoreChange={(delta) => handleScoreChange('opponent', delta)}
+        onNextGame={handleNextGame}
+        onEndMatch={handleEndMatch}
+      />
     </div>
   )
 }

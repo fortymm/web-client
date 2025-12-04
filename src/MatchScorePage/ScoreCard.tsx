@@ -3,6 +3,7 @@ import { MinusIcon } from '@heroicons/react/24/solid'
 
 interface ScoreCardProps {
   gameNumber: number
+  matchLength: number
   playerName: string
   opponentName: string
   playerScore: number
@@ -17,6 +18,7 @@ interface ScoreCardProps {
 
 const ScoreCard: FC<ScoreCardProps> = ({
   gameNumber,
+  matchLength,
   playerName,
   opponentName,
   playerScore,
@@ -28,78 +30,112 @@ const ScoreCard: FC<ScoreCardProps> = ({
   onNextGame,
   onEndMatch,
 }) => {
-  // Determine status message
-  const getStatusMessage = () => {
-    if (isMatchComplete) {
-      const playerWon = playerScore > opponentScore
-      return playerWon ? 'Match complete • You won!' : 'Match complete • Opponent won'
-    }
+  const playerWon = isGameComplete && playerScore > opponentScore
+  const opponentWon = isGameComplete && opponentScore > playerScore
+  const isDeuce = playerScore >= 10 && opponentScore >= 10
+
+  // Determine status text (center of header)
+  const getStatusText = () => {
     if (isGameComplete) {
-      const playerWon = playerScore > opponentScore
-      return playerWon ? `G${gameNumber} complete • You won` : `G${gameNumber} complete • Opponent won`
+      if (playerWon) return 'You win'
+      return 'Opponent wins'
     }
     const diff = playerScore - opponentScore
-    if (diff === 0) return `G${gameNumber}`
-    if (diff > 0) return `G${gameNumber} • You lead by ${diff}`
-    return `G${gameNumber} • Opponent leads by ${Math.abs(diff)}`
+    if (diff === 0) {
+      if (playerScore === 0) return ''
+      return `Tied ${playerScore}–${opponentScore}`
+    }
+    if (diff > 0) return `You lead by ${diff}`
+    return `Opponent leads by ${Math.abs(diff)}`
+  }
+
+  // Helper text below scores
+  const getHelperText = () => {
+    if (isMatchComplete) {
+      return playerWon ? 'Match complete – You win!' : 'Match complete – Opponent wins'
+    }
+    if (isGameComplete) {
+      return playerWon ? 'Game complete – You win' : 'Game complete – Opponent wins'
+    }
+    if (isDeuce) {
+      return 'Win by 2'
+    }
+    return 'To 11 · Win by 2'
+  }
+
+  // CTA button text
+  const getCtaText = () => {
+    if (isMatchComplete) {
+      return 'Save match'
+    }
+    const isLastGame = gameNumber >= matchLength
+    if (isLastGame) {
+      return 'Save game & finish match'
+    }
+    return `Save game & start next`
   }
 
   return (
-    <div className="bg-base-200 rounded-t-2xl px-4 pt-4 pb-6">
-      {/* Status line */}
-      <p className="text-center text-sm text-base-content/70 mb-4">
-        {getStatusMessage()}
-      </p>
+    <div className="fixed bottom-0 inset-x-0 z-40 bg-base-100 border-t border-base-200 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]">
+      <div className="max-w-screen-sm mx-auto w-full px-4 pt-4 pb-5">
+        {/* Card header: G# pill | Status | Edit (when complete) */}
+        <div className="flex items-center justify-between mb-4">
+          <span className="badge badge-sm badge-neutral">G{gameNumber}</span>
+          <span className="text-sm text-base-content/70">
+            {getStatusText()}
+          </span>
+          {/* Placeholder for Edit button - only when game is complete and saved */}
+          <div className="w-12" />
+        </div>
 
-      {/* Main scoring area */}
-      <div className="flex gap-3">
-        {/* Player side */}
-        <ScoreSide
-          name={playerName}
-          score={playerScore}
-          onIncrement={() => onPlayerScoreChange(1)}
-          onDecrement={() => onPlayerScoreChange(-1)}
-          disabled={isGameComplete}
-          isWinner={isGameComplete && playerScore > opponentScore}
-        />
+        {/* Two-column scoring area */}
+        <div className="flex">
+          {/* Player column */}
+          <ScoreColumn
+            name={playerName}
+            score={playerScore}
+            onIncrement={() => onPlayerScoreChange(1)}
+            onDecrement={() => onPlayerScoreChange(-1)}
+            disabled={isGameComplete}
+            isWinner={playerWon}
+          />
 
-        {/* Divider */}
-        <div className="w-px bg-base-300 self-stretch" />
+          {/* Vertical divider */}
+          <div className="w-px bg-base-200 mx-2 self-stretch" />
 
-        {/* Opponent side */}
-        <ScoreSide
-          name={opponentName}
-          score={opponentScore}
-          onIncrement={() => onOpponentScoreChange(1)}
-          onDecrement={() => onOpponentScoreChange(-1)}
-          disabled={isGameComplete}
-          isWinner={isGameComplete && opponentScore > playerScore}
-        />
-      </div>
+          {/* Opponent column */}
+          <ScoreColumn
+            name={opponentName}
+            score={opponentScore}
+            onIncrement={() => onOpponentScoreChange(1)}
+            onDecrement={() => onOpponentScoreChange(-1)}
+            disabled={isGameComplete}
+            isWinner={opponentWon}
+          />
+        </div>
 
-      {/* Action area */}
-      <div className="mt-5">
-        {isMatchComplete ? (
+        {/* Helper text */}
+        <p className="text-center text-xs text-base-content/50 mt-4">
+          {getHelperText()}
+        </p>
+
+        {/* Primary CTA when game is complete */}
+        {isGameComplete && (
+          <button
+            type="button"
+            onClick={isMatchComplete ? onEndMatch : onNextGame}
+            className="btn btn-primary btn-block h-12 mt-4"
+          >
+            {getCtaText()}
+          </button>
+        )}
+
+        {/* End match early - link style */}
+        {!isGameComplete && (
           <button
             type="button"
             onClick={onEndMatch}
-            className="btn btn-primary btn-block h-12"
-          >
-            Save Match
-          </button>
-        ) : isGameComplete ? (
-          <button
-            type="button"
-            onClick={onNextGame}
-            className="btn btn-primary btn-block h-12"
-          >
-            Save & Start Game {gameNumber + 1}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onEndMatch}
-            className="btn btn-ghost btn-sm text-base-content/50 mx-auto block"
+            className="block mx-auto mt-4 text-sm text-base-content/50 underline underline-offset-2 hover:text-base-content/70 transition-colors"
           >
             End match early
           </button>
@@ -109,7 +145,7 @@ const ScoreCard: FC<ScoreCardProps> = ({
   )
 }
 
-interface ScoreSideProps {
+interface ScoreColumnProps {
   name: string
   score: number
   onIncrement: () => void
@@ -118,7 +154,7 @@ interface ScoreSideProps {
   isWinner: boolean
 }
 
-const ScoreSide: FC<ScoreSideProps> = ({
+const ScoreColumn: FC<ScoreColumnProps> = ({
   name,
   score,
   onIncrement,
@@ -128,35 +164,35 @@ const ScoreSide: FC<ScoreSideProps> = ({
 }) => {
   return (
     <div className="flex-1 flex flex-col items-center">
-      {/* Name */}
+      {/* Label */}
       <span className={`text-sm font-medium mb-2 ${isWinner ? 'text-success' : 'text-base-content/70'}`}>
         {name}
       </span>
 
-      {/* Score display */}
-      <span className={`text-5xl font-bold tabular-nums mb-4 ${isWinner ? 'text-success' : ''}`}>
+      {/* Large score */}
+      <span className={`text-5xl font-bold tabular-nums mb-3 ${isWinner ? 'text-success' : ''}`}>
         {score}
       </span>
 
-      {/* Controls */}
-      <div className="flex items-center gap-2">
-        {/* Decrement button - smaller */}
+      {/* Button row: - button (left) + button (right, wider) */}
+      <div className="flex items-center gap-2 w-full justify-center">
+        {/* Decrement button - ghost style, 40x40 min tap area */}
         <button
           type="button"
           onClick={onDecrement}
           disabled={disabled || score <= 0}
-          className="btn btn-ghost btn-sm btn-circle disabled:opacity-30"
+          className="btn btn-ghost btn-square h-11 w-11 min-h-[44px] min-w-[44px] border border-base-300 disabled:opacity-30 disabled:border-base-200"
           aria-label={`Decrease ${name} score`}
         >
-          <MinusIcon className="w-4 h-4" />
+          <MinusIcon className="w-5 h-5" />
         </button>
 
-        {/* Increment button - BIG tappable area */}
+        {/* Increment button - primary, wide */}
         <button
           type="button"
           onClick={onIncrement}
           disabled={disabled}
-          className="btn btn-primary btn-lg px-8 h-14 text-2xl font-bold disabled:opacity-30"
+          className="btn btn-primary flex-1 h-12 text-2xl font-bold disabled:opacity-30"
           aria-label={`Add point for ${name}`}
         >
           +

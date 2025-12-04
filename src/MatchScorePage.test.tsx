@@ -24,9 +24,14 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.opponentScore).toBe(0)
     })
 
-    it('displays status message with current game', async () => {
+    it('displays game pill with current game', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.statusMessage).toHaveTextContent('G1')
+      expect(matchScorePagePage.gamePill).toHaveTextContent('G1')
+    })
+
+    it('displays helper text with rules', async () => {
+      await matchScorePagePage.render()
+      expect(matchScorePagePage.helperText).toHaveTextContent('To 11 · Win by 2')
     })
 
     it('displays big + buttons for scoring', async () => {
@@ -89,7 +94,7 @@ describe('MatchScorePage', () => {
       await matchScorePagePage.addPlayerPoint()
       await matchScorePagePage.addPlayerPoint()
 
-      expect(matchScorePagePage.statusMessage).toHaveTextContent('You lead by 3')
+      expect(matchScorePagePage.statusText).toHaveTextContent('You lead by 3')
     })
 
     it('shows lead status when opponent ahead', async () => {
@@ -98,7 +103,7 @@ describe('MatchScorePage', () => {
       await matchScorePagePage.addOpponentPoint()
       await matchScorePagePage.addOpponentPoint()
 
-      expect(matchScorePagePage.statusMessage).toHaveTextContent('Opponent leads by 2')
+      expect(matchScorePagePage.statusText).toHaveTextContent('Opponent leads by 2')
     })
   })
 
@@ -112,7 +117,7 @@ describe('MatchScorePage', () => {
       }
 
       expect(matchScorePagePage.nextGameButton).toBeInTheDocument()
-      expect(matchScorePagePage.nextGameButton).toHaveTextContent('Save & Start Game 2')
+      expect(matchScorePagePage.nextGameButton).toHaveTextContent('Save game & start next')
     })
 
     it('disables scoring when game is complete', async () => {
@@ -152,6 +157,17 @@ describe('MatchScorePage', () => {
 
       expect(matchScorePagePage.completedGameBadges.length).toBe(1)
     })
+
+    it('shows game complete helper text', async () => {
+      await matchScorePagePage.render()
+
+      // Score 11-0
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.addPlayerPoint()
+      }
+
+      expect(matchScorePagePage.helperText).toHaveTextContent('Game complete – You win')
+    })
   })
 
   describe('deuce rules', () => {
@@ -170,6 +186,18 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.playerScore).toBe(11)
       expect(matchScorePagePage.opponentScore).toBe(10)
       expect(matchScorePagePage.nextGameButton).not.toBeInTheDocument()
+    })
+
+    it('shows deuce helper text at 10-10', async () => {
+      await matchScorePagePage.render()
+
+      // Get to 10-10
+      for (let i = 0; i < 10; i++) {
+        await matchScorePagePage.addPlayerPoint()
+        await matchScorePagePage.addOpponentPoint()
+      }
+
+      expect(matchScorePagePage.helperText).toHaveTextContent('Win by 2')
     })
 
     it('wins game with 2-point lead at deuce', async () => {
@@ -215,7 +243,7 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.saveMatchButton).toBeInTheDocument()
     })
 
-    it('shows match complete status message', async () => {
+    it('shows match complete helper text', async () => {
       await matchScorePagePage.render({ match: { matchLength: 1 } })
 
       // Win 1 game (best of 1)
@@ -223,8 +251,7 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.statusMessage).toHaveTextContent('Match complete')
-      expect(matchScorePagePage.statusMessage).toHaveTextContent('You won')
+      expect(matchScorePagePage.helperText).toHaveTextContent('Match complete – You win!')
     })
   })
 
