@@ -6,7 +6,7 @@ function LandingPage() {
 
   return (
     <>
-      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
+      <div className="fixed inset-0 top-16 bottom-24 flex items-center justify-center">
         <div className="card bg-base-200 p-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <span className="text-3xl">🏓</span>
