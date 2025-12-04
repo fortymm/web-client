@@ -24,20 +24,21 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.opponentScore).toBe(0)
     })
 
-    it('displays game pill with current game', async () => {
+    it('displays caption text with rules', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.gamePill).toHaveTextContent('G1')
-    })
-
-    it('displays helper text with rules', async () => {
-      await matchScorePagePage.render()
-      expect(matchScorePagePage.helperText).toHaveTextContent('To 11 · Win by 2')
+      expect(matchScorePagePage.captionText).toHaveTextContent('To 11 · Win by 2')
     })
 
     it('displays big + buttons for scoring', async () => {
       await matchScorePagePage.render()
       expect(matchScorePagePage.playerAddButton).toBeInTheDocument()
       expect(matchScorePagePage.opponentAddButton).toBeInTheDocument()
+    })
+
+    it('displays CTA button (disabled initially)', async () => {
+      await matchScorePagePage.render()
+      expect(matchScorePagePage.ctaButton).toBeInTheDocument()
+      expect(matchScorePagePage.ctaButton).toBeDisabled()
     })
 
     it('uses match length from stored match', async () => {
@@ -103,7 +104,7 @@ describe('MatchScorePage', () => {
   })
 
   describe('game completion', () => {
-    it('shows next game button when game is complete', async () => {
+    it('enables CTA button when game is complete', async () => {
       await matchScorePagePage.render()
 
       // Score 11-0
@@ -111,6 +112,7 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addPlayerPoint()
       }
 
+      expect(matchScorePagePage.ctaButton).not.toBeDisabled()
       expect(matchScorePagePage.nextGameButton).toBeInTheDocument()
       expect(matchScorePagePage.nextGameButton).toHaveTextContent('Save game & start next')
     })
@@ -153,7 +155,7 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.completedGameBadges.length).toBe(1)
     })
 
-    it('shows game complete helper text', async () => {
+    it('shows game complete caption text', async () => {
       await matchScorePagePage.render()
 
       // Score 11-0
@@ -161,7 +163,7 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.helperText).toHaveTextContent('Game complete – You win')
+      expect(matchScorePagePage.captionText).toHaveTextContent('Game complete – You win')
     })
   })
 
@@ -180,10 +182,11 @@ describe('MatchScorePage', () => {
 
       expect(matchScorePagePage.playerScore).toBe(11)
       expect(matchScorePagePage.opponentScore).toBe(10)
-      expect(matchScorePagePage.nextGameButton).not.toBeInTheDocument()
+      // CTA is still disabled because game is not complete
+      expect(matchScorePagePage.ctaButton).toBeDisabled()
     })
 
-    it('shows deuce helper text at 10-10', async () => {
+    it('shows deuce caption text at 10-10', async () => {
       await matchScorePagePage.render()
 
       // Get to 10-10
@@ -192,7 +195,7 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addOpponentPoint()
       }
 
-      expect(matchScorePagePage.helperText).toHaveTextContent('Win by 2')
+      expect(matchScorePagePage.captionText).toHaveTextContent('Win by 2')
     })
 
     it('wins game with 2-point lead at deuce', async () => {
@@ -208,6 +211,7 @@ describe('MatchScorePage', () => {
       await matchScorePagePage.addPlayerPoint()
       await matchScorePagePage.addPlayerPoint()
 
+      expect(matchScorePagePage.ctaButton).not.toBeDisabled()
       expect(matchScorePagePage.nextGameButton).toBeInTheDocument()
     })
   })
@@ -238,7 +242,7 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.finishMatchButton).toBeInTheDocument()
     })
 
-    it('shows match complete helper text', async () => {
+    it('shows match complete caption text', async () => {
       await matchScorePagePage.render({ match: { matchLength: 1 } })
 
       // Win 1 game (best of 1)
@@ -246,7 +250,7 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.helperText).toHaveTextContent('Match complete – You win!')
+      expect(matchScorePagePage.captionText).toHaveTextContent('Match complete – You win!')
     })
   })
 

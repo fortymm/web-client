@@ -33,8 +33,9 @@ const ScoreCard: FC<ScoreCardProps> = ({
   const playerWon = isGameComplete && playerScore > opponentScore
   const opponentWon = isGameComplete && opponentScore > playerScore
   const isDeuce = playerScore >= 10 && opponentScore >= 10
+  const isLastGame = gameNumber >= matchLength
 
-  // Determine status text (center of header)
+  // Determine status text (centered in header)
   const getStatusText = () => {
     if (isGameComplete) {
       if (playerWon) return 'You win'
@@ -43,14 +44,14 @@ const ScoreCard: FC<ScoreCardProps> = ({
     const diff = playerScore - opponentScore
     if (diff === 0) {
       if (playerScore === 0) return ''
-      return `Tied ${playerScore}–${opponentScore}`
+      return `Tied at ${playerScore}–${opponentScore}`
     }
     if (diff > 0) return `You lead by ${diff}`
     return `Opponent leads by ${Math.abs(diff)}`
   }
 
-  // Helper text below scores
-  const getHelperText = () => {
+  // Caption text under button - rules when in progress, completion status when done
+  const getCaptionText = () => {
     if (isMatchComplete) {
       return playerWon ? 'Match complete – You win!' : 'Match complete – Opponent wins'
     }
@@ -63,26 +64,30 @@ const ScoreCard: FC<ScoreCardProps> = ({
     return 'To 11 · Win by 2'
   }
 
-  // CTA button text - only shown when game is complete
+  // CTA button text
   const getCtaText = () => {
-    // Show "finish match" if this game decides the match (either already complete or last game)
-    if (isMatchComplete || gameNumber >= matchLength) {
+    if (isMatchComplete || isLastGame) {
       return 'Save game & finish match'
     }
     return 'Save game & start next'
   }
 
+  const handleCtaClick = () => {
+    if (isMatchComplete || isLastGame) {
+      onFinishMatch()
+    } else {
+      onNextGame()
+    }
+  }
+
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 bg-base-100 border-t border-base-200 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]">
       <div className="max-w-screen-sm mx-auto w-full px-4 pt-4 pb-4">
-        {/* Card header: G# pill | Status | spacer */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="badge badge-sm badge-neutral">G{gameNumber}</span>
+        {/* Status line - centered */}
+        <div className="text-center mb-4">
           <span className="text-sm text-base-content/70">
             {getStatusText()}
           </span>
-          {/* Spacer for alignment */}
-          <div className="w-10" />
         </div>
 
         {/* Two-column scoring area */}
@@ -109,21 +114,24 @@ const ScoreCard: FC<ScoreCardProps> = ({
           />
         </div>
 
-        {/* Helper text */}
-        <p className="text-center text-xs text-base-content/50 mt-4">
-          {getHelperText()}
-        </p>
+        {/* CTA button - always present, disabled when game in progress */}
+        <button
+          type="button"
+          onClick={handleCtaClick}
+          disabled={!isGameComplete}
+          className={`btn btn-block h-12 mt-4 ${
+            isGameComplete
+              ? 'btn-primary'
+              : 'btn-ghost border border-base-300 text-base-content/50'
+          }`}
+        >
+          {getCtaText()}
+        </button>
 
-        {/* Primary CTA - only shown when game is complete */}
-        {isGameComplete && (
-          <button
-            type="button"
-            onClick={isMatchComplete || gameNumber >= matchLength ? onFinishMatch : onNextGame}
-            className="btn btn-primary btn-block h-12 mt-4"
-          >
-            {getCtaText()}
-          </button>
-        )}
+        {/* Caption under button - rules or completion status */}
+        <p className="text-center text-xs text-base-content/50 mt-2">
+          {getCaptionText()}
+        </p>
       </div>
     </div>
   )

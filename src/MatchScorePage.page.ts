@@ -69,17 +69,12 @@ export const matchScorePagePage = {
     return elements[0]
   },
 
-  // ScoreCard elements
-  get gamePill() {
-    return screen.getByText(/^G\d+$/)
-  },
-
   get statusText() {
-    // Status text in center of card header - uses specific patterns to avoid helper text
+    // Status text centered at top of card
     const patterns = [
       /^You lead by \d+$/i,
       /^Opponent leads by \d+$/i,
-      /^Tied \d+–\d+$/i,
+      /^Tied at \d+–\d+$/i,
       /^You win$/i,
       /^Opponent wins$/i,
     ]
@@ -90,8 +85,9 @@ export const matchScorePagePage = {
     return null
   },
 
-  get helperText() {
-    // Helper text is in the ScoreCard, matches specific patterns
+  // Caption text below CTA button - rules or completion status
+  get captionText() {
+    // Use specific patterns to avoid matching header "Match Complete"
     const patterns = [
       /^To 11 · Win by 2$/,
       /^Win by 2$/,
@@ -104,7 +100,8 @@ export const matchScorePagePage = {
       const el = screen.queryByText(pattern)
       if (el) return el
     }
-    return screen.getByText(/To 11|Win by 2|Game complete|Match complete/i)
+    // Fallback - this shouldn't be reached in normal use
+    throw new Error('Caption text not found')
   },
 
   get playerScore() {
@@ -131,6 +128,11 @@ export const matchScorePagePage = {
 
   get opponentSubtractButton() {
     return screen.getByRole('button', { name: /decrease opponent score/i })
+  },
+
+  // CTA button - always present, may be disabled
+  get ctaButton() {
+    return screen.getByRole('button', { name: /save game/i })
   },
 
   get nextGameButton() {

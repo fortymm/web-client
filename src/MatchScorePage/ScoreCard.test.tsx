@@ -3,11 +3,6 @@ import { scoreCardPage } from './ScoreCard.page'
 
 describe('ScoreCard', () => {
   describe('display', () => {
-    it('shows game number in pill', () => {
-      scoreCardPage.render({ gameNumber: 2 })
-      expect(scoreCardPage.gamePill).toHaveTextContent('G2')
-    })
-
     it('shows player score', () => {
       scoreCardPage.render({ playerScore: 7 })
       expect(scoreCardPage.playerScore).toBe(7)
@@ -30,7 +25,7 @@ describe('ScoreCard', () => {
 
     it('shows tied status when scores are equal', () => {
       scoreCardPage.render({ playerScore: 5, opponentScore: 5 })
-      expect(scoreCardPage.statusText).toHaveTextContent('Tied 5–5')
+      expect(scoreCardPage.statusText).toHaveTextContent('Tied at 5–5')
     })
 
     it('shows empty status text at 0-0', () => {
@@ -39,14 +34,41 @@ describe('ScoreCard', () => {
       expect(scoreCardPage.statusText).toBeNull()
     })
 
-    it('shows helper text with rules', () => {
+    it('shows caption text with rules', () => {
       scoreCardPage.render()
-      expect(scoreCardPage.helperText).toHaveTextContent('To 11 · Win by 2')
+      expect(scoreCardPage.captionText).toHaveTextContent('To 11 · Win by 2')
     })
 
-    it('shows deuce helper text at 10-10', () => {
+    it('shows deuce caption text at 10-10', () => {
       scoreCardPage.render({ playerScore: 10, opponentScore: 10 })
-      expect(scoreCardPage.helperText).toHaveTextContent('Win by 2')
+      expect(scoreCardPage.captionText).toHaveTextContent('Win by 2')
+    })
+  })
+
+  describe('CTA button', () => {
+    it('is always visible', () => {
+      scoreCardPage.render()
+      expect(scoreCardPage.ctaButton).toBeInTheDocument()
+    })
+
+    it('is disabled when game is in progress', () => {
+      scoreCardPage.render({ isGameComplete: false })
+      expect(scoreCardPage.ctaButton).toBeDisabled()
+    })
+
+    it('is enabled when game is complete', () => {
+      scoreCardPage.render({ isGameComplete: true })
+      expect(scoreCardPage.ctaButton).not.toBeDisabled()
+    })
+
+    it('shows next game text when more games remain', () => {
+      scoreCardPage.render({ gameNumber: 1, matchLength: 5 })
+      expect(scoreCardPage.nextGameButton).toBeInTheDocument()
+    })
+
+    it('shows finish match text on last game', () => {
+      scoreCardPage.render({ gameNumber: 5, matchLength: 5 })
+      expect(scoreCardPage.finishMatchButton).toBeInTheDocument()
     })
   })
 
@@ -100,22 +122,13 @@ describe('ScoreCard', () => {
       expect(scoreCardPage.statusText).toHaveTextContent('Opponent wins')
     })
 
-    it('shows game complete helper text when player wins', () => {
+    it('shows game complete caption text when player wins', () => {
       scoreCardPage.render({
         isGameComplete: true,
         playerScore: 11,
         opponentScore: 7
       })
-      expect(scoreCardPage.helperText).toHaveTextContent('Game complete – You win')
-    })
-
-    it('shows next game button when game is complete', () => {
-      scoreCardPage.render({
-        gameNumber: 1,
-        isGameComplete: true
-      })
-      expect(scoreCardPage.nextGameButton).toBeInTheDocument()
-      expect(scoreCardPage.nextGameButton).toHaveTextContent('Save game & start next')
+      expect(scoreCardPage.captionText).toHaveTextContent('Game complete – You win')
     })
 
     it('calls onNextGame when next game button clicked', async () => {
@@ -136,14 +149,14 @@ describe('ScoreCard', () => {
   })
 
   describe('match complete state', () => {
-    it('shows match complete helper text when player wins', () => {
+    it('shows match complete caption text when player wins', () => {
       scoreCardPage.render({
         isMatchComplete: true,
         isGameComplete: true,
         playerScore: 11,
         opponentScore: 5
       })
-      expect(scoreCardPage.helperText).toHaveTextContent('Match complete – You win!')
+      expect(scoreCardPage.captionText).toHaveTextContent('Match complete – You win!')
     })
 
     it('shows finish match button when match is complete', () => {

@@ -45,18 +45,12 @@ export const scoreCardPage = {
     return { onPlayerScoreChange, onOpponentScoreChange, onNextGame, onFinishMatch }
   },
 
-  // Card header elements
-  get gamePill() {
-    return screen.getByText(/^G\d+$/)
-  },
-
   get statusText() {
-    // Status text in center of card header - it's a span, not a paragraph
-    // Uses more specific patterns to avoid matching helper text
+    // Status text centered at top of card
     const patterns = [
       /^You lead by \d+$/i,
       /^Opponent leads by \d+$/i,
-      /^Tied \d+–\d+$/i,
+      /^Tied at \d+–\d+$/i,
       /^You win$/i,
       /^Opponent wins$/i,
     ]
@@ -67,8 +61,8 @@ export const scoreCardPage = {
     return null
   },
 
-  // Helper text below scores
-  get helperText() {
+  // Caption text below CTA button - rules or completion status
+  get captionText() {
     return screen.getByText(/To 11|Win by 2|Game complete|Match complete/i)
   },
 
@@ -97,6 +91,11 @@ export const scoreCardPage = {
 
   get opponentDecrementButton() {
     return screen.getByRole('button', { name: /decrease opponent score/i })
+  },
+
+  // CTA button - always present, may be disabled
+  get ctaButton() {
+    return screen.getByRole('button', { name: /save game/i })
   },
 
   get nextGameButton() {
