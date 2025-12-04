@@ -43,10 +43,6 @@ export const newMatchPage = {
     return newMatchSearchPage.placeholder
   },
 
-  querySearchOfflineBadge() {
-    return newMatchSearchPage.queryOfflineBadge()
-  },
-
   // Section header
   get recentPlayersHeader() {
     return sectionHeaderPage.recentPlayersHeader
@@ -129,17 +125,17 @@ export const newMatchPage = {
     return recentsErrorCardPage
   },
 
-  queryErrorCardHeading() {
-    return screen.queryByRole('heading', { level: 3 })
+  queryErrorAlert() {
+    return screen.queryByRole('alert')
   },
 
   get hasErrorCard() {
-    return this.queryErrorCardHeading() !== null
+    return this.queryErrorAlert() !== null
   },
 
   async waitForErrorCard() {
     await waitFor(() => {
-      expect(this.queryErrorCardHeading()).toBeInTheDocument()
+      expect(this.queryErrorAlert()).toBeInTheDocument()
     })
   },
 

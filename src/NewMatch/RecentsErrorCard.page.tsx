@@ -15,20 +15,20 @@ export const recentsErrorCardPage = {
     return { onRetry }
   },
 
-  get icon() {
-    return screen.getByRole('img', { hidden: true })
+  get alert() {
+    return screen.getByRole('alert')
   },
 
-  get heading() {
-    return screen.getByRole('heading', { level: 3 })
+  get message() {
+    return screen.getByText(/couldn't load|having trouble/i)
   },
 
   get retryButton() {
     return screen.getByRole('button', { name: /try again|retrying/i })
   },
 
-  get headingText() {
-    return this.heading.textContent
+  get messageText() {
+    return this.message.textContent
   },
 
   get isRetrying() {

@@ -225,7 +225,7 @@ describe('NewMatch', () => {
   })
 
   describe('recents error handling', () => {
-    it('shows error card when initial load fails', async () => {
+    it('shows error alert when initial load fails', async () => {
       server.use(
         useRecentOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
@@ -235,12 +235,12 @@ describe('NewMatch', () => {
       newMatchPage.render()
       await newMatchPage.waitForErrorCard()
 
-      expect(newMatchPage.errorCard.heading).toBeInTheDocument()
-      expect(newMatchPage.errorCard.headingText).toBe("Couldn't load players")
+      expect(newMatchPage.errorCard.alert).toBeInTheDocument()
+      expect(newMatchPage.errorCard.messageText).toBe("We couldn't load your recent players.")
       expect(newMatchPage.errorCard.retryButton).toBeInTheDocument()
     })
 
-    it('still shows section header when error card is displayed', async () => {
+    it('still shows section header when error alert is displayed', async () => {
       server.use(
         useRecentOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
@@ -251,19 +251,6 @@ describe('NewMatch', () => {
       await newMatchPage.waitForErrorCard()
 
       expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
-    })
-
-    it('disables search bar when error card is displayed', async () => {
-      server.use(
-        useRecentOpponentsPage.requestHandler(() => {
-          return HttpResponse.error()
-        })
-      )
-
-      newMatchPage.render()
-      await newMatchPage.waitForErrorCard()
-
-      expect(newMatchPage.querySearchOfflineBadge()).toBeInTheDocument()
     })
 
     it('transitions from error to player list on successful retry', async () => {
@@ -309,7 +296,7 @@ describe('NewMatch', () => {
       await newMatchPage.clickRetry()
 
       await waitFor(() => {
-        expect(newMatchPage.errorCard.heading).toBeInTheDocument()
+        expect(newMatchPage.errorCard.alert).toBeInTheDocument()
       })
     })
 
@@ -339,7 +326,7 @@ describe('NewMatch', () => {
         expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
       })
 
-      expect(newMatchPage.errorCard.headingText).toBe(
+      expect(newMatchPage.errorCard.messageText).toBe(
         'Still having trouble. Check your connection.'
       )
     })

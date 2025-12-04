@@ -11,8 +11,10 @@ export const newMatchHeroPage = {
   },
 
   get description() {
-    return screen.getByText(
-      'Choose a player to log a result, or use Quick Match to start now.'
-    )
+    return screen.getByText(/choose a player/i)
+  },
+
+  get descriptionText() {
+    return this.description.textContent
   },
 }

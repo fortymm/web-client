@@ -4,10 +4,10 @@ import { recentsErrorCardPage } from './RecentsErrorCard.page'
 
 describe('RecentsErrorCard', () => {
   describe('rendering', () => {
-    it('renders error card with correct message', () => {
+    it('renders as an alert with correct message', () => {
       recentsErrorCardPage.render()
-      expect(recentsErrorCardPage.heading).toBeInTheDocument()
-      expect(recentsErrorCardPage.headingText).toBe("Couldn't load players")
+      expect(recentsErrorCardPage.alert).toBeInTheDocument()
+      expect(recentsErrorCardPage.messageText).toBe("We couldn't load your recent players.")
     })
 
     it('renders retry button', () => {
@@ -79,29 +79,29 @@ describe('RecentsErrorCard', () => {
   describe('retry count messaging', () => {
     it('shows default message when retry count is 0', () => {
       recentsErrorCardPage.render({ retryCount: 0 })
-      expect(recentsErrorCardPage.headingText).toBe("Couldn't load players")
+      expect(recentsErrorCardPage.messageText).toBe("We couldn't load your recent players.")
     })
 
     it('shows default message when retry count is 1', () => {
       recentsErrorCardPage.render({ retryCount: 1 })
-      expect(recentsErrorCardPage.headingText).toBe("Couldn't load players")
+      expect(recentsErrorCardPage.messageText).toBe("We couldn't load your recent players.")
     })
 
     it('shows default message when retry count is 2', () => {
       recentsErrorCardPage.render({ retryCount: 2 })
-      expect(recentsErrorCardPage.headingText).toBe("Couldn't load players")
+      expect(recentsErrorCardPage.messageText).toBe("We couldn't load your recent players.")
     })
 
     it('shows network-focused message when retry count is 3', () => {
       recentsErrorCardPage.render({ retryCount: 3 })
-      expect(recentsErrorCardPage.headingText).toBe(
+      expect(recentsErrorCardPage.messageText).toBe(
         'Still having trouble. Check your connection.'
       )
     })
 
     it('shows network-focused message when retry count exceeds 3', () => {
       recentsErrorCardPage.render({ retryCount: 5 })
-      expect(recentsErrorCardPage.headingText).toBe(
+      expect(recentsErrorCardPage.messageText).toBe(
         'Still having trouble. Check your connection.'
       )
     })

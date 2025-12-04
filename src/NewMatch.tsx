@@ -34,11 +34,8 @@ function NewMatch() {
   // Mode derived from debounced query
   const mode = debouncedQuery.trim() === '' ? 'recents' : 'search'
 
-  // Error states
-  const showRecentsError =
-    mode === 'recents' && recents.status === 'error' && recents.opponents === null
-  const showRefetchError =
-    mode === 'recents' && recents.status === 'error' && recents.opponents !== null
+  // Error state (initial load failed, no cached data)
+  const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
 
   // Expose state for future integration (FM-301, FM-302)
   void inputQuery
@@ -46,7 +43,6 @@ function NewMatch() {
   void setDebouncedQuery
   void hasRecentsData
   void hasEmptyRecents
-  void showRefetchError
 
   const handleCreateMatch = (opponentId: string | null) => {
     const id = crypto.randomUUID()
@@ -90,33 +86,34 @@ function NewMatch() {
       {/* Main Content Wrapper */}
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
         <NewMatchHero />
-        <NewMatchSearch disabled={showRecentsError} />
+        <NewMatchSearch />
         <NewMatchContent>
-          {mode === 'recents' && recents.isInitialLoading && (
+          {mode === 'recents' && (
             <>
-              <SectionHeader title="RECENT PLAYERS" isLoading={false} />
-              <SkeletonRows count={6} />
+              {recents.isInitialLoading && (
+                <>
+                  <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+                  <SkeletonRows count={6} />
+                </>
+              )}
+              {hasInitialLoadError && (
+                <>
+                  <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+                  <RecentsErrorCard onRetry={handleRetry} retryCount={retryCount} />
+                </>
+              )}
+              {!recents.isInitialLoading && !hasInitialLoadError && recents.opponents !== null && (
+                <>
+                  <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
+                  <PlayerList
+                    players={recents.opponents}
+                    context="recents"
+                    onSelectPlayer={handleSelectPlayer}
+                  />
+                </>
+              )}
             </>
           )}
-          {mode === 'recents' && showRecentsError && (
-            <>
-              <SectionHeader title="RECENT PLAYERS" isLoading={false} />
-              <RecentsErrorCard onRetry={handleRetry} retryCount={retryCount} />
-            </>
-          )}
-          {mode === 'recents' &&
-            !recents.isInitialLoading &&
-            !showRecentsError &&
-            recents.opponents !== null && (
-              <>
-                <SectionHeader title="RECENT PLAYERS" isLoading={recents.isRefetching} />
-                <PlayerList
-                  players={recents.opponents}
-                  context="recents"
-                  onSelectPlayer={handleSelectPlayer}
-                />
-              </>
-            )}
         </NewMatchContent>
       </div>
 

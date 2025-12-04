@@ -31,9 +31,14 @@ describe('QuickMatchButton', () => {
       expect(quickMatchButtonPage.boltIcon).toBeInTheDocument()
     })
 
-    it('displays subtitle text', () => {
+    it('displays default subtitle text', () => {
       quickMatchButtonPage.render()
-      expect(quickMatchButtonPage.subtitleText).toBeInTheDocument()
+      expect(quickMatchButtonPage.subtitleText).toBe('Start now · Choose player later')
+    })
+
+    it('displays reassurance subtitle when showReassurance is true', () => {
+      quickMatchButtonPage.render({ showReassurance: true })
+      expect(quickMatchButtonPage.subtitleText).toBe('Still works · No recent players needed')
     })
 
     it('has fixed touch height', () => {

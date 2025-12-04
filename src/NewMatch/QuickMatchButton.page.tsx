@@ -29,8 +29,12 @@ export const quickMatchButtonPage = {
     return screen.getByRole('button').querySelector('svg')
   },
 
+  get subtitle() {
+    return screen.getByText(/start now/i)
+  },
+
   get subtitleText() {
-    return screen.queryByText(/Start now · Add players and scores later/i)
+    return this.subtitle.textContent
   },
 
   async click() {
