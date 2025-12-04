@@ -33,7 +33,7 @@ describe('QuickMatchButton', () => {
 
     it('displays subtitle text', () => {
       quickMatchButtonPage.render()
-      expect(quickMatchButtonPage.subtitleText).toBeInTheDocument()
+      expect(quickMatchButtonPage.subtitleText).toBe('Start now · Choose player later')
     })
 
     it('has fixed touch height', () => {

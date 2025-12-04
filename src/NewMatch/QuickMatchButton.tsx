@@ -33,7 +33,7 @@ const QuickMatchButton: FC<QuickMatchButtonProps> = ({
         <span>Quick Match</span>
       </span>
       <span className="text-xs font-normal opacity-80">
-        Start now · Add players and scores later
+        Start now · Choose player later
       </span>
     </button>
   )

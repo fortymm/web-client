@@ -1,8 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
+import { HttpResponse } from 'msw'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { matchScorePagePage } from './MatchScorePage.page'
+import { useRecentOpponentsPage } from './hooks/useRecentOpponents.page'
+import { server } from './test/mocks/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -73,21 +76,57 @@ describe('NewMatch', () => {
   })
 
   describe('player list', () => {
-    it('renders the player list with mock players', async () => {
+    it('renders the player list with recent opponents', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            ])
+          )
+        })
+      )
+
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
       expect(newMatchPage.playerList).toBeInTheDocument()
       expect(newMatchPage.playerRows.length).toBeGreaterThan(0)
     })
 
-    it('displays 50 player rows', async () => {
+    it('displays correct number of player rows', async () => {
+      const mockOpponents = Array.from({ length: 5 }, (_, i) =>
+        useRecentOpponentsPage.createMockOpponent({
+          id: `player-${i + 1}`,
+          username: `Player${i + 1}`,
+        })
+      )
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(useRecentOpponentsPage.createMockResponse(mockOpponents))
+        })
+      )
+
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
-      expect(newMatchPage.playerRows).toHaveLength(50)
+      expect(newMatchPage.playerRows).toHaveLength(5)
     })
   })
 
   describe('player selection', () => {
+    beforeEach(() => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            ])
+          )
+        })
+      )
+    })
+
     it('navigates to score page when clicking a player', async () => {
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
@@ -182,6 +221,129 @@ describe('NewMatch', () => {
         })
         expect(matches[0].id).toMatch(UUID_REGEX)
       })
+    })
+  })
+
+  describe('recents error handling', () => {
+    it('shows error alert when initial load fails', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      expect(newMatchPage.errorCard.alert).toBeInTheDocument()
+      expect(newMatchPage.errorCard.titleText).toBe("We couldn't load your recent players.")
+      expect(newMatchPage.errorCard.retryButton).toBeInTheDocument()
+    })
+
+    it('still shows section header when error alert is displayed', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
+    })
+
+    it('transitions from error to player list on successful retry', async () => {
+      let requestCount = 0
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          requestCount++
+          if (requestCount === 1) {
+            return HttpResponse.error()
+          }
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'TestPlayer' }),
+            ])
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Click retry
+      await newMatchPage.clickRetry()
+
+      // Should now show player list
+      await waitFor(() => {
+        expect(newMatchPage.playerList).toBeInTheDocument()
+      })
+      expect(newMatchPage.hasErrorCard).toBe(false)
+    })
+
+    it('stays on error card when retry also fails', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Click retry - should still show error
+      await newMatchPage.clickRetry()
+
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.alert).toBeInTheDocument()
+      })
+    })
+
+    it('shows network-focused message after 3 retries', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Retry 3 times
+      await newMatchPage.clickRetry()
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
+      })
+
+      await newMatchPage.clickRetry()
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
+      })
+
+      await newMatchPage.clickRetry()
+      await waitFor(() => {
+        expect(newMatchPage.errorCard.retryButton).not.toBeDisabled()
+      })
+
+      expect(newMatchPage.errorCard.titleText).toBe(
+        "Still couldn't load your recent players."
+      )
+    })
+
+    it('allows quick match when error card is displayed', async () => {
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForErrorCard()
+
+      // Quick match should still work
+      await newMatchPage.clickQuickMatch()
+      expect(matchScorePagePage.heading).toBeInTheDocument()
     })
   })
 })

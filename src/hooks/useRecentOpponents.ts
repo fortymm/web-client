@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, type QueryObserverResult } from '@tanstack/react-query'
 import { api } from '../lib/api'
 
 const ENDPOINT = '/users/me/recent-opponents'
@@ -41,7 +41,7 @@ export interface UseRecentOpponentsReturn {
   error: Error | null
   isInitialLoading: boolean
   isRefetching: boolean
-  refetch: () => void
+  refetch: () => Promise<QueryObserverResult<RecentOpponent[], Error>>
 }
 
 export function useRecentOpponents(): UseRecentOpponentsReturn {

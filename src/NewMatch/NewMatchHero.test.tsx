@@ -10,7 +10,9 @@ describe('NewMatchHero', () => {
 
   it('displays the description', () => {
     newMatchHeroPage.render()
-    expect(newMatchHeroPage.description).toBeInTheDocument()
+    expect(newMatchHeroPage.descriptionText).toBe(
+      'Choose a player, search, or start a Quick Match.'
+    )
   })
 
   it('has correct heading level for accessibility', () => {
