@@ -18,22 +18,18 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 1 of 5')
     })
 
-    it('displays both player panels', async () => {
+    it('displays all game rows', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.playerPanel).toBeInTheDocument()
-      expect(matchScorePagePage.opponentPanel).toBeInTheDocument()
+      expect(matchScorePagePage.gameRows).toHaveLength(5)
     })
 
-    it('displays initial score of 0-0', async () => {
+    it('displays initial scores of 0-0 for all games', async () => {
       await matchScorePagePage.render()
-      expect(matchScorePagePage.getPlayerScore()).toBe('0')
-      expect(matchScorePagePage.getOpponentScore()).toBe('0')
-    })
-
-    it('displays undo button (disabled)', async () => {
-      await matchScorePagePage.render()
-      expect(matchScorePagePage.undoButton).toBeInTheDocument()
-      expect(matchScorePagePage.undoButton).toBeDisabled()
+      for (let game = 1; game <= 5; game++) {
+        const scores = matchScorePagePage.getGameScores(game)
+        expect(scores.player).toBe(0)
+        expect(scores.opponent).toBe(0)
+      }
     })
 
     it('displays end match button', async () => {
@@ -47,127 +43,162 @@ describe('MatchScorePage', () => {
         match: { matchLength: 7 },
       })
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 1 of 7')
+      expect(matchScorePagePage.gameRows).toHaveLength(7)
+    })
+
+    it('uses match length of 3 from stored match', async () => {
+      await matchScorePagePage.render({
+        match: { matchLength: 3 },
+      })
+      expect(matchScorePagePage.gameRows).toHaveLength(3)
     })
   })
 
-  describe('scoring', () => {
-    it('increments player score when player panel is tapped', async () => {
+  describe('score entry', () => {
+    it('increments player score when + is clicked', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.tapPlayer()
+      await matchScorePagePage.incrementPlayerScore(1)
 
-      expect(matchScorePagePage.getPlayerScore()).toBe('1')
-      expect(matchScorePagePage.getOpponentScore()).toBe('0')
+      const scores = matchScorePagePage.getGameScores(1)
+      expect(scores.player).toBe(1)
+      expect(scores.opponent).toBe(0)
     })
 
-    it('increments opponent score when opponent panel is tapped', async () => {
+    it('increments opponent score when + is clicked', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.tapOpponent()
+      await matchScorePagePage.incrementOpponentScore(1)
 
-      expect(matchScorePagePage.getPlayerScore()).toBe('0')
-      expect(matchScorePagePage.getOpponentScore()).toBe('1')
+      const scores = matchScorePagePage.getGameScores(1)
+      expect(scores.player).toBe(0)
+      expect(scores.opponent).toBe(1)
     })
 
-    it('enables undo button after scoring', async () => {
+    it('decrements player score when - is clicked', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.tapPlayer()
+      await matchScorePagePage.incrementPlayerScore(1)
+      await matchScorePagePage.incrementPlayerScore(1)
+      await matchScorePagePage.decrementPlayerScore(1)
 
-      expect(matchScorePagePage.undoButton).not.toBeDisabled()
+      const scores = matchScorePagePage.getGameScores(1)
+      expect(scores.player).toBe(1)
     })
 
-    it('shows previous score in undo label', async () => {
+    it('does not decrement below 0', async () => {
       await matchScorePagePage.render()
 
-      await matchScorePagePage.tapPlayer()
-      await matchScorePagePage.tapPlayer()
-
-      expect(matchScorePagePage.undoLabel).toHaveTextContent('(1-0)')
-    })
-  })
-
-  describe('undo', () => {
-    it('reverts to previous score', async () => {
-      await matchScorePagePage.render()
-      await matchScorePagePage.tapPlayer()
-      await matchScorePagePage.tapPlayer()
-
-      await matchScorePagePage.undo()
-
-      expect(matchScorePagePage.getPlayerScore()).toBe('1')
+      // Try to decrement from 0 (button should be disabled)
+      const row = matchScorePagePage.getGameRow(1)
+      const decrementButtons = row.querySelectorAll('button[aria-label="Decrease score"]')
+      expect(decrementButtons[0]).toBeDisabled()
     })
 
-    it('disables undo button after undoing all points', async () => {
-      await matchScorePagePage.render()
-      await matchScorePagePage.tapPlayer()
-
-      await matchScorePagePage.undo()
-
-      expect(matchScorePagePage.undoButton).toBeDisabled()
-    })
-  })
-
-  describe('game progression', () => {
-    it('resets score when game is won', async () => {
+    it('allows scoring multiple games', async () => {
       await matchScorePagePage.render()
 
-      // Score 11 points for player
+      // Enter score for game 1: 11-7
       for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.tapPlayer()
+        await matchScorePagePage.incrementPlayerScore(1)
+      }
+      for (let i = 0; i < 7; i++) {
+        await matchScorePagePage.incrementOpponentScore(1)
       }
 
-      // Score should reset for new game
-      expect(matchScorePagePage.getPlayerScore()).toBe('0')
-      expect(matchScorePagePage.getOpponentScore()).toBe('0')
-    })
-
-    it('advances game counter when game is won', async () => {
-      await matchScorePagePage.render()
-
-      // Score 11 points for player
+      // Enter score for game 2: 9-11
+      for (let i = 0; i < 9; i++) {
+        await matchScorePagePage.incrementPlayerScore(2)
+      }
       for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.tapPlayer()
+        await matchScorePagePage.incrementOpponentScore(2)
       }
 
-      expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 2 of 5')
+      const game1 = matchScorePagePage.getGameScores(1)
+      expect(game1.player).toBe(11)
+      expect(game1.opponent).toBe(7)
+
+      const game2 = matchScorePagePage.getGameScores(2)
+      expect(game2.player).toBe(9)
+      expect(game2.opponent).toBe(11)
     })
   })
 
-  describe('deuce rules', () => {
-    it('requires 2-point lead to win at deuce', async () => {
+  describe('game completion detection', () => {
+    it('marks game as complete at 11-0', async () => {
       await matchScorePagePage.render()
 
-      // Get to 10-10
-      for (let i = 0; i < 10; i++) {
-        await matchScorePagePage.tapPlayer()
-        await matchScorePagePage.tapOpponent()
+      // Enter 11-0
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.incrementPlayerScore(1)
       }
 
-      // Player goes to 11-10 (not enough to win)
-      await matchScorePagePage.tapPlayer()
-
-      expect(matchScorePagePage.getPlayerScore()).toBe('11')
-      expect(matchScorePagePage.getOpponentScore()).toBe('10')
-      expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 1 of 5')
+      const row = matchScorePagePage.getGameRow(1)
+      expect(row.querySelector('[aria-label="Game complete"]')).toBeInTheDocument()
     })
 
-    it('wins game with 2-point lead at deuce', async () => {
+    it('does not mark game complete at 11-10 (no 2-point lead)', async () => {
       await matchScorePagePage.render()
 
-      // Get to 10-10
+      // Enter 11-10
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.incrementPlayerScore(1)
+      }
       for (let i = 0; i < 10; i++) {
-        await matchScorePagePage.tapPlayer()
-        await matchScorePagePage.tapOpponent()
+        await matchScorePagePage.incrementOpponentScore(1)
       }
 
-      // Player wins 12-10
-      await matchScorePagePage.tapPlayer()
-      await matchScorePagePage.tapPlayer()
+      const row = matchScorePagePage.getGameRow(1)
+      expect(row.querySelector('[aria-label="Game complete"]')).not.toBeInTheDocument()
+    })
 
-      // Game should be over, scores reset
-      expect(matchScorePagePage.getPlayerScore()).toBe('0')
-      expect(matchScorePagePage.gameCounter).toHaveTextContent('Game 2 of 5')
+    it('marks game complete at 12-10', async () => {
+      await matchScorePagePage.render()
+
+      // Enter 12-10
+      for (let i = 0; i < 12; i++) {
+        await matchScorePagePage.incrementPlayerScore(1)
+      }
+      for (let i = 0; i < 10; i++) {
+        await matchScorePagePage.incrementOpponentScore(1)
+      }
+
+      const row = matchScorePagePage.getGameRow(1)
+      expect(row.querySelector('[aria-label="Game complete"]')).toBeInTheDocument()
+    })
+  })
+
+  describe('match score tracking', () => {
+    it('updates match wins when game is complete', async () => {
+      await matchScorePagePage.render()
+
+      // Enter 11-7 for game 1 (player wins)
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.incrementPlayerScore(1)
+      }
+      for (let i = 0; i < 7; i++) {
+        await matchScorePagePage.incrementOpponentScore(1)
+      }
+
+      const wins = matchScorePagePage.getMatchWins()
+      expect(wins.player).toBe(1)
+      expect(wins.opponent).toBe(0)
+    })
+
+    it('tracks opponent wins', async () => {
+      await matchScorePagePage.render()
+
+      // Enter 7-11 for game 1 (opponent wins)
+      for (let i = 0; i < 7; i++) {
+        await matchScorePagePage.incrementPlayerScore(1)
+      }
+      for (let i = 0; i < 11; i++) {
+        await matchScorePagePage.incrementOpponentScore(1)
+      }
+
+      const wins = matchScorePagePage.getMatchWins()
+      expect(wins.player).toBe(0)
+      expect(wins.opponent).toBe(1)
     })
   })
 
@@ -175,25 +206,59 @@ describe('MatchScorePage', () => {
     it('shows match complete when player wins majority', async () => {
       await matchScorePagePage.render({ match: { matchLength: 3 } })
 
-      // Win 2 games (majority of 3)
-      for (let game = 0; game < 2; game++) {
-        for (let point = 0; point < 11; point++) {
-          await matchScorePagePage.tapPlayer()
+      // Enter 11-0 for games 1 and 2 (player wins 2 of 3)
+      for (let game = 1; game <= 2; game++) {
+        for (let i = 0; i < 11; i++) {
+          await matchScorePagePage.incrementPlayerScore(game)
         }
       }
 
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Match Complete')
+      expect(matchScorePagePage.matchCompleteMessage).toHaveTextContent('wins!')
     })
 
     it('changes save button text when match complete', async () => {
       await matchScorePagePage.render({ match: { matchLength: 1 } })
 
-      // Win 1 game (best of 1)
+      // Enter 11-0 for game 1 (best of 1)
       for (let i = 0; i < 11; i++) {
-        await matchScorePagePage.tapPlayer()
+        await matchScorePagePage.incrementPlayerScore(1)
       }
 
       expect(matchScorePagePage.saveButton).toHaveTextContent('Save Match')
+    })
+
+    it('shows opponent win message when opponent wins', async () => {
+      await matchScorePagePage.render({ match: { matchLength: 3 } })
+
+      // Enter 0-11 for games 1 and 2 (opponent wins 2 of 3)
+      for (let game = 1; game <= 2; game++) {
+        for (let i = 0; i < 11; i++) {
+          await matchScorePagePage.incrementOpponentScore(game)
+        }
+      }
+
+      expect(matchScorePagePage.matchCompleteMessage).toHaveTextContent('wins!')
+    })
+  })
+
+  describe('accessibility', () => {
+    it('has accessible heading', async () => {
+      await matchScorePagePage.render()
+      expect(matchScorePagePage.heading).toBeInTheDocument()
+    })
+
+    it('has accessible game list', async () => {
+      await matchScorePagePage.render()
+      expect(matchScorePagePage.gameList).toHaveAccessibleName('Game scores')
+    })
+
+    it('each game row has accessible name', async () => {
+      await matchScorePagePage.render()
+      for (let game = 1; game <= 5; game++) {
+        const row = matchScorePagePage.getGameRow(game)
+        expect(row).toHaveAccessibleName(`Game ${game}`)
+      }
     })
   })
 })

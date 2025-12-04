@@ -1,10 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { createElement } from 'react'
 import MatchScorePage from './MatchScorePage'
-import { scoreDisplayPage } from './MatchScorePage/ScoreDisplay.page'
-import { gameProgressPage } from './MatchScorePage/GameProgress.page'
 import { saveMatch, clearAllMatches, type StoredMatch } from './lib/matchesDb'
 
 interface RenderOptions {
@@ -72,26 +70,17 @@ export const matchScorePagePage = {
     return elements[0]
   },
 
-  // Delegate to child page objects
-  scoreDisplay: scoreDisplayPage,
-  gameProgress: gameProgressPage,
-
-  // Player panels
-  get playerPanel() {
-    return screen.getByRole('button', { name: /Add point to You/i })
+  // Game score form
+  get gameList() {
+    return screen.getByRole('list', { name: /game scores/i })
   },
 
-  get opponentPanel() {
-    return screen.getByRole('button', { name: /Add point to Opponent/i })
+  get gameRows() {
+    return screen.getAllByRole('group')
   },
 
-  // Undo
-  get undoButton() {
-    return screen.getByRole('button', { name: /undo/i })
-  },
-
-  get undoLabel() {
-    return screen.queryByText(/\(\d+-\d+\)/)
+  getGameRow(gameNumber: number) {
+    return screen.getByRole('group', { name: `Game ${gameNumber}` })
   },
 
   // End/Save button (text changes based on match state)
@@ -108,21 +97,33 @@ export const matchScorePagePage = {
     return screen.queryByRole('status')
   },
 
-  // Actions
-  async tapPlayer() {
-    await userEvent.click(this.playerPanel)
+  // Actions for game scores
+  async incrementPlayerScore(gameNumber: number) {
+    const row = this.getGameRow(gameNumber)
+    const buttons = within(row).getAllByRole('button', { name: /increase score/i })
+    await userEvent.click(buttons[0])
   },
 
-  async tapOpponent() {
-    await userEvent.click(this.opponentPanel)
+  async decrementPlayerScore(gameNumber: number) {
+    const row = this.getGameRow(gameNumber)
+    const buttons = within(row).getAllByRole('button', { name: /decrease score/i })
+    await userEvent.click(buttons[0])
   },
 
-  async undo() {
-    await userEvent.click(this.undoButton)
+  async incrementOpponentScore(gameNumber: number) {
+    const row = this.getGameRow(gameNumber)
+    const buttons = within(row).getAllByRole('button', { name: /increase score/i })
+    await userEvent.click(buttons[1])
+  },
+
+  async decrementOpponentScore(gameNumber: number) {
+    const row = this.getGameRow(gameNumber)
+    const buttons = within(row).getAllByRole('button', { name: /decrease score/i })
+    await userEvent.click(buttons[1])
   },
 
   async save() {
-    await userEvent.click(this.saveButton)
+    await userEvent.click(this.endMatchButton)
   },
 
   async goBack() {
@@ -130,11 +131,27 @@ export const matchScorePagePage = {
   },
 
   // Helpers
-  getPlayerScore() {
-    return this.playerPanel.querySelector('.text-7xl')?.textContent
+  getGameScores(gameNumber: number) {
+    const row = this.getGameRow(gameNumber)
+    const scores = within(row).getAllByText(/^\d+$/)
+    return {
+      player: parseInt(scores[0]?.textContent || '0', 10),
+      opponent: parseInt(scores[1]?.textContent || '0', 10),
+    }
   },
 
-  getOpponentScore() {
-    return this.opponentPanel.querySelector('.text-7xl')?.textContent
+  get matchCompleteMessage() {
+    return screen.queryByText(/wins!/i)
+  },
+
+  getMatchWins() {
+    // Find the .text-2xl elements in the match score header
+    const scores = screen.getAllByText(/^\d+$/).filter(
+      el => el.classList.contains('text-2xl')
+    )
+    return {
+      player: parseInt(scores[0]?.textContent || '0', 10),
+      opponent: parseInt(scores[1]?.textContent || '0', 10),
+    }
   },
 }
