@@ -26,19 +26,22 @@ const RecentsErrorCard: FC<RecentsErrorCardProps> = ({ onRetry, retryCount }) =>
   const subtitle =
     retryCount >= 3
       ? 'Check your connection or try again later.'
-      : 'You can still search for players or start a Quick Match.'
+      : 'Everything else still works.'
 
   return (
     <div className="mx-4 mt-2">
-      <div role="alert" className="alert alert-warning py-2 px-3">
-        <ExclamationTriangleIcon className="w-4 h-4 shrink-0" />
+      <div
+        role="alert"
+        className="flex items-start gap-3 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2"
+      >
+        <ExclamationTriangleIcon className="w-4 h-4 shrink-0 text-warning mt-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium leading-tight">{title}</p>
-          <p className="text-xs opacity-80 leading-tight">{subtitle}</p>
+          <p className="text-xs text-base-content/60 leading-tight mt-0.5">{subtitle}</p>
         </div>
         <button
           onClick={handleRetry}
-          className={`btn btn-outline btn-warning btn-xs ${isRetrying ? 'loading' : ''}`}
+          className={`btn btn-warning btn-xs ${isRetrying ? 'loading' : ''}`}
           disabled={isRetrying}
         >
           {isRetrying ? 'Retrying...' : 'Try again'}
