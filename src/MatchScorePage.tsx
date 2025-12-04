@@ -62,7 +62,7 @@ function MatchScorePage() {
     setCurrentGame({ player: 0, opponent: 0 })
   }
 
-  function handleEndMatch() {
+  function handleFinishMatch() {
     // TODO: Save match scores to IndexedDB and/or API
     navigate('/')
   }
@@ -99,9 +99,9 @@ function MatchScorePage() {
         </div>
       </div>
 
-      {/* Middle area - completed games history */}
-      <div className="flex-1 flex flex-col justify-center max-w-screen-sm mx-auto w-full px-4 pb-[280px]">
-        {completedGames.length > 0 ? (
+      {/* Middle area - completed games history (only shown when games exist) */}
+      <div className="flex-1 flex flex-col justify-end max-w-screen-sm mx-auto w-full px-4 pb-[260px]">
+        {completedGames.length > 0 && (
           <div className="text-center">
             {/* Match score summary */}
             <p className="text-lg font-semibold text-base-content mb-3">
@@ -126,10 +126,6 @@ function MatchScorePage() {
               ))}
             </div>
           </div>
-        ) : (
-          <div className="text-center text-base-content/40">
-            <p className="text-sm">Best of {matchLength}</p>
-          </div>
         )}
       </div>
 
@@ -146,7 +142,7 @@ function MatchScorePage() {
         onPlayerScoreChange={(delta) => handleScoreChange('player', delta)}
         onOpponentScoreChange={(delta) => handleScoreChange('opponent', delta)}
         onNextGame={handleNextGame}
-        onEndMatch={handleEndMatch}
+        onFinishMatch={handleFinishMatch}
       />
     </div>
   )

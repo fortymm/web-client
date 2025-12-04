@@ -15,7 +15,7 @@ interface RenderOptions {
   onPlayerScoreChange?: (delta: number) => void
   onOpponentScoreChange?: (delta: number) => void
   onNextGame?: () => void
-  onEndMatch?: () => void
+  onFinishMatch?: () => void
 }
 
 export const scoreCardPage = {
@@ -23,7 +23,7 @@ export const scoreCardPage = {
     const onPlayerScoreChange = options.onPlayerScoreChange ?? vi.fn()
     const onOpponentScoreChange = options.onOpponentScoreChange ?? vi.fn()
     const onNextGame = options.onNextGame ?? vi.fn()
-    const onEndMatch = options.onEndMatch ?? vi.fn()
+    const onFinishMatch = options.onFinishMatch ?? vi.fn()
 
     render(
       <ScoreCard
@@ -38,11 +38,11 @@ export const scoreCardPage = {
         onPlayerScoreChange={onPlayerScoreChange}
         onOpponentScoreChange={onOpponentScoreChange}
         onNextGame={onNextGame}
-        onEndMatch={onEndMatch}
+        onFinishMatch={onFinishMatch}
       />
     )
 
-    return { onPlayerScoreChange, onOpponentScoreChange, onNextGame, onEndMatch }
+    return { onPlayerScoreChange, onOpponentScoreChange, onNextGame, onFinishMatch }
   },
 
   // Card header elements
@@ -103,16 +103,8 @@ export const scoreCardPage = {
     return screen.queryByRole('button', { name: /save game & start next/i })
   },
 
-  get saveMatchButton() {
-    return screen.queryByRole('button', { name: /save match/i })
-  },
-
   get finishMatchButton() {
     return screen.queryByRole('button', { name: /save game & finish match/i })
-  },
-
-  get endMatchEarlyButton() {
-    return screen.queryByRole('button', { name: /end match early/i })
   },
 
   async addPlayerPoint() {
@@ -136,18 +128,8 @@ export const scoreCardPage = {
     if (btn) await userEvent.click(btn)
   },
 
-  async clickSaveMatch() {
-    const btn = this.saveMatchButton
-    if (btn) await userEvent.click(btn)
-  },
-
   async clickFinishMatch() {
     const btn = this.finishMatchButton
-    if (btn) await userEvent.click(btn)
-  },
-
-  async clickEndMatchEarly() {
-    const btn = this.endMatchEarlyButton
     if (btn) await userEvent.click(btn)
   },
 }

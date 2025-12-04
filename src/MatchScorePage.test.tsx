@@ -40,11 +40,6 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.opponentAddButton).toBeInTheDocument()
     })
 
-    it('displays end match early button', async () => {
-      await matchScorePagePage.render()
-      expect(matchScorePagePage.endMatchEarlyButton).toBeInTheDocument()
-    })
-
     it('uses match length from stored match', async () => {
       await matchScorePagePage.render({
         match: { matchLength: 7 },
@@ -120,7 +115,7 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.nextGameButton).toHaveTextContent('Save game & start next')
     })
 
-    it('disables scoring when game is complete', async () => {
+    it('keeps scoring enabled when game is complete', async () => {
       await matchScorePagePage.render()
 
       // Score 11-0
@@ -128,8 +123,8 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.playerAddButton).toBeDisabled()
-      expect(matchScorePagePage.opponentAddButton).toBeDisabled()
+      expect(matchScorePagePage.playerAddButton).not.toBeDisabled()
+      expect(matchScorePagePage.opponentAddButton).not.toBeDisabled()
     })
 
     it('advances to next game when button clicked', async () => {
@@ -232,7 +227,7 @@ describe('MatchScorePage', () => {
       expect(matchScorePagePage.gameCounter).toHaveTextContent('Match Complete')
     })
 
-    it('shows save match button when match complete', async () => {
+    it('shows finish match button when match complete', async () => {
       await matchScorePagePage.render({ match: { matchLength: 1 } })
 
       // Win 1 game (best of 1)
@@ -240,7 +235,7 @@ describe('MatchScorePage', () => {
         await matchScorePagePage.addPlayerPoint()
       }
 
-      expect(matchScorePagePage.saveMatchButton).toBeInTheDocument()
+      expect(matchScorePagePage.finishMatchButton).toBeInTheDocument()
     })
 
     it('shows match complete helper text', async () => {

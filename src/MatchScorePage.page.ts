@@ -137,12 +137,8 @@ export const matchScorePagePage = {
     return screen.queryByRole('button', { name: /save game & start next/i })
   },
 
-  get saveMatchButton() {
-    return screen.queryByRole('button', { name: /save match/i })
-  },
-
-  get endMatchEarlyButton() {
-    return screen.queryByRole('button', { name: /end match early/i })
+  get finishMatchButton() {
+    return screen.queryByRole('button', { name: /save game & finish match/i })
   },
 
   // Completed games badges
@@ -173,13 +169,8 @@ export const matchScorePagePage = {
     if (btn) await userEvent.click(btn)
   },
 
-  async clickSaveMatch() {
-    const btn = this.saveMatchButton
-    if (btn) await userEvent.click(btn)
-  },
-
-  async clickEndMatchEarly() {
-    const btn = this.endMatchEarlyButton
+  async clickFinishMatch() {
+    const btn = this.finishMatchButton
     if (btn) await userEvent.click(btn)
   },
 

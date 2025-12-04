@@ -74,10 +74,10 @@ describe('ScoreCard', () => {
       expect(scoreCardPage.playerDecrementButton).toBeDisabled()
     })
 
-    it('disables all scoring when game is complete', () => {
+    it('keeps scoring enabled when game is complete', () => {
       scoreCardPage.render({ isGameComplete: true })
-      expect(scoreCardPage.playerIncrementButton).toBeDisabled()
-      expect(scoreCardPage.opponentIncrementButton).toBeDisabled()
+      expect(scoreCardPage.playerIncrementButton).not.toBeDisabled()
+      expect(scoreCardPage.opponentIncrementButton).not.toBeDisabled()
     })
   })
 
@@ -124,11 +124,6 @@ describe('ScoreCard', () => {
       expect(onNextGame).toHaveBeenCalled()
     })
 
-    it('hides end match early button when game is complete', () => {
-      scoreCardPage.render({ isGameComplete: true })
-      expect(scoreCardPage.endMatchEarlyButton).not.toBeInTheDocument()
-    })
-
     it('shows finish match button on last game', () => {
       scoreCardPage.render({
         gameNumber: 5,
@@ -151,33 +146,21 @@ describe('ScoreCard', () => {
       expect(scoreCardPage.helperText).toHaveTextContent('Match complete – You win!')
     })
 
-    it('shows save match button when match is complete', () => {
+    it('shows finish match button when match is complete', () => {
       scoreCardPage.render({ isMatchComplete: true, isGameComplete: true })
-      expect(scoreCardPage.saveMatchButton).toBeInTheDocument()
+      expect(scoreCardPage.finishMatchButton).toBeInTheDocument()
     })
 
-    it('calls onEndMatch when save match clicked', async () => {
-      const { onEndMatch } = scoreCardPage.render({ isMatchComplete: true, isGameComplete: true })
-      await scoreCardPage.clickSaveMatch()
-      expect(onEndMatch).toHaveBeenCalled()
-    })
-  })
-
-  describe('end match early', () => {
-    it('shows end match early link during game', () => {
-      scoreCardPage.render()
-      expect(scoreCardPage.endMatchEarlyButton).toBeInTheDocument()
+    it('calls onFinishMatch when finish match clicked', async () => {
+      const { onFinishMatch } = scoreCardPage.render({ isMatchComplete: true, isGameComplete: true })
+      await scoreCardPage.clickFinishMatch()
+      expect(onFinishMatch).toHaveBeenCalled()
     })
 
-    it('calls onEndMatch when clicked', async () => {
-      const { onEndMatch } = scoreCardPage.render()
-      await scoreCardPage.clickEndMatchEarly()
-      expect(onEndMatch).toHaveBeenCalled()
-    })
-
-    it('is styled as a link (has underline)', () => {
-      scoreCardPage.render()
-      expect(scoreCardPage.endMatchEarlyButton).toHaveClass('underline')
+    it('keeps scoring enabled in match complete state', () => {
+      scoreCardPage.render({ isMatchComplete: true, isGameComplete: true })
+      expect(scoreCardPage.playerIncrementButton).not.toBeDisabled()
+      expect(scoreCardPage.opponentIncrementButton).not.toBeDisabled()
     })
   })
 })
