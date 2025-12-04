@@ -32,7 +32,7 @@ const RecentsErrorCard: FC<RecentsErrorCardProps> = ({ onRetry, retryCount }) =>
     <div className="mx-4 mt-2">
       <div
         role="alert"
-        className="flex items-center gap-3 rounded-md border border-warning/30 bg-warning/10 px-3 py-1.5"
+        className="flex items-center gap-3 rounded-md border border-warning/30 bg-warning/10 px-3 py-1"
       >
         <ExclamationTriangleIcon className="w-4 h-4 shrink-0 text-warning" />
         <div className="flex-1 min-w-0">
