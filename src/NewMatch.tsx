@@ -9,7 +9,7 @@ import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
-import { useDebounce } from './hooks/useDebounce'
+import { useDebounce } from '@uidotdev/usehooks'
 
 function NewMatch() {
   // UI state
