@@ -28,7 +28,7 @@ const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
   if (isInitialLoading) {
     return (
       <>
-        <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+        <SectionHeader title="RECENT OPPONENTS" isLoading={false} />
         <SkeletonRows count={6} />
       </>
     )
@@ -37,7 +37,7 @@ const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
   if (hasError) {
     return (
       <>
-        <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+        <SectionHeader title="RECENT OPPONENTS" isLoading={false} />
         <RecentsErrorCard onRetry={onRetry} retryCount={retryCount} />
       </>
     )
@@ -50,7 +50,7 @@ const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
   if (players.length === 0) {
     return (
       <>
-        <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+        <SectionHeader title="RECENT OPPONENTS" isLoading={false} />
         <div className="mx-4 rounded-lg border border-base-300 bg-base-200/30">
           <NoRecentsEmptyState />
         </div>
@@ -60,7 +60,7 @@ const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
 
   return (
     <>
-      <SectionHeader title="RECENT PLAYERS" isLoading={isRefetching} />
+      <SectionHeader title="RECENT OPPONENTS" isLoading={isRefetching} />
       <PlayerList
         players={players}
         context="recents"

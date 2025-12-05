@@ -81,7 +81,7 @@ export const recentPlayersPanelPage = {
 
   // Delegate to SectionHeader page object
   get header() {
-    return sectionHeaderPage.recentPlayersHeader
+    return sectionHeaderPage.recentOpponentsHeader
   },
 
   get loadingSpinner() {

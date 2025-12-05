@@ -24,11 +24,11 @@ describe('RecentPlayersPanel', () => {
   })
 
   describe('loaded state', () => {
-    it('shows header with RECENT PLAYERS title', () => {
+    it('shows header with RECENT OPPONENTS title', () => {
       recentPlayersPanelPage.render()
 
       expect(recentPlayersPanelPage.header).toBeInTheDocument()
-      expect(recentPlayersPanelPage.header).toHaveTextContent('RECENT PLAYERS')
+      expect(recentPlayersPanelPage.header).toHaveTextContent('RECENT OPPONENTS')
     })
 
     it('does not show skeleton rows when loaded', () => {
@@ -129,9 +129,7 @@ describe('RecentPlayersPanel', () => {
       expect(recentPlayersPanelPage.emptyState.title).toHaveTextContent(
         'Your recent opponents will appear here'
       )
-      expect(recentPlayersPanelPage.emptyState.subtitle).toHaveTextContent(
-        'After your first match, starting a rematch is just one tap.'
-      )
+      expect(recentPlayersPanelPage.emptyState.cta).toBeInTheDocument()
     })
 
     it('does not show player list when empty state is displayed', () => {

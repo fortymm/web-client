@@ -16,14 +16,6 @@ describe('NoRecentsEmptyState', () => {
       )
     })
 
-    it('renders the subtitle explaining the benefit', () => {
-      noRecentsEmptyStatePage.render()
-      expect(noRecentsEmptyStatePage.subtitle).toBeInTheDocument()
-      expect(noRecentsEmptyStatePage.subtitle).toHaveTextContent(
-        'After your first match, starting a rematch is just one tap.'
-      )
-    })
-
     it('renders the CTA pointing to Quick Match button', () => {
       noRecentsEmptyStatePage.render()
       expect(noRecentsEmptyStatePage.cta).toBeInTheDocument()
@@ -41,7 +33,7 @@ describe('NoRecentsEmptyState', () => {
 
     it('has compact vertical padding', () => {
       noRecentsEmptyStatePage.render()
-      expect(noRecentsEmptyStatePage.container).toHaveClass('py-6')
+      expect(noRecentsEmptyStatePage.container).toHaveClass('py-5')
     })
   })
 })

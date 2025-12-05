@@ -21,15 +21,11 @@ export const noRecentsEmptyStatePage = {
     })
   },
 
-  get subtitle() {
-    return screen.getByText('After your first match, starting a rematch is just one tap.')
-  },
-
   get cta() {
     return screen.getByText((_content, element) => {
       return (
         element?.tagName === 'P' &&
-        element.textContent === 'Tap Quick Match below to play your first game.'
+        element.textContent === 'To get started, tap Quick Match below.'
       )
     })
   },
