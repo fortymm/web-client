@@ -109,4 +109,45 @@ describe('RecentPlayersPanel', () => {
       expect(recentPlayersPanelPage.isShowingSkeleton).toBe(false)
     })
   })
+
+  describe('empty state', () => {
+    it('shows empty state when players array is empty', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.emptyState.title).toBeInTheDocument()
+    })
+
+    it('shows header when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.header).toBeInTheDocument()
+    })
+
+    it('displays correct empty state message', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.emptyState.title).toHaveTextContent('No recent players yet')
+      expect(recentPlayersPanelPage.emptyState.subtitle).toHaveTextContent(
+        'Start a Quick Match to play your first game'
+      )
+    })
+
+    it('does not show player list when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(screen.queryByTestId('player-list')).not.toBeInTheDocument()
+    })
+
+    it('does not show skeleton when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.isShowingSkeleton).toBe(false)
+    })
+
+    it('does not show error card when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    })
+  })
 })

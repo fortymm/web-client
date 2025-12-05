@@ -3,6 +3,7 @@ import SectionHeader from './SectionHeader'
 import SkeletonRows from './SkeletonRows'
 import PlayerList from './PlayerList'
 import RecentsErrorCard from './RecentsErrorCard'
+import NoRecentsEmptyState from './NoRecentsEmptyState'
 import { type RecentOpponent } from '../hooks/useRecentOpponents'
 
 export interface RecentPlayersPanelProps {
@@ -44,6 +45,15 @@ const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
 
   if (players === null) {
     return null
+  }
+
+  if (players.length === 0) {
+    return (
+      <>
+        <SectionHeader title="RECENT PLAYERS" isLoading={false} />
+        <NoRecentsEmptyState />
+      </>
+    )
   }
 
   return (

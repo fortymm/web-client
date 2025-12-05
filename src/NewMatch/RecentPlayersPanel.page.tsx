@@ -9,6 +9,7 @@ import { sectionHeaderPage } from './SectionHeader.page'
 import { skeletonRowsPage } from './SkeletonRows.page'
 import { playerListPage } from './PlayerList.page'
 import { recentsErrorCardPage } from './RecentsErrorCard.page'
+import { noRecentsEmptyStatePage } from './NoRecentsEmptyState.page'
 
 interface RenderOptions {
   isInitialLoading?: boolean
@@ -119,4 +120,7 @@ export const recentPlayersPanelPage = {
 
   // Delegate to RecentsErrorCard page object
   errorCard: recentsErrorCardPage,
+
+  // Delegate to NoRecentsEmptyState page object
+  emptyState: noRecentsEmptyStatePage,
 }
