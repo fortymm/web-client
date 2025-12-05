@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import NewMatchHero from './NewMatch/NewMatchHero'
 import NewMatchSearch from './NewMatch/NewMatchSearch'
 import NewMatchContent from './NewMatch/NewMatchContent'
@@ -12,10 +12,13 @@ import { useCreateMatch } from './NewMatch/useCreateMatch'
 import { useDebounce } from '@uidotdev/usehooks'
 
 function NewMatch() {
+  // URL state (source of truth for search query)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const queryParam = searchParams.get('q') ?? ''
+  const debouncedQuery = useDebounce(queryParam, 250)
+
   // UI state
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
-  const [inputQuery, setInputQuery] = useState('')
-  const debouncedQuery = useDebounce(inputQuery, 250)
   const [retryCount, setRetryCount] = useState(0)
   const navigate = useNavigate()
 
@@ -28,14 +31,28 @@ function NewMatch() {
   // Derived state for recents
   const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
 
-  // Mode derived from debounced query
-  const mode = debouncedQuery.trim() === '' ? 'recents' : 'search'
+  // Mode: show recents immediately when cleared, otherwise wait for debounce
+  // (Initial load works because useDebounce returns initial value immediately)
+  const mode =
+    queryParam.trim() === ''
+      ? 'recents'
+      : debouncedQuery.trim() !== ''
+        ? 'search'
+        : 'recents'
 
   // Error state (initial load failed, no cached data)
   const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
 
+  const handleSearchChange = (value: string) => {
+    if (value) {
+      setSearchParams({ q: value }, { replace: true })
+    } else {
+      setSearchParams({}, { replace: true })
+    }
+  }
+
   const handleClear = () => {
-    setInputQuery('')
+    setSearchParams({}, { replace: true })
   }
 
   const handleCreateMatch = (opponentId: string | null) => {
@@ -81,8 +98,8 @@ function NewMatch() {
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
         <NewMatchHero hasRecentPlayers={hasRecentsData} />
         <NewMatchSearch
-          value={inputQuery}
-          onChange={setInputQuery}
+          value={queryParam}
+          onChange={handleSearchChange}
           onClear={handleClear}
         />
         <NewMatchContent>
