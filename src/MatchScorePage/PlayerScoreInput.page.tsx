@@ -45,22 +45,6 @@ export const playerScoreInputPage = {
     return screen.getByLabelText(playerName)
   },
 
-  get decrementButton() {
-    return screen.getByRole('button', { name: /decrease/i })
-  },
-
-  get incrementButton() {
-    return screen.getByRole('button', { name: /increase/i })
-  },
-
-  getDecrementButtonFor(playerName: string) {
-    return screen.getByRole('button', { name: `Decrease ${playerName} score` })
-  },
-
-  getIncrementButtonFor(playerName: string) {
-    return screen.getByRole('button', { name: `Increase ${playerName} score` })
-  },
-
   get errorMessage() {
     return screen.queryByRole('paragraph')
   },
@@ -70,11 +54,7 @@ export const playerScoreInputPage = {
     await userEvent.type(this.input, score)
   },
 
-  async clickIncrement() {
-    await userEvent.click(this.incrementButton)
-  },
-
-  async clickDecrement() {
-    await userEvent.click(this.decrementButton)
+  async clickInput() {
+    await userEvent.click(this.input)
   },
 }

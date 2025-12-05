@@ -1,4 +1,4 @@
-import { type FC, type ChangeEvent } from 'react'
+import { type FC, type ChangeEvent, useRef } from 'react'
 
 interface PlayerScoreInputProps {
   playerName: string
@@ -18,68 +18,49 @@ const PlayerScoreInput: FC<PlayerScoreInputProps> = ({
   disabled = false,
 }) => {
   const inputId = `score-${playerId}`
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.replace(/[^0-9]/g, '')
     onChange(newValue)
   }
 
-  const handleIncrement = () => {
-    const current = parseInt(value, 10) || 0
-    onChange(String(current + 1))
-  }
-
-  const handleDecrement = () => {
-    const current = parseInt(value, 10) || 0
-    if (current > 0) {
-      onChange(String(current - 1))
-    }
+  const handleContainerClick = () => {
+    inputRef.current?.focus()
+    inputRef.current?.select()
   }
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between gap-4">
+      <div
+        className={`flex items-center justify-between gap-4 p-3 -m-3 rounded-lg cursor-text ${
+          disabled ? '' : 'hover:bg-base-300/30 active:bg-base-300/50'
+        }`}
+        onClick={handleContainerClick}
+      >
         <label
           htmlFor={inputId}
-          className="text-base font-medium text-base-content flex-1 min-w-0 truncate"
+          className="text-base font-medium text-base-content flex-1 min-w-0 truncate cursor-text"
         >
           {playerName}
         </label>
-        <div className="flex items-center gap-0.5">
-          <button
-            type="button"
-            className="btn btn-ghost btn-square min-h-[48px] min-w-[48px] text-xl"
-            onClick={handleDecrement}
-            disabled={disabled || parseInt(value, 10) <= 0}
-            aria-label={`Decrease ${playerName} score`}
-          >
-            −
-          </button>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            id={inputId}
-            name={inputId}
-            value={value}
-            onChange={handleChange}
-            disabled={disabled}
-            className={`input input-bordered w-18 h-14 text-center text-2xl font-semibold ${
-              error ? 'input-error' : ''
-            }`}
-            aria-describedby={error ? `${inputId}-error` : undefined}
-            aria-invalid={error ? 'true' : undefined}
-          />
-          <button
-            type="button"
-            className="btn btn-ghost btn-square min-h-[48px] min-w-[48px] text-xl"
-            onClick={handleIncrement}
-            disabled={disabled}
-            aria-label={`Increase ${playerName} score`}
-          >
-            +
-          </button>
-        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          id={inputId}
+          name={inputId}
+          value={value}
+          placeholder="0"
+          onChange={handleChange}
+          disabled={disabled}
+          className={`input input-bordered w-20 h-14 text-center text-3xl font-bold ${
+            error ? 'input-error' : ''
+          }`}
+          aria-describedby={error ? `${inputId}-error` : undefined}
+          aria-invalid={error ? 'true' : undefined}
+        />
       </div>
       {error && (
         <p id={`${inputId}-error`} className="text-error text-sm text-right">

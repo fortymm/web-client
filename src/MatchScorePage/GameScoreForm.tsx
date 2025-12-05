@@ -116,11 +116,11 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
     : `Game ${gameNumber}`
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8 pb-24">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 pb-40">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-xl font-semibold">Enter score</h2>
-        <p className="text-sm text-base-content/60 mt-2">
+        <p className="text-sm text-base-content/60 mt-1">
           {gameContext} · {player1.name} vs {player2.name}
         </p>
       </div>
@@ -131,7 +131,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
           hasError ? 'border-error/50' : 'border-base-300'
         }`}
       >
-        <div className="card-body p-4 gap-4">
+        <div className="card-body p-4 gap-3">
           <span className="text-xs font-medium text-base-content/50 tracking-wide">
             Game score
           </span>
@@ -144,7 +144,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               error={errors.score1}
               disabled={disabled}
             />
-            <div className="divider my-2" />
+            <div className="divider my-1" />
             <PlayerScoreInput
               playerName={player2.name}
               playerId={player2.id}
@@ -154,14 +154,14 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               disabled={disabled}
             />
           </div>
-          <p className="text-[11px] text-base-content/40 text-center mt-1">
+          <p className="text-[11px] text-base-content/40 text-center">
             Default: first to 11, win by 2. You can override if needed.
           </p>
         </div>
       </div>
 
-      {/* Winner summary / validation feedback - reserve space */}
-      <div className="min-h-[72px]">
+      {/* Winner summary / validation feedback */}
+      <div className="min-h-[56px]">
         <WinnerSummary
           player1={player1}
           player2={player2}
