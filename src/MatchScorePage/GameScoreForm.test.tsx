@@ -19,12 +19,6 @@ describe('GameScoreForm', () => {
       expect(gameScoreFormPage.subtitle).toHaveTextContent('Game 2 · Alice vs Bob')
     })
 
-    it('displays the game score label', () => {
-      gameScoreFormPage.render()
-
-      expect(gameScoreFormPage.scoreLabel).toBeInTheDocument()
-    })
-
     it('displays rules hint', () => {
       gameScoreFormPage.render()
 

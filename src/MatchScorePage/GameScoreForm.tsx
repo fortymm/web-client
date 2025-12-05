@@ -127,15 +127,12 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
 
       {/* Score inputs card */}
       <div
-        className={`card bg-base-200/50 border transition-colors ${
+        className={`card bg-base-200/50 border transition-colors -mt-2 ${
           hasError ? 'border-error/50' : 'border-base-300'
         }`}
       >
         <div className="card-body p-4 gap-3">
-          <span className="text-xs font-medium text-base-content/50 tracking-wide">
-            Game score
-          </span>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <PlayerScoreInput
               playerName={player1.name}
               playerId={player1.id}
@@ -144,7 +141,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               error={errors.score1}
               disabled={disabled}
             />
-            <div className="divider my-1" />
+            <div className="divider my-2" />
             <PlayerScoreInput
               playerName={player2.name}
               playerId={player2.id}

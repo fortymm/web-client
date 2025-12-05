@@ -59,10 +59,6 @@ export const gameScoreFormPage = {
     return screen.getByText(new RegExp(`game ${gameNumber} ·`, 'i'))
   },
 
-  get scoreLabel() {
-    return screen.getByText(/game score/i)
-  },
-
   get rulesHint() {
     return screen.getByText(/first to 11/i)
   },
