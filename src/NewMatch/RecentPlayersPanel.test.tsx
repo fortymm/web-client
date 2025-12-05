@@ -126,9 +126,11 @@ describe('RecentPlayersPanel', () => {
     it('displays correct empty state message', () => {
       recentPlayersPanelPage.render({ players: [] })
 
-      expect(recentPlayersPanelPage.emptyState.title).toHaveTextContent('No recent players yet')
+      expect(recentPlayersPanelPage.emptyState.title).toHaveTextContent(
+        'Your recent opponents will appear here'
+      )
       expect(recentPlayersPanelPage.emptyState.subtitle).toHaveTextContent(
-        'Start a Quick Match to play your first game'
+        'After your first match, starting a rematch is just one tap.'
       )
     })
 

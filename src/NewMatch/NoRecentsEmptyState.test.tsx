@@ -8,17 +8,19 @@ describe('NoRecentsEmptyState', () => {
       expect(noRecentsEmptyStatePage.emoji).toBeInTheDocument()
     })
 
-    it('renders the title', () => {
+    it('renders the title explaining future value', () => {
       noRecentsEmptyStatePage.render()
       expect(noRecentsEmptyStatePage.title).toBeInTheDocument()
-      expect(noRecentsEmptyStatePage.title).toHaveTextContent('No recent players yet')
+      expect(noRecentsEmptyStatePage.title).toHaveTextContent(
+        'Your recent opponents will appear here'
+      )
     })
 
-    it('renders the subtitle with guidance to use Quick Match', () => {
+    it('renders the subtitle explaining the benefit', () => {
       noRecentsEmptyStatePage.render()
       expect(noRecentsEmptyStatePage.subtitle).toBeInTheDocument()
       expect(noRecentsEmptyStatePage.subtitle).toHaveTextContent(
-        'Start a Quick Match to play your first game'
+        'After your first match, starting a rematch is just one tap.'
       )
     })
 
@@ -27,9 +29,9 @@ describe('NoRecentsEmptyState', () => {
       expect(noRecentsEmptyStatePage.container).toHaveClass('text-center')
     })
 
-    it('has appropriate vertical padding', () => {
+    it('has compact vertical padding', () => {
       noRecentsEmptyStatePage.render()
-      expect(noRecentsEmptyStatePage.container).toHaveClass('py-12')
+      expect(noRecentsEmptyStatePage.container).toHaveClass('py-6')
     })
   })
 })

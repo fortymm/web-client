@@ -15,10 +15,13 @@ export const noRecentsEmptyStatePage = {
   },
 
   get title() {
-    return screen.getByRole('heading', { level: 3, name: 'No recent players yet' })
+    return screen.getByRole('heading', {
+      level: 3,
+      name: 'Your recent opponents will appear here',
+    })
   },
 
   get subtitle() {
-    return screen.getByText('Start a Quick Match to play your first game')
+    return screen.getByText('After your first match, starting a rematch is just one tap.')
   },
 }
