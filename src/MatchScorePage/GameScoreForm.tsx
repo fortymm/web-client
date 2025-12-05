@@ -15,6 +15,7 @@ interface GameScore {
 
 interface GameScoreFormProps {
   gameNumber: number
+  totalGames?: number
   player1: Player
   player2: Player
   onSave: (score: GameScore) => void
@@ -49,7 +50,7 @@ function validateForm(
   const num2 = parseInt(score2, 10)
 
   if (num1 === num2) {
-    errors.general = 'Scores cannot be tied. Enter a winner.'
+    errors.general = 'Game scores must have a winner. Adjust one of the scores.'
     return { valid: false, errors }
   }
 
@@ -58,6 +59,7 @@ function validateForm(
 
 const GameScoreForm: FC<GameScoreFormProps> = ({
   gameNumber,
+  totalGames,
   player1,
   player2,
   onSave,
@@ -105,24 +107,35 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
   }
 
   const canSubmit = score1 !== '' && score2 !== ''
+  const isTied = score1 !== '' && score2 !== '' && score1 === score2
+  const hasError = errors.general || isTied
+
+  // Build context string
+  const gameContext = totalGames
+    ? `Game ${gameNumber} of ${totalGames}`
+    : `Game ${gameNumber}`
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-xl font-semibold">Enter score</h2>
-        <p className="text-sm text-base-content/60 mt-1">
-          Game {gameNumber} · {player1.name} vs {player2.name}
+        <p className="text-sm text-base-content/60 mt-2">
+          {gameContext} · {player1.name} vs {player2.name}
         </p>
       </div>
 
       {/* Score inputs card */}
-      <div className="card bg-base-200/50 border border-base-300">
+      <div
+        className={`card bg-base-200/50 border transition-colors ${
+          hasError ? 'border-error/50' : 'border-base-300'
+        }`}
+      >
         <div className="card-body p-4 gap-4">
-          <span className="text-xs font-medium text-base-content/50 uppercase tracking-wide">
+          <span className="text-xs font-medium text-base-content/50 tracking-wide">
             Game score
           </span>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col">
             <PlayerScoreInput
               playerName={player1.name}
               playerId={player1.id}
@@ -131,6 +144,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               error={errors.score1}
               disabled={disabled}
             />
+            <div className="divider my-2" />
             <PlayerScoreInput
               playerName={player2.name}
               playerId={player2.id}
@@ -140,35 +154,38 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               disabled={disabled}
             />
           </div>
-          <p className="text-xs text-base-content/50 text-center mt-2">
-            First to 11, win by 2. You can override if needed.
+          <p className="text-[11px] text-base-content/40 text-center mt-1">
+            Default: first to 11, win by 2. You can override if needed.
           </p>
         </div>
       </div>
 
-      {/* Winner summary */}
-      <WinnerSummary
-        player1={player1}
-        player2={player2}
-        score1={score1}
-        score2={score2}
-      />
-
-      {/* General error */}
-      {errors.general && (
-        <p className="text-error text-sm text-center" role="alert">
-          {errors.general}
-        </p>
-      )}
+      {/* Winner summary / validation feedback - reserve space */}
+      <div className="min-h-[72px]">
+        <WinnerSummary
+          player1={player1}
+          player2={player2}
+          score1={score1}
+          score2={score2}
+        />
+        {errors.general && !isTied && (
+          <div
+            className="bg-error/10 border border-error/20 rounded-lg p-3 text-center"
+            role="alert"
+          >
+            <p className="text-error text-sm font-medium">{errors.general}</p>
+          </div>
+        )}
+      </div>
 
       {/* Actions */}
-      <div className="flex flex-col gap-3 mt-2">
+      <div className="flex flex-col gap-4 pb-4">
         <button
           type="submit"
           className="btn btn-primary btn-block h-12"
           disabled={disabled || !canSubmit}
         >
-          Save game
+          Save score
         </button>
         <button
           type="button"

@@ -69,7 +69,7 @@ const WinnerSummary: FC<WinnerSummaryProps> = ({
         role="alert"
       >
         <p className="text-error text-sm font-medium">
-          Score cannot be tied. Adjust the scores.
+          Game scores must have a winner. Adjust one of the scores.
         </p>
       </div>
     )

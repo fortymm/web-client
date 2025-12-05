@@ -28,7 +28,7 @@ describe('GameScoreForm', () => {
     it('displays rules hint', () => {
       gameScoreFormPage.render()
 
-      expect(gameScoreFormPage.rulesHint).toHaveTextContent('First to 11, win by 2')
+      expect(gameScoreFormPage.rulesHint).toHaveTextContent('Default: first to 11, win by 2')
     })
 
     it('displays score inputs for both players', () => {
@@ -101,7 +101,7 @@ describe('GameScoreForm', () => {
       await gameScoreFormPage.enterScore('Bob', '11')
       await gameScoreFormPage.clickSave()
 
-      expect(gameScoreFormPage.formError).toHaveTextContent('Scores cannot be tied')
+      expect(gameScoreFormPage.formError).toHaveTextContent('Game scores must have a winner')
     })
   })
 

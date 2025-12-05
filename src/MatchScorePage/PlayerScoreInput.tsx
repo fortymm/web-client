@@ -45,15 +45,15 @@ const PlayerScoreInput: FC<PlayerScoreInputProps> = ({
         >
           {playerName}
         </label>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <button
             type="button"
-            className="btn btn-ghost btn-sm btn-square min-h-[44px] min-w-[44px]"
+            className="btn btn-ghost btn-square min-h-[48px] min-w-[48px] text-xl"
             onClick={handleDecrement}
             disabled={disabled || parseInt(value, 10) <= 0}
             aria-label={`Decrease ${playerName} score`}
           >
-            <span className="text-lg">−</span>
+            −
           </button>
           <input
             type="text"
@@ -64,7 +64,7 @@ const PlayerScoreInput: FC<PlayerScoreInputProps> = ({
             value={value}
             onChange={handleChange}
             disabled={disabled}
-            className={`input input-bordered w-16 h-12 text-center text-lg font-semibold ${
+            className={`input input-bordered w-18 h-14 text-center text-2xl font-semibold ${
               error ? 'input-error' : ''
             }`}
             aria-describedby={error ? `${inputId}-error` : undefined}
@@ -72,12 +72,12 @@ const PlayerScoreInput: FC<PlayerScoreInputProps> = ({
           />
           <button
             type="button"
-            className="btn btn-ghost btn-sm btn-square min-h-[44px] min-w-[44px]"
+            className="btn btn-ghost btn-square min-h-[48px] min-w-[48px] text-xl"
             onClick={handleIncrement}
             disabled={disabled}
             aria-label={`Increase ${playerName} score`}
           >
-            <span className="text-lg">+</span>
+            +
           </button>
         </div>
       </div>

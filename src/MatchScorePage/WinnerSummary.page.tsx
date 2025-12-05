@@ -56,6 +56,6 @@ export const winnerSummaryPage = {
   },
 
   get tiedError() {
-    return screen.queryByText(/cannot be tied/i)
+    return screen.queryByText(/must have a winner/i)
   },
 }

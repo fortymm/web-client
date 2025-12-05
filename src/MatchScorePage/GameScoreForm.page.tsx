@@ -68,7 +68,7 @@ export const gameScoreFormPage = {
   },
 
   get saveButton() {
-    return screen.getByRole('button', { name: /save game/i })
+    return screen.getByRole('button', { name: /save score/i })
   },
 
   get cancelButton() {
@@ -80,7 +80,7 @@ export const gameScoreFormPage = {
   },
 
   get formError() {
-    return screen.queryByText(/scores cannot be tied\. enter a winner/i)
+    return screen.queryByText(/game scores must have a winner/i)
   },
 
   // Delegate to child page objects
