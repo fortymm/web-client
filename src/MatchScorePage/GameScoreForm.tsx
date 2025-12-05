@@ -1,4 +1,5 @@
 import { type FC, useState } from 'react'
+import CTAPanel from '../CTAPanel'
 import PlayerScoreInput from './PlayerScoreInput'
 import WinnerSummary from './WinnerSummary'
 
@@ -176,18 +177,15 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
         )}
       </div>
 
-      {/* Sticky CTA Panel */}
-      <div className="fixed bottom-0 left-0 right-0 bg-base-100 border-t border-base-300 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-        <div className="container mx-auto max-w-md">
-          <button
-            type="submit"
-            className="btn btn-primary btn-block h-12"
-            disabled={disabled || !canSubmit}
-          >
-            Save score
-          </button>
-        </div>
-      </div>
+      <CTAPanel>
+        <button
+          type="submit"
+          className="btn btn-primary btn-block h-12"
+          disabled={disabled || !canSubmit}
+        >
+          Save score
+        </button>
+      </CTAPanel>
     </form>
   )
 }
