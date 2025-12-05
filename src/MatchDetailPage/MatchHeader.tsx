@@ -25,22 +25,11 @@ function getTitle(participants: MatchDetails['participants']): string {
 }
 
 function getSubtitle(
-  context: ContextEntity[],
   matchLength: MatchDetails['matchLength'],
   format: MatchDetails['format']
 ): string {
-  const parts: string[] = []
-
-  // Add primary context (tournament/league name)
-  const primaryContext = context[0]
-  if (primaryContext) {
-    parts.push(primaryContext.name)
-  }
-
-  parts.push(`Best of ${matchLength}`)
-  parts.push(format === 'singles' ? 'Singles' : 'Doubles')
-
-  return parts.join(' · ')
+  // Simplified subtitle - no context name to avoid duplication with breadcrumb/Related card
+  return `Best of ${matchLength} · ${format === 'singles' ? 'Singles' : 'Doubles'}`
 }
 
 function getStatusClasses(status: MatchStatus): string {
@@ -92,7 +81,7 @@ const MatchHeader: FC<MatchHeaderProps> = ({
   matchId,
 }) => {
   const title = getTitle(participants)
-  const subtitle = getSubtitle(context, matchLength, format)
+  const subtitle = getSubtitle(matchLength, format)
   const actionLabel = getPrimaryActionLabel(status)
   const { canStart, reason } = canStartScoring(status, participants)
 
@@ -100,8 +89,8 @@ const MatchHeader: FC<MatchHeaderProps> = ({
   const backContext = context[0]
 
   return (
-    <div className="space-y-3" data-testid="match-header">
-      {/* Back link - mobile friendly */}
+    <div className="space-y-2" data-testid="match-header">
+      {/* Back link - simplified to just "Back" */}
       {backContext && (
         <Link
           to={backContext.url}
@@ -117,7 +106,7 @@ const MatchHeader: FC<MatchHeaderProps> = ({
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          <span>{backContext.name}</span>
+          <span>Back</span>
         </Link>
       )}
 
@@ -127,8 +116,8 @@ const MatchHeader: FC<MatchHeaderProps> = ({
         <p className="text-sm text-base-content/50 mt-0.5">{subtitle}</p>
       </div>
 
-      {/* Chip row */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Chip row - more space above, less below */}
+      <div className="flex flex-wrap items-center gap-2 pt-1">
         <span className="badge badge-outline text-xs">
           Best of {matchLength}
         </span>
@@ -145,18 +134,18 @@ const MatchHeader: FC<MatchHeaderProps> = ({
         </span>
       </div>
 
-      {/* Primary action */}
-      <div className="pt-3">
+      {/* Primary action - tighter connection to chips */}
+      <div className="pt-1">
         <Link
           to={canStart ? `/matches/${matchId}/score` : '#'}
-          className={`btn btn-primary rounded-xl ${!canStart ? 'btn-disabled opacity-50' : ''}`}
+          className={`btn btn-primary rounded-xl ${!canStart ? 'btn-disabled opacity-60 border border-base-300' : ''}`}
           aria-disabled={!canStart}
           onClick={(e) => !canStart && e.preventDefault()}
         >
           {actionLabel}
         </Link>
         {reason && (
-          <p className="text-xs text-base-content/50 mt-2">{reason}</p>
+          <p className="text-xs text-base-content/50 mt-1">{reason}</p>
         )}
       </div>
     </div>

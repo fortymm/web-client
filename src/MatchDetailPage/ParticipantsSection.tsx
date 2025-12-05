@@ -48,7 +48,9 @@ const ParticipantRow: FC<ParticipantRowProps> = ({
           <p className={`font-medium ${onAssign ? 'text-primary' : 'text-base-content/50'}`}>
             {onAssign ? 'Assign opponent' : 'Opponent TBD'}
           </p>
-          <p className="text-xs text-base-content/50">No opponent assigned yet</p>
+          <p className="text-xs text-base-content/50">
+            {onAssign ? 'Tap to assign an opponent' : 'No opponent assigned yet'}
+          </p>
         </div>
 
         {/* Chevron - only show when actionable */}
@@ -128,10 +130,11 @@ const ParticipantRow: FC<ParticipantRowProps> = ({
           )}
         </div>
 
-        {/* Rating */}
+        {/* Rating - formatted as "Rating · 1,850" */}
         {rating !== null && (
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-xs text-base-content/50">{rating.toLocaleString()} rating</span>
+          <div className="flex items-center gap-1 mt-0.5">
+            <span className="text-xs text-base-content/40">Rating ·</span>
+            <span className="text-xs text-base-content/60">{rating.toLocaleString()}</span>
             {ratingChange !== null && (
               <span
                 className={`text-xs font-medium ${
@@ -180,18 +183,18 @@ const ParticipantsSection: FC<ParticipantsSectionProps> = ({
             onAssign={participant1.isPlaceholder ? onAssignOpponent : undefined}
           />
 
-          {/* VS divider */}
+          {/* VS divider - reduced line opacity */}
           <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-base-300" />
+            <div className="flex-1 h-px bg-base-300/50" />
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-base-content/40 uppercase">vs</span>
+              <span className="text-xs font-semibold text-base-content/30 uppercase">vs</span>
               {isCompleted && finalScore && (
                 <span className="badge badge-sm badge-neutral">
                   {finalScore[0]}–{finalScore[1]}
                 </span>
               )}
             </div>
-            <div className="flex-1 h-px bg-base-300" />
+            <div className="flex-1 h-px bg-base-300/50" />
           </div>
 
           {/* Player 2 */}

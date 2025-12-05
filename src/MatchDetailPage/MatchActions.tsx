@@ -43,6 +43,12 @@ const ChevronDownIcon: FC<{ className?: string }> = ({ className = 'h-4 w-4' }) 
   </svg>
 )
 
+const ChevronRightIcon: FC<{ className?: string }> = ({ className = 'h-4 w-4' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
+)
+
 interface ActionButtonProps {
   onClick: () => void
   icon: React.ReactNode
@@ -57,14 +63,21 @@ const ActionButton: FC<ActionButtonProps> = ({ onClick, icon, label, variant = '
     danger: 'text-error hover:bg-error/10',
   }
 
+  const iconColorClasses = {
+    default: 'text-base-content/60',
+    warning: 'text-warning/60',
+    danger: 'text-error/60',
+  }
+
   return (
     <button
       type="button"
       onClick={onClick}
       className={`flex items-center gap-2 w-full py-2 px-2 -mx-2 rounded-lg text-sm text-left transition-colors ${variantClasses[variant]}`}
     >
-      <span className="text-base-content/60">{icon}</span>
-      <span>{label}</span>
+      <span className={iconColorClasses[variant]}>{icon}</span>
+      <span className="flex-1">{label}</span>
+      <ChevronRightIcon className="h-4 w-4 text-base-content/30" />
     </button>
   )
 }
@@ -113,7 +126,7 @@ const MatchActions: FC<MatchActionsProps> = ({ permissions }) => {
 
       {/* Danger zone */}
       {hasDangerActions && (
-        <div className="card bg-base-200 rounded-2xl p-4">
+        <div className="card bg-error/5 border border-error/10 rounded-2xl p-4">
           <button
             type="button"
             onClick={() => setShowDangerZone(!showDangerZone)}
@@ -121,16 +134,16 @@ const MatchActions: FC<MatchActionsProps> = ({ permissions }) => {
             aria-expanded={showDangerZone}
             data-testid="danger-zone-toggle"
           >
-            <h3 className="text-xs font-semibold text-base-content/50 uppercase tracking-wide">
+            <h3 className="text-xs font-semibold text-error/60 uppercase tracking-wide">
               Danger zone
             </h3>
             <ChevronDownIcon
-              className={`h-4 w-4 text-base-content/40 transition-transform ${showDangerZone ? 'rotate-180' : ''}`}
+              className={`h-4 w-4 text-error/40 transition-transform ${showDangerZone ? 'rotate-180' : ''}`}
             />
           </button>
 
           {showDangerZone && (
-            <div className="mt-3 pt-3 border-t border-base-300 -my-1" data-testid="danger-zone-content">
+            <div className="mt-3 pt-3 border-t border-error/10 -my-1" data-testid="danger-zone-content">
               {permissions.canMarkNoShow && (
                 <ActionButton
                   onClick={() => handleAction('Mark no-show')}

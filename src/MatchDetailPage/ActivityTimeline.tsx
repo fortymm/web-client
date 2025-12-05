@@ -1,5 +1,5 @@
 import { type FC } from 'react'
-import { format, parseISO, formatDistanceToNow, isToday, isYesterday } from 'date-fns'
+import { format, parseISO, formatDistanceToNow } from 'date-fns'
 import { type ActivityItem } from './mockMatchDetails'
 
 export interface ActivityTimelineProps {
@@ -85,27 +85,14 @@ function getActivityIconConfig(type: ActivityItem['type']): IconConfig {
 function formatActivityTime(isoString: string): string {
   const date = parseISO(isoString)
   const now = new Date()
-  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+  const diffInDays = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
 
-  // Within the last 24 hours, show relative time
-  if (diffInHours < 24) {
+  // Within the last 7 days, always use relative time with "ago" suffix
+  if (diffInDays < 7) {
     return formatDistanceToNow(date, { addSuffix: true })
   }
 
-  // Today or yesterday
-  if (isToday(date)) {
-    return `Today at ${format(date, 'h:mm a')}`
-  }
-  if (isYesterday(date)) {
-    return `Yesterday at ${format(date, 'h:mm a')}`
-  }
-
-  // Within the last week, show day name
-  if (diffInHours < 168) {
-    return format(date, "EEEE 'at' h:mm a")
-  }
-
-  // Otherwise show date
+  // Older than a week, show date
   return format(date, 'MMM d, h:mm a')
 }
 
