@@ -26,7 +26,7 @@ export const noRecentsEmptyStatePage = {
   },
 
   get cta() {
-    return screen.getByText((content, element) => {
+    return screen.getByText((_content, element) => {
       return (
         element?.tagName === 'P' &&
         element.textContent === 'Tap Quick Match below to play your first game.'

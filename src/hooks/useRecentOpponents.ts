@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { useQuery, type QueryObserverResult } from '@tanstack/react-query'
-// import { api } from '../lib/api' // Temporarily disabled for FM-205
+import { api } from '../lib/api'
 
 const ENDPOINT = '/users/me/recent-opponents'
 
@@ -48,8 +48,11 @@ export function useRecentOpponents(): UseRecentOpponentsReturn {
   const query = useQuery({
     queryKey: ['recent-opponents'],
     queryFn: async () => {
-      // Hard coded to return empty list for FM-205
-      return [] as RecentOpponent[]
+      const response = await api.get<RecentOpponentsResponse>(ENDPOINT, {
+        params: { limit: 50 },
+      })
+      const validated = recentOpponentsResponseSchema.parse(response.data)
+      return validated.opponents
     },
     staleTime: 1000 * 60, // 1 minute
     gcTime: 1000 * 60 * 5, // 5 minutes (cache time)
