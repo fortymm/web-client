@@ -36,9 +36,27 @@ export const newMatchPage = {
     return newMatchHeroPage.description
   },
 
-  // Search section
+  // Search section - delegate to child page object
+  search: newMatchSearchPage,
+
+  get searchInput() {
+    return newMatchSearchPage.input
+  },
+
   get searchPlaceholder() {
     return newMatchSearchPage.placeholder
+  },
+
+  querySearchClearButton() {
+    return newMatchSearchPage.queryClearButton()
+  },
+
+  async typeInSearch(text: string) {
+    await newMatchSearchPage.type(text)
+  },
+
+  async clearSearch() {
+    await newMatchSearchPage.clear()
   },
 
   // Recent players panel - delegate to child page object

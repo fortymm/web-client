@@ -9,12 +9,13 @@ import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
+import { useDebounce } from './hooks/useDebounce'
 
 function NewMatch() {
   // UI state
   const [matchLength, setMatchLength] = useState<MatchLength>(5)
   const [inputQuery, setInputQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
+  const debouncedQuery = useDebounce(inputQuery, 250)
   const [retryCount, setRetryCount] = useState(0)
   const navigate = useNavigate()
 
@@ -33,10 +34,9 @@ function NewMatch() {
   // Error state (initial load failed, no cached data)
   const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
 
-  // Expose state for future integration (FM-301, FM-302)
-  void inputQuery
-  void setInputQuery
-  void setDebouncedQuery
+  const handleClear = () => {
+    setInputQuery('')
+  }
 
   const handleCreateMatch = (opponentId: string | null) => {
     const id = crypto.randomUUID()
@@ -80,7 +80,11 @@ function NewMatch() {
       {/* Main Content Wrapper */}
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
         <NewMatchHero hasRecentPlayers={hasRecentsData} />
-        <NewMatchSearch />
+        <NewMatchSearch
+          value={inputQuery}
+          onChange={setInputQuery}
+          onClear={handleClear}
+        />
         <NewMatchContent>
           {mode === 'recents' && (
             <RecentPlayersPanel
