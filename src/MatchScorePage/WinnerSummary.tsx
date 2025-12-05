@@ -59,7 +59,13 @@ const WinnerSummary: FC<WinnerSummaryProps> = ({
   const result = validateScores(player1, player2, score1, score2)
 
   if (result.status === 'empty') {
-    return null
+    return (
+      <div className="border border-dashed border-base-300 rounded-lg p-3 text-center">
+        <p className="text-xs text-base-content/30">
+          Winner will appear here
+        </p>
+      </div>
+    )
   }
 
   if (result.status === 'tied') {

@@ -127,11 +127,12 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
 
       {/* Score inputs card */}
       <div
-        className={`card bg-base-200/50 border transition-colors -mt-2 ${
+        className={`card bg-base-200/50 border transition-colors -mt-1 ${
           hasError ? 'border-error/50' : 'border-base-300'
         }`}
       >
         <div className="card-body p-4 gap-3">
+          <span className="text-xs text-base-content/50">Game score</span>
           <div className="flex flex-col gap-1">
             <PlayerScoreInput
               playerName={player1.name}
@@ -151,8 +152,8 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               disabled={disabled}
             />
           </div>
-          <p className="text-[11px] text-base-content/40 text-center">
-            Default: first to 11, win by 2. You can override if needed.
+          <p className="text-[10px] text-base-content/30 text-center">
+            First to 11, win by 2. You can override if needed.
           </p>
         </div>
       </div>

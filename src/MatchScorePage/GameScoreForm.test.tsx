@@ -22,7 +22,7 @@ describe('GameScoreForm', () => {
     it('displays rules hint', () => {
       gameScoreFormPage.render()
 
-      expect(gameScoreFormPage.rulesHint).toHaveTextContent('Default: first to 11, win by 2')
+      expect(gameScoreFormPage.rulesHint).toHaveTextContent('First to 11, win by 2')
     })
 
     it('displays score inputs for both players', () => {

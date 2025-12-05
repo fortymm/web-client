@@ -55,7 +55,7 @@ const PlayerScoreInput: FC<PlayerScoreInputProps> = ({
           placeholder="0"
           onChange={handleChange}
           disabled={disabled}
-          className={`input input-bordered w-20 h-14 text-center text-3xl font-bold placeholder:text-base-content/20 placeholder:text-2xl placeholder:font-normal ${
+          className={`input input-bordered w-20 h-[52px] min-h-[44px] text-center text-[22px] font-bold placeholder:text-base-content/25 placeholder:font-semibold ${
             error ? 'input-error' : ''
           }`}
           aria-describedby={error ? `${inputId}-error` : undefined}
