@@ -127,7 +127,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
 
       {/* Score inputs card */}
       <div
-        className={`card bg-base-200/50 border transition-colors -mt-1 ${
+        className={`card bg-base-200/50 border transition-colors -mt-2 ${
           hasError ? 'border-error/50' : 'border-base-300'
         }`}
       >

@@ -52,7 +52,7 @@ export const winnerSummaryPage = {
   },
 
   get unusualWarning() {
-    return screen.queryByText(/unusual/i)
+    return screen.queryByText(/ended before 11/i)
   },
 
   get tiedError() {

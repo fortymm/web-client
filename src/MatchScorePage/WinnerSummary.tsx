@@ -60,9 +60,9 @@ const WinnerSummary: FC<WinnerSummaryProps> = ({
 
   if (result.status === 'empty') {
     return (
-      <div className="border border-dashed border-base-300 rounded-lg p-3 text-center">
-        <p className="text-xs text-base-content/30">
-          Winner will appear here
+      <div className="border border-dashed border-base-300/60 rounded-lg py-2 px-3 text-center">
+        <p className="text-[11px] text-base-content/25">
+          Winner will appear after you enter both scores
         </p>
       </div>
     )
@@ -97,8 +97,8 @@ const WinnerSummary: FC<WinnerSummaryProps> = ({
         </p>
       </div>
       {result.status === 'unusual' && (
-        <p className="text-warning text-xs text-center">
-          This score is unusual for standard rules (first to 11, win by 2).
+        <p className="text-warning/70 text-[11px] text-center mt-0.5">
+          Game ended before 11 points—make sure it's correct.
         </p>
       )}
     </div>
