@@ -132,6 +132,7 @@ describe('NewMatch', () => {
       await newMatchPage.waitForPlayersToLoad()
       await newMatchPage.clickPlayerByIndex(0)
 
+      await matchDetailPagePage.waitForContent()
       expect(matchDetailPagePage.heading).toBeInTheDocument()
     })
 
@@ -200,7 +201,8 @@ describe('NewMatch', () => {
       newMatchPage.render()
       await newMatchPage.clickQuickMatch()
 
-      // Navigation happens optimistically, so it should be immediate
+      // Navigation happens optimistically, then content loads
+      await matchDetailPagePage.waitForContent()
       expect(matchDetailPagePage.heading).toBeInTheDocument()
     })
 
@@ -343,6 +345,7 @@ describe('NewMatch', () => {
 
       // Quick match should still work
       await newMatchPage.clickQuickMatch()
+      await matchDetailPagePage.waitForContent()
       expect(matchDetailPagePage.heading).toBeInTheDocument()
     })
   })
