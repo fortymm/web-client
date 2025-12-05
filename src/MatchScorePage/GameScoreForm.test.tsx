@@ -50,47 +50,14 @@ describe('GameScoreForm', () => {
   })
 
   describe('save button state', () => {
-    it('is disabled when both scores are empty', () => {
+    it('is always enabled', () => {
       gameScoreFormPage.render()
-
-      expect(gameScoreFormPage.saveButton).toBeDisabled()
-    })
-
-    it('is disabled when only one score is entered', async () => {
-      gameScoreFormPage.render({
-        player1: { id: 'p1', name: 'Alice' },
-        player2: { id: 'p2', name: 'Bob' },
-      })
-
-      await gameScoreFormPage.enterScore('Alice', '11')
-
-      expect(gameScoreFormPage.saveButton).toBeDisabled()
-    })
-
-    it('is enabled when both scores are entered', async () => {
-      gameScoreFormPage.render({
-        player1: { id: 'p1', name: 'Alice' },
-        player2: { id: 'p2', name: 'Bob' },
-      })
-
-      await gameScoreFormPage.enterScore('Alice', '11')
-      await gameScoreFormPage.enterScore('Bob', '9')
 
       expect(gameScoreFormPage.saveButton).toBeEnabled()
     })
   })
 
   describe('validation', () => {
-    it('prevents submission when scores are empty', () => {
-      gameScoreFormPage.render({
-        player1: { id: 'p1', name: 'Alice' },
-        player2: { id: 'p2', name: 'Bob' },
-      })
-
-      // Button should be disabled when scores are empty
-      expect(gameScoreFormPage.saveButton).toBeDisabled()
-    })
-
     it('shows form error when scores are tied', async () => {
       gameScoreFormPage.render({
         player1: { id: 'p1', name: 'Alice' },

@@ -107,7 +107,6 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
     }
   }
 
-  const canSubmit = score1 !== '' && score2 !== ''
   const isTied = score1 !== '' && score2 !== '' && score1 === score2
   const hasError = errors.general || isTied
 
@@ -183,7 +182,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
         <button
           type="submit"
           className="btn btn-primary btn-block h-12"
-          disabled={disabled || !canSubmit}
+          disabled={disabled}
         >
           Save score
         </button>
