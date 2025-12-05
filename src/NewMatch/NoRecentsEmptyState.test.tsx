@@ -24,9 +24,19 @@ describe('NoRecentsEmptyState', () => {
       )
     })
 
+    it('renders the CTA pointing to Quick Match button', () => {
+      noRecentsEmptyStatePage.render()
+      expect(noRecentsEmptyStatePage.cta).toBeInTheDocument()
+    })
+
     it('has centered text styling', () => {
       noRecentsEmptyStatePage.render()
       expect(noRecentsEmptyStatePage.container).toHaveClass('text-center')
+    })
+
+    it('aligns content to top of container', () => {
+      noRecentsEmptyStatePage.render()
+      expect(noRecentsEmptyStatePage.container).not.toHaveClass('justify-center')
     })
 
     it('has compact vertical padding', () => {

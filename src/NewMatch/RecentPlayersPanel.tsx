@@ -51,7 +51,9 @@ const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
     return (
       <>
         <SectionHeader title="RECENT PLAYERS" isLoading={false} />
-        <NoRecentsEmptyState />
+        <div className="mx-4 rounded-lg border border-base-300 bg-base-200/30">
+          <NoRecentsEmptyState />
+        </div>
       </>
     )
   }
