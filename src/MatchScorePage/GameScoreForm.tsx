@@ -20,6 +20,7 @@ interface GameScoreFormProps {
   player1: Player
   player2: Player
   onSave: (score: GameScore) => void
+  onCancel: () => void
   disabled?: boolean
 }
 
@@ -63,6 +64,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
   player1,
   player2,
   onSave,
+  onCancel,
   disabled = false,
 }) => {
   const [score1, setScore1] = useState('')
@@ -184,6 +186,14 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
           disabled={disabled || !canSubmit}
         >
           Save score
+        </button>
+        <button
+          type="button"
+          className="btn btn-ghost btn-block"
+          onClick={onCancel}
+          disabled={disabled}
+        >
+          Cancel
         </button>
       </CTAPanel>
     </form>

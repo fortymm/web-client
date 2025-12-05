@@ -33,4 +33,12 @@ describe('MatchScorePage', () => {
 
     expect(matchScorePagePage.matchDetailPage).toBeInTheDocument()
   })
+
+  it('navigates to match detail page on cancel', async () => {
+    matchScorePagePage.render({ matchId: 'match-789' })
+
+    await matchScorePagePage.gameScoreForm.clickCancel()
+
+    expect(matchScorePagePage.matchDetailPage).toBeInTheDocument()
+  })
 })
