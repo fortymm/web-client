@@ -1,9 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import NewMatchHero from './NewMatchHero'
 
+interface RenderOptions {
+  hasRecentPlayers?: boolean
+}
+
 export const newMatchHeroPage = {
-  render() {
-    render(<NewMatchHero />)
+  render(options: RenderOptions = {}) {
+    const { hasRecentPlayers = true } = options
+    render(<NewMatchHero hasRecentPlayers={hasRecentPlayers} />)
   },
 
   get heading() {
@@ -11,7 +16,7 @@ export const newMatchHeroPage = {
   },
 
   get description() {
-    return screen.getByText(/choose a player/i)
+    return screen.getByText(/search for a player|choose a player/i)
   },
 
   get descriptionText() {

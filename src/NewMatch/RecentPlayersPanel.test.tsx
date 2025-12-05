@@ -24,11 +24,11 @@ describe('RecentPlayersPanel', () => {
   })
 
   describe('loaded state', () => {
-    it('shows header with RECENT PLAYERS title', () => {
+    it('shows header with RECENT OPPONENTS title', () => {
       recentPlayersPanelPage.render()
 
       expect(recentPlayersPanelPage.header).toBeInTheDocument()
-      expect(recentPlayersPanelPage.header).toHaveTextContent('RECENT PLAYERS')
+      expect(recentPlayersPanelPage.header).toHaveTextContent('RECENT OPPONENTS')
     })
 
     it('does not show skeleton rows when loaded', () => {
@@ -107,6 +107,47 @@ describe('RecentPlayersPanel', () => {
       recentPlayersPanelPage.render({ hasError: true, players: null })
 
       expect(recentPlayersPanelPage.isShowingSkeleton).toBe(false)
+    })
+  })
+
+  describe('empty state', () => {
+    it('shows empty state when players array is empty', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.emptyState.title).toBeInTheDocument()
+    })
+
+    it('shows header when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.header).toBeInTheDocument()
+    })
+
+    it('displays correct empty state message', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.emptyState.title).toHaveTextContent(
+        'Your recent opponents will appear here'
+      )
+      expect(recentPlayersPanelPage.emptyState.cta).toBeInTheDocument()
+    })
+
+    it('does not show player list when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(screen.queryByTestId('player-list')).not.toBeInTheDocument()
+    })
+
+    it('does not show skeleton when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(recentPlayersPanelPage.isShowingSkeleton).toBe(false)
+    })
+
+    it('does not show error card when empty state is displayed', () => {
+      recentPlayersPanelPage.render({ players: [] })
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     })
   })
 })

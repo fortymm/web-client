@@ -26,7 +26,6 @@ function NewMatch() {
 
   // Derived state for recents
   const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
-  const hasEmptyRecents = recents.opponents !== null && recents.opponents.length === 0
 
   // Mode derived from debounced query
   const mode = debouncedQuery.trim() === '' ? 'recents' : 'search'
@@ -38,8 +37,6 @@ function NewMatch() {
   void inputQuery
   void setInputQuery
   void setDebouncedQuery
-  void hasRecentsData
-  void hasEmptyRecents
 
   const handleCreateMatch = (opponentId: string | null) => {
     const id = crypto.randomUUID()
@@ -82,7 +79,7 @@ function NewMatch() {
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
-        <NewMatchHero />
+        <NewMatchHero hasRecentPlayers={hasRecentsData} />
         <NewMatchSearch />
         <NewMatchContent>
           {mode === 'recents' && (
