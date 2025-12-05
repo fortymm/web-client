@@ -18,7 +18,7 @@ const MatchDetailPage: FC = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-screen-md mx-auto">
+      <div className="max-w-screen-md mx-auto px-4 py-6">
         <MatchDetailSkeleton />
       </div>
     )
@@ -26,14 +26,14 @@ const MatchDetailPage: FC = () => {
 
   if (isError || !data) {
     return (
-      <div className="max-w-screen-md mx-auto">
+      <div className="max-w-screen-md mx-auto px-4 py-6">
         <MatchDetailError onRetry={refetch} />
       </div>
     )
   }
 
   return (
-    <div className="max-w-screen-md mx-auto space-y-6" data-testid="match-detail-page">
+    <div className="max-w-screen-md mx-auto px-4 py-6 space-y-6" data-testid="match-detail-page">
       {/* Header with title, status, and primary action */}
       <MatchHeader
         participants={data.participants}
@@ -73,8 +73,8 @@ const MatchDetailPage: FC = () => {
 
       {/* Dev helper: Show available variants */}
       {import.meta.env.DEV && (
-        <div className="card bg-base-300 p-4 mt-8">
-          <h4 className="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-2">
+        <div className="card bg-base-300/50 rounded-2xl p-4 mt-4">
+          <h4 className="text-xs font-semibold text-base-content/40 uppercase tracking-wide mb-2">
             Dev: Switch Variant
           </h4>
           <div className="flex flex-wrap gap-2">

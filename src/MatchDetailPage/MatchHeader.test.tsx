@@ -11,28 +11,30 @@ describe('MatchHeader', () => {
     expect(matchHeaderPage.title).toHaveTextContent(/Alex Johnson vs David Park/i)
   })
 
-  it('displays generic title when opponent is placeholder', () => {
+  it('displays Opponent TBD when opponent is placeholder', () => {
     matchHeaderPage.render({
       participants: pendingMatch.participants,
       status: 'pending',
     })
-    expect(matchHeaderPage.title).toHaveTextContent('Match details')
+    expect(matchHeaderPage.title).toHaveTextContent(/Alex Johnson vs Opponent TBD/i)
   })
 
-  it('displays format subtitle', () => {
+  it('displays format in subtitle', () => {
     matchHeaderPage.render({
       format: 'singles',
       matchLength: 5,
     })
-    expect(matchHeaderPage.querySubtitle('Best of 5 • Singles match')).toBeInTheDocument()
+    expect(matchHeaderPage.querySubtitle(/Best of 5/)).toBeInTheDocument()
+    expect(matchHeaderPage.querySubtitle(/Singles/)).toBeInTheDocument()
   })
 
-  it('displays doubles format subtitle', () => {
+  it('displays doubles format in subtitle', () => {
     matchHeaderPage.render({
       format: 'doubles',
       matchLength: 3,
     })
-    expect(matchHeaderPage.querySubtitle('Best of 3 • Doubles match')).toBeInTheDocument()
+    expect(matchHeaderPage.querySubtitle(/Best of 3/)).toBeInTheDocument()
+    expect(matchHeaderPage.querySubtitle(/Doubles/)).toBeInTheDocument()
   })
 
   it('shows Start scoring button for pending match', () => {
@@ -50,7 +52,7 @@ describe('MatchHeader', () => {
     expect(matchHeaderPage.primaryActionButton).toHaveTextContent('View scorecard')
   })
 
-  it('shows breadcrumbs when context is provided', () => {
+  it('shows back link when context is provided', () => {
     matchHeaderPage.render({
       context: [
         {
@@ -61,7 +63,6 @@ describe('MatchHeader', () => {
         },
       ],
     })
-    // Breadcrumb link should be present
     expect(matchHeaderPage.container).toBeInTheDocument()
   })
 })

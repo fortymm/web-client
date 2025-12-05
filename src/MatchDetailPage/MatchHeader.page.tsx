@@ -35,8 +35,20 @@ export const matchHeaderPage = {
     return screen.getByRole('heading', { level: 1 })
   },
 
-  querySubtitle(text: string) {
-    return screen.queryByText(text)
+  querySubtitle(text: string | RegExp) {
+    // The subtitle is in a <p> element, use a more specific matcher
+    const textMatcher = typeof text === 'string' ? text : text
+    const elements = screen.queryAllByText(textMatcher)
+    // Find the one that's a paragraph (subtitle) not a badge
+    return elements.find((el) => el.tagName === 'P') ?? null
+  },
+
+  queryFormatBadge(format: 'Singles' | 'Doubles') {
+    return screen.queryByText(format)
+  },
+
+  queryMatchLengthBadge(length: number) {
+    return screen.queryByText(`Best of ${length}`)
   },
 
   get primaryActionButton() {

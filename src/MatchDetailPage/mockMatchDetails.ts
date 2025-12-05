@@ -46,6 +46,8 @@ export const contextEntitySchema = z.object({
   type: z.enum(['tournament', 'league', 'club']),
   name: z.string(),
   url: z.string(),
+  relationship: z.string().optional(), // e.g., "Parent tournament", "Home club"
+  meta: z.string().optional(), // e.g., "64 players · Chicago · Dec 5–6"
 })
 
 export type ContextEntity = z.infer<typeof contextEntitySchema>
@@ -146,6 +148,8 @@ export const pendingMatch: MatchDetails = {
       type: 'tournament',
       name: 'Winter Open 2025',
       url: '/tournaments/tournament-001',
+      relationship: 'Parent tournament',
+      meta: '64 players · Chicago · Dec 5–7',
     },
   ],
   activity: [
@@ -211,12 +215,16 @@ export const scheduledMatch: MatchDetails = {
       type: 'league',
       name: 'Chicago Masters League',
       url: '/leagues/league-001',
+      relationship: 'League match',
+      meta: '32 players · Fall 2025 season',
     },
     {
       id: 'club-001',
       type: 'club',
       name: 'Spin Chicago',
       url: '/clubs/club-001',
+      relationship: 'Venue',
+      meta: '12 tables · River North',
     },
   ],
   activity: [
@@ -303,6 +311,8 @@ export const inProgressMatch: MatchDetails = {
       type: 'club',
       name: 'Spin Chicago',
       url: '/clubs/club-001',
+      relationship: 'Venue',
+      meta: '12 tables · River North',
     },
   ],
   activity: [
@@ -389,12 +399,16 @@ export const completedMatch: MatchDetails = {
       type: 'tournament',
       name: 'December Showdown',
       url: '/tournaments/tournament-002',
+      relationship: 'Parent tournament',
+      meta: '32 players · Dec 3–4',
     },
     {
       id: 'club-001',
       type: 'club',
       name: 'Spin Chicago',
       url: '/clubs/club-001',
+      relationship: 'Venue',
+      meta: '12 tables · River North',
     },
   ],
   activity: [
@@ -560,6 +574,8 @@ export const doublesMatch: MatchDetails = {
       type: 'league',
       name: 'Chicago Doubles League',
       url: '/leagues/league-002',
+      relationship: 'League match',
+      meta: '16 teams · Winter 2025 season',
     },
   ],
   activity: [

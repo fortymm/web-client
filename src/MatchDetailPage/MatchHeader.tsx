@@ -1,12 +1,11 @@
 import { type FC } from 'react'
 import { Link } from 'react-router-dom'
-import MatchStatusPill from './MatchStatusPill'
 import {
   type MatchStatus,
   type MatchDetails,
   type ContextEntity,
   getPrimaryActionLabel,
-  getFormatDisplayText,
+  getStatusDisplayText,
 } from './mockMatchDetails'
 
 export interface MatchHeaderProps {
@@ -18,18 +17,70 @@ export interface MatchHeaderProps {
   matchId: string
 }
 
-function getTitle(
-  participants: MatchDetails['participants']
-): string {
+function getTitle(participants: MatchDetails['participants']): string {
   const [p1, p2] = participants
+  const name1 = p1.isPlaceholder ? 'Opponent TBD' : p1.name
+  const name2 = p2.isPlaceholder ? 'Opponent TBD' : p2.name
+  return `${name1} vs ${name2}`
+}
 
-  // If either participant is a placeholder, show generic title
-  if (p1.isPlaceholder || p2.isPlaceholder) {
-    return 'Match details'
+function getSubtitle(
+  context: ContextEntity[],
+  matchLength: MatchDetails['matchLength'],
+  format: MatchDetails['format']
+): string {
+  const parts: string[] = []
+
+  // Add primary context (tournament/league name)
+  const primaryContext = context[0]
+  if (primaryContext) {
+    parts.push(primaryContext.name)
   }
 
-  // Show "Player A vs Player B" when both are known
-  return `${p1.name} vs ${p2.name}`
+  parts.push(`Best of ${matchLength}`)
+  parts.push(format === 'singles' ? 'Singles' : 'Doubles')
+
+  return parts.join(' · ')
+}
+
+function getStatusClasses(status: MatchStatus): string {
+  switch (status) {
+    case 'pending':
+      return 'bg-warning text-warning-content'
+    case 'scheduled':
+      return 'bg-info text-info-content'
+    case 'in_progress':
+      return 'bg-primary text-primary-content'
+    case 'completed':
+      return 'bg-success text-success-content'
+    case 'cancelled':
+      return 'bg-error text-error-content'
+    default:
+      return 'bg-base-300 text-base-content'
+  }
+}
+
+function canStartScoring(
+  status: MatchStatus,
+  participants: MatchDetails['participants']
+): { canStart: boolean; reason: string | null } {
+  if (status === 'completed') {
+    return { canStart: true, reason: null }
+  }
+  if (status === 'cancelled') {
+    return { canStart: false, reason: 'This match was cancelled' }
+  }
+  if (status === 'in_progress') {
+    return { canStart: true, reason: null }
+  }
+
+  // For pending/scheduled, check if opponent is assigned
+  const hasPlaceholder = participants.some((p) => p.isPlaceholder)
+  if (hasPlaceholder) {
+    return { canStart: false, reason: 'Assign an opponent to start scoring' }
+  }
+
+  return { canStart: true, reason: null }
 }
 
 const MatchHeader: FC<MatchHeaderProps> = ({
@@ -41,46 +92,72 @@ const MatchHeader: FC<MatchHeaderProps> = ({
   matchId,
 }) => {
   const title = getTitle(participants)
-  const subtitle = getFormatDisplayText(format, matchLength)
+  const subtitle = getSubtitle(context, matchLength, format)
   const actionLabel = getPrimaryActionLabel(status)
-  const isActionDisabled = status === 'cancelled'
+  const { canStart, reason } = canStartScoring(status, participants)
+
+  // Get back link from primary context
+  const backContext = context[0]
 
   return (
-    <div className="space-y-4" data-testid="match-header">
-      {/* Breadcrumbs */}
-      {context.length > 0 && (
-        <nav className="text-sm breadcrumbs" aria-label="Breadcrumb">
-          <ul>
-            {context.map((entity) => (
-              <li key={entity.id}>
-                <Link to={entity.url} className="link link-hover">
-                  {entity.name}
-                </Link>
-              </li>
-            ))}
-            <li className="text-base-content/60">Match</li>
-          </ul>
-        </nav>
+    <div className="space-y-3" data-testid="match-header">
+      {/* Back link - mobile friendly */}
+      {backContext && (
+        <Link
+          to={backContext.url}
+          className="inline-flex items-center gap-1 text-sm text-base-content/60 hover:text-base-content transition-colors group"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>{backContext.name}</span>
+        </Link>
       )}
 
-      {/* Title row */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-sm text-base-content/60">{subtitle}</span>
-            <MatchStatusPill status={status} />
-          </div>
-        </div>
+      {/* Title and subtitle */}
+      <div>
+        <h1 className="text-2xl font-bold leading-tight">{title}</h1>
+        <p className="text-sm text-base-content/50 mt-0.5">{subtitle}</p>
+      </div>
 
-        {/* Primary action button */}
+      {/* Chip row */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="badge badge-outline text-xs">
+          Best of {matchLength}
+        </span>
+        <span className="badge badge-outline text-xs">
+          {format === 'singles' ? 'Singles' : 'Doubles'}
+        </span>
+        <span
+          className={`badge text-xs ${getStatusClasses(status)}`}
+          role="status"
+          aria-label={`Match status: ${getStatusDisplayText(status)}`}
+          data-testid="match-status-pill"
+        >
+          {getStatusDisplayText(status)}
+        </span>
+      </div>
+
+      {/* Primary action */}
+      <div className="pt-3">
         <Link
-          to={isActionDisabled ? '#' : `/matches/${matchId}/score`}
-          className={`btn btn-primary ${isActionDisabled ? 'btn-disabled' : ''}`}
-          aria-disabled={isActionDisabled}
+          to={canStart ? `/matches/${matchId}/score` : '#'}
+          className={`btn btn-primary rounded-xl ${!canStart ? 'btn-disabled opacity-50' : ''}`}
+          aria-disabled={!canStart}
+          onClick={(e) => !canStart && e.preventDefault()}
         >
           {actionLabel}
         </Link>
+        {reason && (
+          <p className="text-xs text-base-content/50 mt-2">{reason}</p>
+        )}
       </div>
     </div>
   )

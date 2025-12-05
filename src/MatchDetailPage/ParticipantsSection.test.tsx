@@ -1,19 +1,30 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { participantsSectionPage } from './ParticipantsSection.page'
 import { completedMatch, pendingMatch } from './mockMatchDetails'
 
 describe('ParticipantsSection', () => {
-  it('renders two participant cards', () => {
+  it('renders two participant rows', () => {
     participantsSectionPage.render({
       participants: completedMatch.participants,
       status: 'completed',
     })
-    expect(participantsSectionPage.participantCards).toHaveLength(2)
+    expect(participantsSectionPage.participantRows).toHaveLength(2)
   })
 
-  it('renders vs block between participants', () => {
-    participantsSectionPage.render()
-    expect(participantsSectionPage.container).toBeInTheDocument()
+  it('shows You badge for current user', () => {
+    participantsSectionPage.render({
+      participants: completedMatch.participants,
+      status: 'completed',
+    })
+    expect(participantsSectionPage.queryYouBadge()).toBeInTheDocument()
+  })
+
+  it('shows Winner badge for winner', () => {
+    participantsSectionPage.render({
+      participants: completedMatch.participants,
+      status: 'completed',
+    })
+    expect(participantsSectionPage.queryWinnerBadge()).toBeInTheDocument()
   })
 
   it('shows final score for completed match', () => {
@@ -22,16 +33,27 @@ describe('ParticipantsSection', () => {
       finalScore: [3, 1],
       status: 'completed',
     })
-    // Score should be visible via VsBlock
     expect(participantsSectionPage.container).toBeInTheDocument()
   })
 
-  it('does not show score for pending match', () => {
+  it('shows assign opponent button when participant is placeholder', () => {
+    const onAssign = vi.fn()
+    participantsSectionPage.render({
+      participants: pendingMatch.participants,
+      finalScore: null,
+      status: 'pending',
+      onAssignOpponent: onAssign,
+    })
+    expect(participantsSectionPage.queryAssignOpponentButton()).toBeInTheDocument()
+  })
+
+  it('does not show assign button when no callback provided', () => {
     participantsSectionPage.render({
       participants: pendingMatch.participants,
       finalScore: null,
       status: 'pending',
     })
-    expect(participantsSectionPage.container).toBeInTheDocument()
+    // Without onAssignOpponent, placeholder is just text, not a button
+    expect(participantsSectionPage.queryAssignOpponentButton()).not.toBeInTheDocument()
   })
 })

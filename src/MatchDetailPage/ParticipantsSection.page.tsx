@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import ParticipantsSection, { type ParticipantsSectionProps } from './ParticipantsSection'
-import { participantCardPage } from './ParticipantCard.page'
-import { vsBlockPage } from './VsBlock.page'
 import { completedMatch } from './mockMatchDetails'
 
 const defaultProps: ParticipantsSectionProps = {
@@ -24,11 +23,24 @@ export const participantsSectionPage = {
     return screen.getByTestId('participants-section')
   },
 
-  get participantCards() {
-    return screen.getAllByTestId('participant-card')
+  get participantRows() {
+    return screen.getAllByTestId('participant-row')
   },
 
-  // Delegate to child page objects
-  participantCard: participantCardPage,
-  vsBlock: vsBlockPage,
+  queryYouBadge() {
+    return screen.queryByText('(you)')
+  },
+
+  queryWinnerBadge() {
+    return screen.queryByText('Winner')
+  },
+
+  queryAssignOpponentButton() {
+    return screen.queryByTestId('assign-opponent-button')
+  },
+
+  async clickAssignOpponent() {
+    const button = screen.getByTestId('assign-opponent-button')
+    await userEvent.click(button)
+  },
 }

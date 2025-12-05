@@ -36,6 +36,19 @@ export const matchActionsPage = {
     return screen.queryByRole('button', { name: /Edit participants/i })
   },
 
+  queryDangerZoneToggle() {
+    return screen.queryByTestId('danger-zone-toggle')
+  },
+
+  queryDangerZoneContent() {
+    return screen.queryByTestId('danger-zone-content')
+  },
+
+  async expandDangerZone() {
+    const toggle = screen.getByTestId('danger-zone-toggle')
+    await userEvent.click(toggle)
+  },
+
   queryCancelButton() {
     return screen.queryByRole('button', { name: /Cancel match/i })
   },
@@ -45,7 +58,7 @@ export const matchActionsPage = {
   },
 
   queryDeleteButton() {
-    return screen.queryByRole('button', { name: /Delete/i })
+    return screen.queryByRole('button', { name: /Delete match/i })
   },
 
   async clickEditDetails() {

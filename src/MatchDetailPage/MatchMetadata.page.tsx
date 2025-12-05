@@ -28,11 +28,11 @@ export const matchMetadataPage = {
   },
 
   get heading() {
-    return screen.getByText('Match Details')
+    return screen.getByText(/match details/i)
   },
 
   queryFormat() {
-    return screen.queryByText(/Best of \d+ • (Singles|Doubles) match/i)
+    return screen.queryByText(/Best of \d+ · (Singles|Doubles)/i)
   },
 
   queryLocation(name: string) {
@@ -43,11 +43,15 @@ export const matchMetadataPage = {
     return screen.queryByText(`Table ${num}`)
   },
 
-  queryNotAssigned() {
-    return screen.queryByText('Not assigned')
+  queryUnassigned() {
+    return screen.queryByText('Unassigned')
   },
 
   queryNotScheduled() {
-    return screen.queryByText('Not scheduled')
+    return screen.queryByText('Not scheduled yet')
+  },
+
+  querySetScheduled() {
+    return screen.queryByText('Set scheduled')
   },
 }

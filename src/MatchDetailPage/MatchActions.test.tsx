@@ -41,7 +41,7 @@ describe('MatchActions', () => {
     expect(matchActionsPage.queryEditParticipantsButton()).toBeInTheDocument()
   })
 
-  it('shows cancel button when canCancel is true', () => {
+  it('shows danger zone toggle when canCancel is true', () => {
     matchActionsPage.render({
       permissions: {
         canEdit: false,
@@ -51,10 +51,26 @@ describe('MatchActions', () => {
         canDelete: false,
       },
     })
+    expect(matchActionsPage.queryDangerZoneToggle()).toBeInTheDocument()
+    // Cancel button is hidden until danger zone is expanded
+    expect(matchActionsPage.queryCancelButton()).not.toBeInTheDocument()
+  })
+
+  it('shows cancel button after expanding danger zone', async () => {
+    matchActionsPage.render({
+      permissions: {
+        canEdit: false,
+        canEditParticipants: false,
+        canCancel: true,
+        canMarkNoShow: false,
+        canDelete: false,
+      },
+    })
+    await matchActionsPage.expandDangerZone()
     expect(matchActionsPage.queryCancelButton()).toBeInTheDocument()
   })
 
-  it('shows mark no-show button when canMarkNoShow is true', () => {
+  it('shows mark no-show button after expanding danger zone', async () => {
     matchActionsPage.render({
       permissions: {
         canEdit: false,
@@ -64,10 +80,11 @@ describe('MatchActions', () => {
         canDelete: false,
       },
     })
+    await matchActionsPage.expandDangerZone()
     expect(matchActionsPage.queryMarkNoShowButton()).toBeInTheDocument()
   })
 
-  it('shows delete button when canDelete is true', () => {
+  it('shows delete button after expanding danger zone', async () => {
     matchActionsPage.render({
       permissions: {
         canEdit: false,
@@ -77,10 +94,11 @@ describe('MatchActions', () => {
         canDelete: true,
       },
     })
+    await matchActionsPage.expandDangerZone()
     expect(matchActionsPage.queryDeleteButton()).toBeInTheDocument()
   })
 
-  it('shows multiple buttons when multiple permissions are true', () => {
+  it('shows safe actions and danger zone toggle when both permissions exist', async () => {
     matchActionsPage.render({
       permissions: {
         canEdit: true,
@@ -90,8 +108,13 @@ describe('MatchActions', () => {
         canDelete: false,
       },
     })
+    // Safe actions visible immediately
     expect(matchActionsPage.queryEditDetailsButton()).toBeInTheDocument()
     expect(matchActionsPage.queryEditParticipantsButton()).toBeInTheDocument()
+    // Danger zone toggle visible
+    expect(matchActionsPage.queryDangerZoneToggle()).toBeInTheDocument()
+    // Danger actions hidden until expanded
+    await matchActionsPage.expandDangerZone()
     expect(matchActionsPage.queryCancelButton()).toBeInTheDocument()
   })
 })

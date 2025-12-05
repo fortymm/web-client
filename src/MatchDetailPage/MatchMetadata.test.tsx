@@ -31,11 +31,11 @@ describe('MatchMetadata', () => {
     expect(matchMetadataPage.queryTableNumber(3)).toBeInTheDocument()
   })
 
-  it('shows Not assigned when table is null', () => {
+  it('shows Unassigned when table is null', () => {
     matchMetadataPage.render({
       location: { name: 'Spin Chicago', tableNumber: null },
     })
-    expect(matchMetadataPage.queryNotAssigned()).toBeInTheDocument()
+    expect(matchMetadataPage.queryUnassigned()).toBeInTheDocument()
   })
 
   it('shows Not scheduled when scheduled is null', () => {
