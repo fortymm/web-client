@@ -1,23 +1,28 @@
 import { describe, it, expect } from 'vitest'
 import { matchDetailPagePage } from './MatchDetailPage.page'
 
-describe('MatchDetailPage', () => {
-  it('renders the heading with the match id', () => {
+describe('MatchDetailPage (integration)', () => {
+  it('shows skeleton while loading', () => {
     matchDetailPagePage.render('123')
 
+    expect(matchDetailPagePage.querySkeleton()).toBeInTheDocument()
+  })
+
+  it('renders match detail page after loading', async () => {
+    matchDetailPagePage.render('123')
+
+    await matchDetailPagePage.waitForContent()
+
+    expect(matchDetailPagePage.queryPage()).toBeInTheDocument()
     expect(matchDetailPagePage.heading).toBeInTheDocument()
-    expect(matchDetailPagePage.headingText).toBe('Match 123')
   })
 
-  it('displays different match ids correctly', () => {
-    matchDetailPagePage.render('456')
+  it('displays title for completed match variant', async () => {
+    matchDetailPagePage.render('123', 'variant=completed')
 
-    expect(matchDetailPagePage.headingText).toBe('Match 456')
-  })
+    await matchDetailPagePage.waitForContent()
 
-  it('handles string ids', () => {
-    matchDetailPagePage.render('abc-def')
-
-    expect(matchDetailPagePage.headingText).toBe('Match abc-def')
+    // The completed match shows "Player A vs Player B"
+    expect(matchDetailPagePage.headingText).toContain('vs')
   })
 })
