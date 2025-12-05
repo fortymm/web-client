@@ -21,10 +21,6 @@ function MatchScorePage() {
     navigate(`/matches/${id}`)
   }
 
-  const handleCancel = () => {
-    navigate(`/matches/${id}`)
-  }
-
   return (
     <div className="min-h-screen bg-base-100">
       <div className="container mx-auto max-w-md px-4 py-6">
@@ -33,7 +29,6 @@ function MatchScorePage() {
           player1={DEFAULT_PLAYER_1}
           player2={DEFAULT_PLAYER_2}
           onSave={handleSave}
-          onCancel={handleCancel}
         />
       </div>
     </div>

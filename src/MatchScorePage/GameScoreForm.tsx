@@ -19,7 +19,6 @@ interface GameScoreFormProps {
   player1: Player
   player2: Player
   onSave: (score: GameScore) => void
-  onCancel: () => void
   disabled?: boolean
 }
 
@@ -63,7 +62,6 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
   player1,
   player2,
   onSave,
-  onCancel,
   disabled = false,
 }) => {
   const [score1, setScore1] = useState('')
@@ -116,7 +114,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
     : `Game ${gameNumber}`
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8 pb-24">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-xl font-semibold">Enter score</h2>
@@ -178,23 +176,17 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-col gap-4 pb-4">
-        <button
-          type="submit"
-          className="btn btn-primary btn-block h-12"
-          disabled={disabled || !canSubmit}
-        >
-          Save score
-        </button>
-        <button
-          type="button"
-          className="btn btn-ghost btn-block"
-          onClick={onCancel}
-          disabled={disabled}
-        >
-          Cancel
-        </button>
+      {/* Sticky CTA Panel */}
+      <div className="fixed bottom-0 left-0 right-0 bg-base-100 border-t border-base-300 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="container mx-auto max-w-md">
+          <button
+            type="submit"
+            className="btn btn-primary btn-block h-12"
+            disabled={disabled || !canSubmit}
+          >
+            Save score
+          </button>
+        </div>
       </div>
     </form>
   )

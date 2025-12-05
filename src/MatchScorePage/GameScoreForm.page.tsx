@@ -15,7 +15,6 @@ interface RenderOptions {
   player1?: Player
   player2?: Player
   onSave?: (score: { player1Score: number; player2Score: number; winnerId: string }) => void
-  onCancel?: () => void
   disabled?: boolean
 }
 
@@ -29,7 +28,6 @@ export const gameScoreFormPage = {
       player1 = defaultPlayer1,
       player2 = defaultPlayer2,
       onSave = vi.fn(),
-      onCancel = vi.fn(),
       disabled = false,
     } = options
 
@@ -39,12 +37,11 @@ export const gameScoreFormPage = {
         player1={player1}
         player2={player2}
         onSave={onSave}
-        onCancel={onCancel}
         disabled={disabled}
       />
     )
 
-    return { onSave, onCancel }
+    return { onSave }
   },
 
   get heading() {
@@ -69,10 +66,6 @@ export const gameScoreFormPage = {
 
   get saveButton() {
     return screen.getByRole('button', { name: /save score/i })
-  },
-
-  get cancelButton() {
-    return screen.getByRole('button', { name: /cancel/i })
   },
 
   get generalError() {
@@ -104,10 +97,6 @@ export const gameScoreFormPage = {
 
   async clickSave() {
     await userEvent.click(this.saveButton)
-  },
-
-  async clickCancel() {
-    await userEvent.click(this.cancelButton)
   },
 
   // Winner summary delegation

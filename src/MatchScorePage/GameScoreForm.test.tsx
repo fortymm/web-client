@@ -41,11 +41,10 @@ describe('GameScoreForm', () => {
       expect(gameScoreFormPage.getInputFor('Bob')).toBeInTheDocument()
     })
 
-    it('displays save and cancel buttons', () => {
+    it('displays save button', () => {
       gameScoreFormPage.render()
 
       expect(gameScoreFormPage.saveButton).toBeInTheDocument()
-      expect(gameScoreFormPage.cancelButton).toBeInTheDocument()
     })
   })
 
@@ -154,16 +153,6 @@ describe('GameScoreForm', () => {
     })
   })
 
-  describe('cancel action', () => {
-    it('calls onCancel when clicking cancel button', async () => {
-      const { onCancel } = gameScoreFormPage.render()
-
-      await gameScoreFormPage.clickCancel()
-
-      expect(onCancel).toHaveBeenCalled()
-    })
-  })
-
   describe('disabled state', () => {
     it('disables all inputs when disabled prop is true', () => {
       gameScoreFormPage.render({
@@ -175,7 +164,6 @@ describe('GameScoreForm', () => {
       expect(gameScoreFormPage.getInputFor('Alice')).toBeDisabled()
       expect(gameScoreFormPage.getInputFor('Bob')).toBeDisabled()
       expect(gameScoreFormPage.saveButton).toBeDisabled()
-      expect(gameScoreFormPage.cancelButton).toBeDisabled()
     })
   })
 })
