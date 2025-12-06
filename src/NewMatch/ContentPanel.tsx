@@ -89,7 +89,11 @@ function getHeaderConfig(viewState: ViewState): {
   isLoading: boolean
 } {
   switch (viewState.type) {
+    // No loading indicator during initial skeleton
     case 'initial-load-recents':
+    case 'initial-load-search':
+      return { title: viewState.type === 'initial-load-recents' ? 'RECENT PLAYERS' : 'SEARCH RESULTS', isLoading: false }
+
     case 'recents-idle':
     case 'recents-empty':
     case 'recents-error':
@@ -98,16 +102,14 @@ function getHeaderConfig(viewState: ViewState): {
     case 'recents-fetching':
       return { title: 'RECENT PLAYERS', isLoading: true }
 
-    // No data shown - use skeleton/placeholder, no inline loader
-    case 'initial-load-search':
+    // Search states - show loader when fetching
     case 'search-fetching-no-data':
+    case 'search-fetching':
+      return { title: 'SEARCH RESULTS', isLoading: true }
+
     case 'search-idle':
     case 'search-empty':
       return { title: 'SEARCH RESULTS', isLoading: false }
-
-    // Data shown - use inline loader
-    case 'search-fetching':
-      return { title: 'SEARCH RESULTS', isLoading: true }
   }
 }
 

@@ -91,7 +91,7 @@ describe('ContentPanel', () => {
       expect(contentPanelPage.playerRows).toHaveLength(2)
     })
 
-    it('shows search loading placeholder when fetching with no data', () => {
+    it('shows search loading placeholder with inline loader when fetching with no data', () => {
       contentPanelPage.render({
         queryParam: 'john',
         isFetching: true,
@@ -99,7 +99,7 @@ describe('ContentPanel', () => {
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasLoadingSpinner).toBe(false)
+      expect(contentPanelPage.hasLoadingSpinner).toBe(true)
       expect(contentPanelPage.hasSearchLoadingPlaceholder).toBe(true)
     })
 
