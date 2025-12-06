@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { api } from '../lib/api'
 
 const ENDPOINT = '/users/search'
@@ -71,6 +71,7 @@ export function usePlayerSearch({
     enabled: shouldFetch,
     staleTime: 1000 * 60 * 2, // 2 minutes
     gcTime: 1000 * 60 * 5, // 5 minutes
+    placeholderData: keepPreviousData,
   })
 
   return {

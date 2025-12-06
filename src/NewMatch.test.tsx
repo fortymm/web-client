@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { waitFor } from '@testing-library/react'
-import { HttpResponse } from 'msw'
+import { waitFor, screen } from '@testing-library/react'
+import { HttpResponse, delay } from 'msw'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { matchDetailPagePage } from './MatchDetailPage.page'
 import { useRecentOpponentsPage } from './hooks/useRecentOpponents.page'
+import { usePlayerSearchPage } from './hooks/usePlayerSearch.page'
 import { server } from './test/mocks/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -344,6 +345,314 @@ describe('NewMatch', () => {
       // Quick match should still work
       await newMatchPage.clickQuickMatch()
       expect(matchDetailPagePage.heading).toBeInTheDocument()
+    })
+  })
+
+  describe('search mode switching', () => {
+    beforeEach(() => {
+      // Setup default handlers for recents
+      server.use(
+        useRecentOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(
+            useRecentOpponentsPage.createMockResponse([
+              useRecentOpponentsPage.createMockOpponent({
+                id: 'recent-1',
+                username: 'RecentPlayer',
+              }),
+            ])
+          )
+        })
+      )
+    })
+
+    it('shows RECENT OPPONENTS header when search query is empty', async () => {
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
+      expect(newMatchPage.querySearchResultsHeader()).not.toBeInTheDocument()
+    })
+
+    it('shows SEARCH RESULTS header when search query is entered after debounce', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [usePlayerSearchPage.createMockSearchResult({ username: 'SearchResult' })],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      // Type in search - wait for debounce and results
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      expect(newMatchPage.querySearchResultsHeader()).toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', { name: 'RECENT OPPONENTS', level: 2 })
+      ).not.toBeInTheDocument()
+    })
+
+    it('shows loading spinner while search is in progress', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(async () => {
+          await delay(500)
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [usePlayerSearchPage.createMockSearchResult({ username: 'SearchResult' })],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      // Type in search
+      await newMatchPage.typeInSearch('test')
+
+      // Should show loading state
+      await newMatchPage.waitForSearchLoading()
+      expect(newMatchPage.querySearchLoadingSpinner()).toBeInTheDocument()
+
+      // Wait for results
+      await newMatchPage.waitForSearchResults()
+      expect(newMatchPage.querySearchLoadingSpinner()).not.toBeInTheDocument()
+    })
+
+    it('shows inline loader on header when refetching with existing results', async () => {
+      let requestCount = 0
+      server.use(
+        usePlayerSearchPage.requestHandler(async () => {
+          requestCount++
+          if (requestCount > 1) {
+            await delay(500)
+          }
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [
+                usePlayerSearchPage.createMockSearchResult({
+                  username: `Result${requestCount}`,
+                }),
+              ],
+              requestCount === 1 ? 'test' : 'test2'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      // First search
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      // Second search - should show inline loader
+      await newMatchPage.typeInSearch('2')
+
+      // Wait for the inline loader to appear on header (not full page loading)
+      await waitFor(() => {
+        const header = newMatchPage.querySearchResultsHeader()
+        expect(header).toBeInTheDocument()
+        // The loading spinner should be in the header area
+        const loadingSpinner = screen.queryByLabelText('Loading')
+        expect(loadingSpinner).toBeInTheDocument()
+      })
+
+      // But we should still see the previous results
+      expect(newMatchPage.searchResultRows.length).toBeGreaterThan(0)
+    })
+
+    it('returns to recents mode when search is cleared', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [usePlayerSearchPage.createMockSearchResult({ username: 'SearchResult' })],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      // Enter search mode
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+      expect(newMatchPage.querySearchResultsHeader()).toBeInTheDocument()
+
+      // Clear search
+      await newMatchPage.clearSearch()
+
+      // Should return to recents mode immediately
+      await waitFor(() => {
+        expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
+      })
+      expect(newMatchPage.querySearchResultsHeader()).not.toBeInTheDocument()
+    })
+
+    it('displays search results in PlayerList with search context', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [
+                usePlayerSearchPage.createMockSearchResult({
+                  id: 'search-1',
+                  username: 'Alice',
+                }),
+                usePlayerSearchPage.createMockSearchResult({
+                  id: 'search-2',
+                  username: 'Bob',
+                }),
+              ],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      expect(newMatchPage.searchResultRows).toHaveLength(2)
+      expect(screen.getByRole('button', { name: /Alice/ })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Bob/ })).toBeInTheDocument()
+    })
+
+    it('navigates to match detail page when clicking a search result', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [
+                usePlayerSearchPage.createMockSearchResult({
+                  id: 'search-player-1',
+                  username: 'SearchPlayer',
+                }),
+              ],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      await newMatchPage.clickSearchResultByIndex(0)
+
+      expect(matchDetailPagePage.heading).toBeInTheDocument()
+    })
+
+    it('saves match with opponentId when clicking a search result', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [
+                usePlayerSearchPage.createMockSearchResult({
+                  id: 'search-player-1',
+                  username: 'SearchPlayer',
+                }),
+              ],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      await newMatchPage.clickSearchResultByIndex(0)
+
+      await waitFor(async () => {
+        const matches = await import('./lib/matchesDb').then((m) => m.getAllMatches())
+        expect(matches).toHaveLength(1)
+        expect(matches[0].opponentId).toBe('search-player-1')
+        expect(matches[0].matchLength).toBe(5)
+        expect(matches[0].id).toMatch(UUID_REGEX)
+      })
+    })
+
+    it('shows match history for players with history in search results', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [
+                usePlayerSearchPage.createMockSearchResult({
+                  id: 'search-1',
+                  username: 'PlayerWithHistory',
+                  headToHead: { wins: 5, losses: 3 },
+                  lastMatch: {
+                    id: 'match-1',
+                    result: 'win',
+                    score: '11-7',
+                    playedAt: new Date().toISOString(),
+                  },
+                }),
+              ],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      // Should show match history
+      expect(screen.getByText(/Record 5-3/)).toBeInTheDocument()
+    })
+
+    it('shows "No matches yet" for players without history in search results', async () => {
+      server.use(
+        usePlayerSearchPage.requestHandler(() => {
+          return HttpResponse.json(
+            usePlayerSearchPage.createMockResponse(
+              [
+                usePlayerSearchPage.createMockSearchResult({
+                  id: 'search-1',
+                  username: 'NewPlayer',
+                  // No headToHead or lastMatch
+                }),
+              ],
+              'test'
+            )
+          )
+        })
+      )
+
+      newMatchPage.render()
+      await newMatchPage.waitForPlayersToLoad()
+
+      await newMatchPage.typeInSearch('test')
+      await newMatchPage.waitForSearchResults()
+
+      expect(screen.getByText('No matches yet')).toBeInTheDocument()
     })
   })
 })

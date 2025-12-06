@@ -8,6 +8,9 @@ import { matchLengthControlPage } from './NewMatch/MatchLengthControl.page'
 import { quickMatchButtonPage } from './NewMatch/QuickMatchButton.page'
 import { recentPlayersPanelPage } from './NewMatch/RecentPlayersPanel.page'
 import { recentsErrorCardPage } from './NewMatch/RecentsErrorCard.page'
+import { sectionHeaderPage } from './NewMatch/SectionHeader.page'
+import { searchLoadingPlaceholderPage } from './NewMatch/SearchLoadingPlaceholder.page'
+import { playerListPage } from './NewMatch/PlayerList.page'
 
 export const newMatchPage = {
   render() {
@@ -158,5 +161,58 @@ export const newMatchPage = {
 
   async clickRetry() {
     await recentsErrorCardPage.clickRetry()
+  },
+
+  // Search results
+  get searchResultsHeader() {
+    return sectionHeaderPage.searchResultsHeader
+  },
+
+  querySearchResultsHeader() {
+    return screen.queryByRole('heading', { name: 'SEARCH RESULTS', level: 2 })
+  },
+
+  get searchLoadingSpinner() {
+    return searchLoadingPlaceholderPage.spinner
+  },
+
+  querySearchLoadingSpinner() {
+    return searchLoadingPlaceholderPage.querySpinner()
+  },
+
+  get searchResultsList() {
+    return playerListPage.list
+  },
+
+  get searchResultRows() {
+    return playerListPage.playerRows
+  },
+
+  async waitForSearchResults() {
+    await waitFor(() => {
+      expect(this.querySearchResultsHeader()).toBeInTheDocument()
+    })
+    // Wait for loading placeholder to disappear if visible
+    const spinner = this.querySearchLoadingSpinner()
+    if (spinner) {
+      await waitForElementToBeRemoved(spinner)
+    }
+  },
+
+  async waitForSearchLoading() {
+    await waitFor(() => {
+      expect(this.querySearchResultsHeader()).toBeInTheDocument()
+      expect(this.querySearchLoadingSpinner()).toBeInTheDocument()
+    })
+  },
+
+  getSearchResultByIndex(index: number) {
+    return this.searchResultRows[index]
+  },
+
+  async clickSearchResultByIndex(index: number) {
+    const user = userEvent.setup()
+    const row = this.searchResultRows[index]
+    await user.click(row)
   },
 }
