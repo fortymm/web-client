@@ -4,7 +4,7 @@ import SkeletonRows from './SkeletonRows'
 import PlayerList from './PlayerList'
 import RecentsErrorCard from './RecentsErrorCard'
 import NoRecentsEmptyState from './NoRecentsEmptyState'
-import SearchTodoCard from './SearchTodoCard'
+import NoSearchResultsEmptyState from './NoSearchResultsEmptyState'
 import { useFlash } from '../useFlash'
 import { type Opponent } from '../hooks/useOpponents'
 
@@ -179,10 +179,20 @@ const ContentPanel: FC<ContentPanelProps> = ({
 
       case 'search-idle':
       case 'search-fetching':
-        return <SearchTodoCard />
+        return (
+          <PlayerList
+            players={viewState.opponents}
+            context="search"
+            onSelectPlayer={onSelectPlayer}
+          />
+        )
 
       case 'search-empty':
-        return <SearchTodoCard />
+        return (
+          <div className="mx-4 rounded-lg border border-base-300 bg-base-200/30">
+            <NoSearchResultsEmptyState query={queryParam} />
+          </div>
+        )
     }
   }
 

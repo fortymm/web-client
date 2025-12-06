@@ -9,6 +9,7 @@ import { skeletonRowsPage } from './SkeletonRows.page'
 import { playerListPage } from './PlayerList.page'
 import { recentsErrorCardPage } from './RecentsErrorCard.page'
 import { noRecentsEmptyStatePage } from './NoRecentsEmptyState.page'
+import { noSearchResultsEmptyStatePage } from './NoSearchResultsEmptyState.page'
 import { type Opponent } from '../hooks/useOpponents'
 
 export const defaultOpponents: Opponent[] = [
@@ -162,12 +163,14 @@ export const contentPanelPage = {
     return this.queryEmptyState() !== null
   },
 
-  // Search todo card
-  querySearchTodoCard() {
-    return screen.queryByText(/Search results coming soon/i)
+  // Search empty state delegation
+  searchEmptyState: noSearchResultsEmptyStatePage,
+
+  querySearchEmptyState() {
+    return noSearchResultsEmptyStatePage.queryContainer()
   },
 
-  get hasSearchTodoCard() {
-    return this.querySearchTodoCard() !== null
+  get hasSearchEmptyState() {
+    return this.querySearchEmptyState() !== null
   },
 }
