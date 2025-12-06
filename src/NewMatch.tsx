@@ -7,8 +7,7 @@ import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthCont
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
 import ContentPanel from './NewMatch/ContentPanel'
-import { useRecentOpponents } from './hooks/useRecentOpponents'
-import { usePlayerSearch } from './hooks/usePlayerSearch'
+import { useOpponents } from './hooks/useOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 import { useDebounce } from '@uidotdev/usehooks'
 
@@ -26,17 +25,11 @@ function NewMatch() {
   // Match creation
   const createMatch = useCreateMatch()
 
-  // Recent opponents data
-  const recents = useRecentOpponents()
+  // Unified opponents data (recents or search based on query)
+  const opponents = useOpponents({ query: debouncedQuery })
 
-  // Derived state for recents
-  const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
-
-  // Player search
-  const search = usePlayerSearch({
-    query: debouncedQuery,
-    enabled: debouncedQuery.trim() !== '',
-  })
+  // Derived state for hero subtitle
+  const hasRecentsData = opponents.opponents !== null && opponents.opponents.length > 0
 
   const handleSearchChange = (value: string) => {
     if (value) {
@@ -81,7 +74,7 @@ function NewMatch() {
 
   const handleRetry = async () => {
     setRetryCount((prev) => prev + 1)
-    const result = await recents.refetch()
+    const result = await opponents.refetch()
     if (result.status === 'success') {
       setRetryCount(0)
     }
@@ -100,18 +93,10 @@ function NewMatch() {
         <NewMatchContent>
           <ContentPanel
             queryParam={queryParam}
-            recents={{
-              isInitialLoading: recents.isInitialLoading,
-              isRefetching: recents.isRefetching,
-              hasError: recents.status === 'error',
-              opponents: recents.opponents,
-            }}
-            search={{
-              isLoading: search.isLoading,
-              isFetching: search.isFetching,
-              hasError: search.status === 'error',
-              results: search.results,
-            }}
+            opponents={opponents.opponents}
+            isInitialLoading={opponents.isInitialLoading}
+            isFetching={opponents.isFetching}
+            hasError={opponents.status === 'error'}
             onSelectPlayer={handleSelectPlayer}
             onRetry={handleRetry}
             retryCount={retryCount}

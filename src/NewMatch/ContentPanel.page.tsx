@@ -9,10 +9,9 @@ import { skeletonRowsPage } from './SkeletonRows.page'
 import { playerListPage } from './PlayerList.page'
 import { recentsErrorCardPage } from './RecentsErrorCard.page'
 import { noRecentsEmptyStatePage } from './NoRecentsEmptyState.page'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
-import { type SearchResult } from '../hooks/usePlayerSearch'
+import { type Opponent } from '../hooks/useOpponents'
 
-export const defaultRecentsData: RecentOpponent[] = [
+export const defaultOpponents: Opponent[] = [
   {
     id: 'player-1',
     username: 'AliceSmith',
@@ -41,26 +40,12 @@ export const defaultRecentsData: RecentOpponent[] = [
   },
 ]
 
-export const defaultSearchData: SearchResult[] = [
-  {
-    id: 'search-1',
-    username: 'JohnDoe',
-    avatarUrl: null,
-    isEphemeral: false,
-    headToHead: { wins: 2, losses: 1 },
-    lastMatch: {
-      id: 'match-3',
-      result: 'win',
-      score: '11-9',
-      playedAt: '2025-03-18T10:00:00.000Z',
-    },
-  },
-]
-
 interface RenderOptions {
   queryParam?: string
-  recents?: Partial<ContentPanelProps['recents']>
-  search?: Partial<ContentPanelProps['search']>
+  opponents?: Opponent[] | null
+  isInitialLoading?: boolean
+  isFetching?: boolean
+  hasError?: boolean
   onSelectPlayer?: ContentPanelProps['onSelectPlayer']
   onRetry?: ContentPanelProps['onRetry']
   retryCount?: number
@@ -70,28 +55,14 @@ export const contentPanelPage = {
   render(options: RenderOptions = {}) {
     const {
       queryParam = '',
-      recents = {},
-      search = {},
+      opponents = defaultOpponents,
+      isInitialLoading = false,
+      isFetching = false,
+      hasError = false,
       onSelectPlayer = vi.fn(),
       onRetry = vi.fn(),
       retryCount = 0,
     } = options
-
-    const recentsProps: ContentPanelProps['recents'] = {
-      isInitialLoading: false,
-      isRefetching: false,
-      hasError: false,
-      opponents: defaultRecentsData,
-      ...recents,
-    }
-
-    const searchProps: ContentPanelProps['search'] = {
-      isLoading: false,
-      isFetching: false,
-      hasError: false,
-      results: null,
-      ...search,
-    }
 
     const user = userEvent.setup()
 
@@ -99,8 +70,10 @@ export const contentPanelPage = {
       <FlashTestWrapper>
         <ContentPanel
           queryParam={queryParam}
-          recents={recentsProps}
-          search={searchProps}
+          opponents={opponents}
+          isInitialLoading={isInitialLoading}
+          isFetching={isFetching}
+          hasError={hasError}
           onSelectPlayer={onSelectPlayer}
           onRetry={onRetry}
           retryCount={retryCount}
