@@ -9,7 +9,6 @@ import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
 import SectionHeader from './NewMatch/SectionHeader'
 import PlayerList from './NewMatch/PlayerList'
-import SearchLoadingPlaceholder from './NewMatch/SearchLoadingPlaceholder'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { usePlayerSearch } from './hooks/usePlayerSearch'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
@@ -105,6 +104,9 @@ function NewMatch() {
     }
   }
 
+  // Show recents panel when in recents mode OR when searching but no results yet
+  const showRecentsPanel = mode === 'recents' || (mode === 'search' && !hasSearchResults)
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
@@ -116,7 +118,7 @@ function NewMatch() {
           onClear={handleClear}
         />
         <NewMatchContent>
-          {mode === 'recents' && (
+          {showRecentsPanel && (
             <RecentPlayersPanel
               isInitialLoading={recents.isInitialLoading}
               isRefetching={recents.isRefetching}
@@ -127,28 +129,17 @@ function NewMatch() {
               retryCount={retryCount}
             />
           )}
-          {mode === 'search' && (
+          {mode === 'search' && hasSearchResults && (
             <>
-              {search.isLoading && !hasSearchResults ? (
-                <>
-                  <SectionHeader title="SEARCH RESULTS" isLoading />
-                  <SearchLoadingPlaceholder />
-                </>
-              ) : (
-                hasSearchResults && (
-                  <>
-                    <SectionHeader
-                      title="SEARCH RESULTS"
-                      isLoading={search.isFetching}
-                    />
-                    <PlayerList
-                      players={search.results!}
-                      context="search"
-                      onSelectPlayer={handleSelectPlayer}
-                    />
-                  </>
-                )
-              )}
+              <SectionHeader
+                title="SEARCH RESULTS"
+                isLoading={search.isFetching}
+              />
+              <PlayerList
+                players={search.results!}
+                context="search"
+                onSelectPlayer={handleSelectPlayer}
+              />
             </>
           )}
         </NewMatchContent>

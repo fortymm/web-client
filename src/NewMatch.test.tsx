@@ -398,7 +398,7 @@ describe('NewMatch', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('shows loading spinner while search is in progress', async () => {
+    it('keeps showing recents while search is loading', async () => {
       server.use(
         usePlayerSearchPage.requestHandler(async () => {
           await delay(500)
@@ -417,13 +417,15 @@ describe('NewMatch', () => {
       // Type in search
       await newMatchPage.typeInSearch('test')
 
-      // Should show loading state
-      await newMatchPage.waitForSearchLoading()
-      expect(newMatchPage.querySearchLoadingSpinner()).toBeInTheDocument()
+      // Should still show recents while search is loading
+      expect(newMatchPage.recentPlayersHeader).toBeInTheDocument()
+      expect(newMatchPage.playerList).toBeInTheDocument()
 
-      // Wait for results
+      // Wait for search results to appear
       await newMatchPage.waitForSearchResults()
-      expect(newMatchPage.querySearchLoadingSpinner()).not.toBeInTheDocument()
+
+      // Now should show search results
+      expect(newMatchPage.querySearchResultsHeader()).toBeInTheDocument()
     })
 
     it('shows inline loader on header when refetching with existing results', async () => {
