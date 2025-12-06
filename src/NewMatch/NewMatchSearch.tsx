@@ -31,7 +31,7 @@ const NewMatchSearch: FC<NewMatchSearchProps> = ({ value, onChange, onClear }) =
           placeholder="Search players…"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="grow bg-transparent outline-none text-base"
+          className="grow bg-transparent outline-none text-base [&::-webkit-search-cancel-button]:hidden"
           aria-label="Search players"
         />
         {value && (
