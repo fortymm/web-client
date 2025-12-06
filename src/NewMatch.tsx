@@ -8,6 +8,7 @@ import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
+import { usePlayerSearch } from './hooks/usePlayerSearch'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 import { useDebounce } from '@uidotdev/usehooks'
 
@@ -39,6 +40,17 @@ function NewMatch() {
       : debouncedQuery.trim() !== ''
         ? 'search'
         : 'recents'
+
+  // Player search - results will be rendered in FM-303
+  // Derived state examples:
+  //   searchResults = search.results
+  //   isSearchLoading = search.isLoading || search.isFetching
+  //   hasSearchResults = search.results !== null && search.results.length > 0
+  //   hasEmptySearchResults = search.status === 'success' && search.results?.length === 0
+  usePlayerSearch({
+    query: debouncedQuery,
+    enabled: mode === 'search',
+  })
 
   // Error state (initial load failed, no cached data)
   const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
