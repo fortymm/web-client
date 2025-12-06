@@ -6,10 +6,8 @@ import NewMatchContent from './NewMatch/NewMatchContent'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
-import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
-import SearchTodoCard from './NewMatch/SearchTodoCard'
-import { useRecentOpponents } from './hooks/useRecentOpponents'
-import { usePlayerSearch } from './hooks/usePlayerSearch'
+import ContentPanel from './NewMatch/ContentPanel'
+import { useOpponents } from './hooks/useOpponents'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 import { useDebounce } from '@uidotdev/usehooks'
 
@@ -27,34 +25,11 @@ function NewMatch() {
   // Match creation
   const createMatch = useCreateMatch()
 
-  // Recent opponents data
-  const recents = useRecentOpponents()
+  // Unified opponents data (recents or search based on query)
+  const opponents = useOpponents({ query: debouncedQuery })
 
-  // Derived state for recents
-  const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
-
-  // Mode: show recents immediately when cleared, otherwise wait for debounce
-  // (Initial load works because useDebounce returns initial value immediately)
-  const mode =
-    queryParam.trim() === ''
-      ? 'recents'
-      : debouncedQuery.trim() !== ''
-        ? 'search'
-        : 'recents'
-
-  // Player search - results will be rendered in FM-303
-  // Derived state examples:
-  //   searchResults = search.results
-  //   isSearchLoading = search.isLoading || search.isFetching
-  //   hasSearchResults = search.results !== null && search.results.length > 0
-  //   hasEmptySearchResults = search.status === 'success' && search.results?.length === 0
-  usePlayerSearch({
-    query: debouncedQuery,
-    enabled: mode === 'search',
-  })
-
-  // Error state (initial load failed, no cached data)
-  const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
+  // Derived state for hero subtitle
+  const hasRecentsData = opponents.opponents !== null && opponents.opponents.length > 0
 
   const handleSearchChange = (value: string) => {
     if (value) {
@@ -99,7 +74,7 @@ function NewMatch() {
 
   const handleRetry = async () => {
     setRetryCount((prev) => prev + 1)
-    const result = await recents.refetch()
+    const result = await opponents.refetch()
     if (result.status === 'success') {
       setRetryCount(0)
     }
@@ -116,18 +91,16 @@ function NewMatch() {
           onClear={handleClear}
         />
         <NewMatchContent>
-          {mode === 'recents' && (
-            <RecentPlayersPanel
-              isInitialLoading={recents.isInitialLoading}
-              isRefetching={recents.isRefetching}
-              hasError={hasInitialLoadError}
-              players={recents.opponents}
-              onSelectPlayer={handleSelectPlayer}
-              onRetry={handleRetry}
-              retryCount={retryCount}
-            />
-          )}
-          {mode === 'search' && <SearchTodoCard />}
+          <ContentPanel
+            queryParam={queryParam}
+            opponents={opponents.opponents}
+            isInitialLoading={opponents.isInitialLoading}
+            isFetching={opponents.isFetching}
+            hasError={opponents.status === 'error'}
+            onSelectPlayer={handleSelectPlayer}
+            onRetry={handleRetry}
+            retryCount={retryCount}
+          />
         </NewMatchContent>
       </div>
 

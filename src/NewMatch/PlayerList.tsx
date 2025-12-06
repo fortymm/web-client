@@ -1,6 +1,6 @@
 import { type FC } from 'react'
 import PlayerRow from './PlayerRow'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
+import { type Opponent } from '../hooks/useOpponents'
 
 export interface PlayerListPlayer {
   id: string
@@ -19,7 +19,7 @@ export interface PlayerListPlayer {
 }
 
 export interface PlayerListProps {
-  players: PlayerListPlayer[] | RecentOpponent[]
+  players: PlayerListPlayer[] | Opponent[]
   context: 'recents' | 'search'
   onSelectPlayer: (playerId: string) => void
 }

@@ -4,7 +4,7 @@ import { HttpResponse } from 'msw'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { matchDetailPagePage } from './MatchDetailPage.page'
-import { useRecentOpponentsPage } from './hooks/useRecentOpponents.page'
+import { useOpponentsPage } from './hooks/useOpponents.page'
 import { server } from './test/mocks/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -78,11 +78,11 @@ describe('NewMatch', () => {
   describe('player list', () => {
     it('renders the player list with recent opponents', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            useOpponentsPage.createMockResponse([
+              useOpponentsPage.createMockRecentOpponent({ id: 'player-1', username: 'Alice' }),
+              useOpponentsPage.createMockRecentOpponent({ id: 'player-2', username: 'Bob' }),
             ])
           )
         })
@@ -96,14 +96,14 @@ describe('NewMatch', () => {
 
     it('displays correct number of player rows', async () => {
       const mockOpponents = Array.from({ length: 5 }, (_, i) =>
-        useRecentOpponentsPage.createMockOpponent({
+        useOpponentsPage.createMockRecentOpponent({
           id: `player-${i + 1}`,
           username: `Player${i + 1}`,
         })
       )
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
-          return HttpResponse.json(useRecentOpponentsPage.createMockResponse(mockOpponents))
+        useOpponentsPage.requestHandler(() => {
+          return HttpResponse.json(useOpponentsPage.createMockResponse(mockOpponents))
         })
       )
 
@@ -116,11 +116,11 @@ describe('NewMatch', () => {
   describe('player selection', () => {
     beforeEach(() => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            useOpponentsPage.createMockResponse([
+              useOpponentsPage.createMockRecentOpponent({ id: 'player-1', username: 'Alice' }),
+              useOpponentsPage.createMockRecentOpponent({ id: 'player-2', username: 'Bob' }),
             ])
           )
         })
@@ -227,7 +227,7 @@ describe('NewMatch', () => {
   describe('recents error handling', () => {
     it('shows error alert when initial load fails', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -242,7 +242,7 @@ describe('NewMatch', () => {
 
     it('still shows section header when error alert is displayed', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -256,14 +256,14 @@ describe('NewMatch', () => {
     it('transitions from error to player list on successful retry', async () => {
       let requestCount = 0
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           requestCount++
           if (requestCount === 1) {
             return HttpResponse.error()
           }
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'TestPlayer' }),
+            useOpponentsPage.createMockResponse([
+              useOpponentsPage.createMockRecentOpponent({ id: 'player-1', username: 'TestPlayer' }),
             ])
           )
         })
@@ -284,7 +284,7 @@ describe('NewMatch', () => {
 
     it('stays on error card when retry also fails', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -302,7 +302,7 @@ describe('NewMatch', () => {
 
     it('shows network-focused message after 3 retries', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -333,7 +333,7 @@ describe('NewMatch', () => {
 
     it('allows quick match when error card is displayed', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        useOpponentsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
