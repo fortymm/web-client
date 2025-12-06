@@ -98,14 +98,14 @@ function getHeaderConfig(viewState: ViewState): {
     case 'recents-fetching':
       return { title: 'RECENT PLAYERS', isLoading: true }
 
+    // No data shown - use skeleton/placeholder, no inline loader
     case 'initial-load-search':
     case 'search-fetching-no-data':
-      return { title: 'SEARCH RESULTS', isLoading: true }
-
     case 'search-idle':
     case 'search-empty':
       return { title: 'SEARCH RESULTS', isLoading: false }
 
+    // Data shown - use inline loader
     case 'search-fetching':
       return { title: 'SEARCH RESULTS', isLoading: true }
   }
