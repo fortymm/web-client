@@ -1,4 +1,4 @@
-import { type PlayerListPlayer } from './PlayerList'
+import { type PlayerResult } from '../hooks/usePlayerResults'
 
 const firstNames = [
   'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Quinn', 'Avery',
@@ -37,8 +37,8 @@ function getRandomDate(daysAgo: number): string {
   return date.toISOString()
 }
 
-function generateMockPlayers(count: number): PlayerListPlayer[] {
-  const players: PlayerListPlayer[] = []
+function generateMockPlayers(count: number): PlayerResult[] {
+  const players: PlayerResult[] = []
 
   for (let i = 0; i < count; i++) {
     const firstName = firstNames[i % firstNames.length]
@@ -79,6 +79,7 @@ function generateMockPlayers(count: number): PlayerListPlayer[] {
       isEphemeral,
       headToHead: { wins, losses },
       lastMatch: {
+        id: `match-${i + 1}`,
         result,
         score,
         playedAt,

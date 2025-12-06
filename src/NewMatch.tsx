@@ -9,8 +9,7 @@ import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
 import SectionHeader from './NewMatch/SectionHeader'
 import PlayerList from './NewMatch/PlayerList'
-import { useRecentOpponents } from './hooks/useRecentOpponents'
-import { usePlayerSearch } from './hooks/usePlayerSearch'
+import { usePlayerResults } from './hooks/usePlayerResults'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 import { useDebounce } from '@uidotdev/usehooks'
 
@@ -28,12 +27,6 @@ function NewMatch() {
   // Match creation
   const createMatch = useCreateMatch()
 
-  // Recent opponents data
-  const recents = useRecentOpponents()
-
-  // Derived state for recents
-  const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
-
   // Mode: show recents immediately when cleared, otherwise wait for debounce
   // (Initial load works because useDebounce returns initial value immediately)
   const mode =
@@ -43,17 +36,16 @@ function NewMatch() {
         ? 'search'
         : 'recents'
 
-  // Player search
-  const search = usePlayerSearch({
-    query: debouncedQuery,
-    enabled: mode === 'search',
-  })
+  // Player results - returns recents when query is empty, search results otherwise
+  const playerResults = usePlayerResults({ query: debouncedQuery })
 
-  // Derived state for search
-  const hasSearchResults = search.results !== null && search.results.length > 0
+  // Derived state
+  const hasPlayersData = playerResults.players !== null && playerResults.players.length > 0
+  const isSearchMode = mode === 'search'
+  const hasSearchResults = isSearchMode && hasPlayersData
 
   // Error state (initial load failed, no cached data)
-  const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
+  const hasInitialLoadError = playerResults.status === 'error' && playerResults.players === null
 
   const handleSearchChange = (value: string) => {
     if (value) {
@@ -98,7 +90,7 @@ function NewMatch() {
 
   const handleRetry = async () => {
     setRetryCount((prev) => prev + 1)
-    const result = await recents.refetch()
+    const result = await playerResults.refetch()
     if (result.status === 'success') {
       setRetryCount(0)
     }
@@ -111,7 +103,7 @@ function NewMatch() {
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
-        <NewMatchHero hasRecentPlayers={hasRecentsData} />
+        <NewMatchHero hasRecentPlayers={hasPlayersData} />
         <NewMatchSearch
           value={queryParam}
           onChange={handleSearchChange}
@@ -120,10 +112,10 @@ function NewMatch() {
         <NewMatchContent>
           {showRecentsPanel && (
             <RecentPlayersPanel
-              isInitialLoading={recents.isInitialLoading}
-              isRefetching={recents.isRefetching}
+              isInitialLoading={playerResults.isInitialLoading}
+              isRefetching={playerResults.isRefetching}
               hasError={hasInitialLoadError}
-              players={recents.opponents}
+              players={playerResults.players}
               onSelectPlayer={handleSelectPlayer}
               onRetry={handleRetry}
               retryCount={retryCount}
@@ -133,10 +125,10 @@ function NewMatch() {
             <>
               <SectionHeader
                 title="SEARCH RESULTS"
-                isLoading={search.isFetching}
+                isLoading={playerResults.isFetching}
               />
               <PlayerList
-                players={search.results!}
+                players={playerResults.players!}
                 context="search"
                 onSelectPlayer={handleSelectPlayer}
               />

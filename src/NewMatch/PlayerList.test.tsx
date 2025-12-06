@@ -152,6 +152,7 @@ describe('PlayerList', () => {
             isEphemeral: false,
             headToHead: { wins: 5, losses: 3 },
             lastMatch: {
+              id: 'match-1',
               result: 'win',
               score: '11-7',
               playedAt: '2025-03-20T10:00:00.000Z',

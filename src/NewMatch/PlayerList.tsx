@@ -1,25 +1,9 @@
 import { type FC } from 'react'
 import PlayerRow from './PlayerRow'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
-
-export interface PlayerListPlayer {
-  id: string
-  username: string
-  avatarUrl: string | null
-  isEphemeral: boolean
-  headToHead?: {
-    wins: number
-    losses: number
-  }
-  lastMatch?: {
-    result: 'win' | 'loss'
-    score: string
-    playedAt: string
-  }
-}
+import { type PlayerResult } from '../hooks/usePlayerResults'
 
 export interface PlayerListProps {
-  players: PlayerListPlayer[] | RecentOpponent[]
+  players: PlayerResult[]
   context: 'recents' | 'search'
   onSelectPlayer: (playerId: string) => void
 }

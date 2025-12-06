@@ -4,8 +4,7 @@ import { HttpResponse, delay } from 'msw'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
 import { matchDetailPagePage } from './MatchDetailPage.page'
-import { useRecentOpponentsPage } from './hooks/useRecentOpponents.page'
-import { usePlayerSearchPage } from './hooks/usePlayerSearch.page'
+import { usePlayerResultsPage } from './hooks/usePlayerResults.page'
 import { server } from './test/mocks/server'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -79,11 +78,11 @@ describe('NewMatch', () => {
   describe('player list', () => {
     it('renders the player list with recent opponents', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            usePlayerResultsPage.createMockResponse([
+              usePlayerResultsPage.createMockRecentPlayer({ id: 'player-1', username: 'Alice' }),
+              usePlayerResultsPage.createMockRecentPlayer({ id: 'player-2', username: 'Bob' }),
             ])
           )
         })
@@ -96,15 +95,15 @@ describe('NewMatch', () => {
     })
 
     it('displays correct number of player rows', async () => {
-      const mockOpponents = Array.from({ length: 5 }, (_, i) =>
-        useRecentOpponentsPage.createMockOpponent({
+      const mockPlayers = Array.from({ length: 5 }, (_, i) =>
+        usePlayerResultsPage.createMockRecentPlayer({
           id: `player-${i + 1}`,
           username: `Player${i + 1}`,
         })
       )
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
-          return HttpResponse.json(useRecentOpponentsPage.createMockResponse(mockOpponents))
+        usePlayerResultsPage.requestHandler(() => {
+          return HttpResponse.json(usePlayerResultsPage.createMockResponse(mockPlayers))
         })
       )
 
@@ -117,11 +116,11 @@ describe('NewMatch', () => {
   describe('player selection', () => {
     beforeEach(() => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'Alice' }),
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-2', username: 'Bob' }),
+            usePlayerResultsPage.createMockResponse([
+              usePlayerResultsPage.createMockRecentPlayer({ id: 'player-1', username: 'Alice' }),
+              usePlayerResultsPage.createMockRecentPlayer({ id: 'player-2', username: 'Bob' }),
             ])
           )
         })
@@ -228,7 +227,7 @@ describe('NewMatch', () => {
   describe('recents error handling', () => {
     it('shows error alert when initial load fails', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -243,7 +242,7 @@ describe('NewMatch', () => {
 
     it('still shows section header when error alert is displayed', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -257,14 +256,14 @@ describe('NewMatch', () => {
     it('transitions from error to player list on successful retry', async () => {
       let requestCount = 0
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           requestCount++
           if (requestCount === 1) {
             return HttpResponse.error()
           }
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({ id: 'player-1', username: 'TestPlayer' }),
+            usePlayerResultsPage.createMockResponse([
+              usePlayerResultsPage.createMockRecentPlayer({ id: 'player-1', username: 'TestPlayer' }),
             ])
           )
         })
@@ -285,7 +284,7 @@ describe('NewMatch', () => {
 
     it('stays on error card when retry also fails', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -303,7 +302,7 @@ describe('NewMatch', () => {
 
     it('shows network-focused message after 3 retries', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -334,7 +333,7 @@ describe('NewMatch', () => {
 
     it('allows quick match when error card is displayed', async () => {
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(() => {
           return HttpResponse.error()
         })
       )
@@ -350,12 +349,25 @@ describe('NewMatch', () => {
 
   describe('search mode switching', () => {
     beforeEach(() => {
-      // Setup default handlers for recents
+      // Setup default handler that returns recents for empty query, search for non-empty
       server.use(
-        useRecentOpponentsPage.requestHandler(() => {
+        usePlayerResultsPage.requestHandler(({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            // Search mode
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [usePlayerResultsPage.createMockPlayer({ id: 'search-1', username: 'SearchResult' })],
+                query
+              )
+            )
+          }
+          // Recents mode
           return HttpResponse.json(
-            useRecentOpponentsPage.createMockResponse([
-              useRecentOpponentsPage.createMockOpponent({
+            usePlayerResultsPage.createMockResponse([
+              usePlayerResultsPage.createMockRecentPlayer({
                 id: 'recent-1',
                 username: 'RecentPlayer',
               }),
@@ -374,17 +386,6 @@ describe('NewMatch', () => {
     })
 
     it('shows SEARCH RESULTS header when search query is entered after debounce', async () => {
-      server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [usePlayerSearchPage.createMockSearchResult({ username: 'SearchResult' })],
-              'test'
-            )
-          )
-        })
-      )
-
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
 
@@ -400,13 +401,23 @@ describe('NewMatch', () => {
 
     it('keeps showing recents while search is loading', async () => {
       server.use(
-        usePlayerSearchPage.requestHandler(async () => {
-          await delay(500)
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [usePlayerSearchPage.createMockSearchResult({ username: 'SearchResult' })],
-              'test'
+        usePlayerResultsPage.requestHandler(async ({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            await delay(500)
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [usePlayerResultsPage.createMockPlayer({ username: 'SearchResult' })],
+                query
+              )
             )
+          }
+          return HttpResponse.json(
+            usePlayerResultsPage.createMockResponse([
+              usePlayerResultsPage.createMockRecentPlayer({ username: 'RecentPlayer' }),
+            ])
           )
         })
       )
@@ -431,20 +442,26 @@ describe('NewMatch', () => {
     it('shows inline loader on header when refetching with existing results', async () => {
       let requestCount = 0
       server.use(
-        usePlayerSearchPage.requestHandler(async () => {
-          requestCount++
-          if (requestCount > 1) {
-            await delay(500)
+        usePlayerResultsPage.requestHandler(async ({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            requestCount++
+            if (requestCount > 1) {
+              await delay(500)
+            }
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [usePlayerResultsPage.createMockPlayer({ username: `Result${requestCount}` })],
+                query
+              )
+            )
           }
           return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [
-                usePlayerSearchPage.createMockSearchResult({
-                  username: `Result${requestCount}`,
-                }),
-              ],
-              requestCount === 1 ? 'test' : 'test2'
-            )
+            usePlayerResultsPage.createMockResponse([
+              usePlayerResultsPage.createMockRecentPlayer({ username: 'RecentPlayer' }),
+            ])
           )
         })
       )
@@ -473,17 +490,6 @@ describe('NewMatch', () => {
     })
 
     it('returns to recents mode when search is cleared', async () => {
-      server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [usePlayerSearchPage.createMockSearchResult({ username: 'SearchResult' })],
-              'test'
-            )
-          )
-        })
-      )
-
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
 
@@ -504,22 +510,22 @@ describe('NewMatch', () => {
 
     it('displays search results in PlayerList with search context', async () => {
       server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [
-                usePlayerSearchPage.createMockSearchResult({
-                  id: 'search-1',
-                  username: 'Alice',
-                }),
-                usePlayerSearchPage.createMockSearchResult({
-                  id: 'search-2',
-                  username: 'Bob',
-                }),
-              ],
-              'test'
+        usePlayerResultsPage.requestHandler(({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [
+                  usePlayerResultsPage.createMockPlayer({ id: 'search-1', username: 'Alice' }),
+                  usePlayerResultsPage.createMockPlayer({ id: 'search-2', username: 'Bob' }),
+                ],
+                query
+              )
             )
-          )
+          }
+          return HttpResponse.json(usePlayerResultsPage.createMockResponse([]))
         })
       )
 
@@ -536,18 +542,19 @@ describe('NewMatch', () => {
 
     it('navigates to match detail page when clicking a search result', async () => {
       server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [
-                usePlayerSearchPage.createMockSearchResult({
-                  id: 'search-player-1',
-                  username: 'SearchPlayer',
-                }),
-              ],
-              'test'
+        usePlayerResultsPage.requestHandler(({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [usePlayerResultsPage.createMockPlayer({ id: 'search-player-1', username: 'SearchPlayer' })],
+                query
+              )
             )
-          )
+          }
+          return HttpResponse.json(usePlayerResultsPage.createMockResponse([]))
         })
       )
 
@@ -564,18 +571,19 @@ describe('NewMatch', () => {
 
     it('saves match with opponentId when clicking a search result', async () => {
       server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [
-                usePlayerSearchPage.createMockSearchResult({
-                  id: 'search-player-1',
-                  username: 'SearchPlayer',
-                }),
-              ],
-              'test'
+        usePlayerResultsPage.requestHandler(({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [usePlayerResultsPage.createMockPlayer({ id: 'search-player-1', username: 'SearchPlayer' })],
+                query
+              )
             )
-          )
+          }
+          return HttpResponse.json(usePlayerResultsPage.createMockResponse([]))
         })
       )
 
@@ -598,25 +606,31 @@ describe('NewMatch', () => {
 
     it('shows match history for players with history in search results', async () => {
       server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [
-                usePlayerSearchPage.createMockSearchResult({
-                  id: 'search-1',
-                  username: 'PlayerWithHistory',
-                  headToHead: { wins: 5, losses: 3 },
-                  lastMatch: {
-                    id: 'match-1',
-                    result: 'win',
-                    score: '11-7',
-                    playedAt: new Date().toISOString(),
-                  },
-                }),
-              ],
-              'test'
+        usePlayerResultsPage.requestHandler(({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [
+                  usePlayerResultsPage.createMockPlayer({
+                    id: 'search-1',
+                    username: 'PlayerWithHistory',
+                    headToHead: { wins: 5, losses: 3 },
+                    lastMatch: {
+                      id: 'match-1',
+                      result: 'win',
+                      score: '11-7',
+                      playedAt: new Date().toISOString(),
+                    },
+                  }),
+                ],
+                query
+              )
             )
-          )
+          }
+          return HttpResponse.json(usePlayerResultsPage.createMockResponse([]))
         })
       )
 
@@ -632,19 +646,19 @@ describe('NewMatch', () => {
 
     it('shows "No matches yet" for players without history in search results', async () => {
       server.use(
-        usePlayerSearchPage.requestHandler(() => {
-          return HttpResponse.json(
-            usePlayerSearchPage.createMockResponse(
-              [
-                usePlayerSearchPage.createMockSearchResult({
-                  id: 'search-1',
-                  username: 'NewPlayer',
-                  // No headToHead or lastMatch
-                }),
-              ],
-              'test'
+        usePlayerResultsPage.requestHandler(({ request }) => {
+          const url = new URL(request.url)
+          const query = url.searchParams.get('q') ?? ''
+
+          if (query) {
+            return HttpResponse.json(
+              usePlayerResultsPage.createMockResponse(
+                [usePlayerResultsPage.createMockPlayer({ id: 'search-1', username: 'NewPlayer' })],
+                query
+              )
             )
-          )
+          }
+          return HttpResponse.json(usePlayerResultsPage.createMockResponse([]))
         })
       )
 

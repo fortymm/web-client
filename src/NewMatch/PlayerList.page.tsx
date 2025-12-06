@@ -1,18 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
-import PlayerList, {
-  type PlayerListProps,
-  type PlayerListPlayer,
-} from './PlayerList'
+import PlayerList, { type PlayerListProps } from './PlayerList'
+import { type PlayerResult } from '../hooks/usePlayerResults'
 
 interface RenderOptions {
-  players?: PlayerListPlayer[]
+  players?: PlayerResult[]
   context?: PlayerListProps['context']
   onSelectPlayer?: PlayerListProps['onSelectPlayer']
 }
 
-const defaultPlayers: PlayerListPlayer[] = [
+const defaultPlayers: PlayerResult[] = [
   {
     id: 'player-1',
     username: 'Player1',
@@ -20,6 +18,7 @@ const defaultPlayers: PlayerListPlayer[] = [
     isEphemeral: false,
     headToHead: { wins: 3, losses: 2 },
     lastMatch: {
+      id: 'match-1',
       result: 'win',
       score: '11-7',
       playedAt: '2025-03-20T10:00:00.000Z',
@@ -32,6 +31,7 @@ const defaultPlayers: PlayerListPlayer[] = [
     isEphemeral: false,
     headToHead: { wins: 1, losses: 4 },
     lastMatch: {
+      id: 'match-2',
       result: 'loss',
       score: '7-11',
       playedAt: '2025-03-19T10:00:00.000Z',

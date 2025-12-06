@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import RecentPlayersPanel, {
   type RecentPlayersPanelProps,
 } from './RecentPlayersPanel'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
+import { type PlayerResult } from '../hooks/usePlayerResults'
 import { sectionHeaderPage } from './SectionHeader.page'
 import { skeletonRowsPage } from './SkeletonRows.page'
 import { playerListPage } from './PlayerList.page'
@@ -15,13 +15,13 @@ interface RenderOptions {
   isInitialLoading?: boolean
   isRefetching?: boolean
   hasError?: boolean
-  players?: RecentOpponent[] | null
+  players?: PlayerResult[] | null
   onSelectPlayer?: RecentPlayersPanelProps['onSelectPlayer']
   onRetry?: RecentPlayersPanelProps['onRetry']
   retryCount?: number
 }
 
-const defaultPlayers: RecentOpponent[] = [
+const defaultPlayers: PlayerResult[] = [
   {
     id: 'player-1',
     username: 'Player1',

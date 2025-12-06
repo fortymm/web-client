@@ -4,13 +4,13 @@ import SkeletonRows from './SkeletonRows'
 import PlayerList from './PlayerList'
 import RecentsErrorCard from './RecentsErrorCard'
 import NoRecentsEmptyState from './NoRecentsEmptyState'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
+import { type PlayerResult } from '../hooks/usePlayerResults'
 
 export interface RecentPlayersPanelProps {
   isInitialLoading: boolean
   isRefetching: boolean
   hasError: boolean
-  players: RecentOpponent[] | null
+  players: PlayerResult[] | null
   onSelectPlayer: (playerId: string) => void
   onRetry: () => Promise<void> | void
   retryCount: number
