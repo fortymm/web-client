@@ -1,10 +1,11 @@
 import { http, HttpResponse } from 'msw'
 
 export const handlers = [
-  // Default handler for recent opponents endpoint - returns empty list
-  http.get('/api/v1/users/me/recent-opponents', () => {
+  // Default handler for player results endpoint - returns empty list
+  http.get('/api/v1/users/players', () => {
     return HttpResponse.json({
-      opponents: [],
+      players: [],
+      query: '',
       total: 0,
     })
   }),

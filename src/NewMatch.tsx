@@ -7,8 +7,9 @@ import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthCont
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
-import { useRecentOpponents } from './hooks/useRecentOpponents'
-import { usePlayerSearch } from './hooks/usePlayerSearch'
+import SectionHeader from './NewMatch/SectionHeader'
+import PlayerList from './NewMatch/PlayerList'
+import { usePlayerResults } from './hooks/usePlayerResults'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
 import { useDebounce } from '@uidotdev/usehooks'
 
@@ -26,12 +27,6 @@ function NewMatch() {
   // Match creation
   const createMatch = useCreateMatch()
 
-  // Recent opponents data
-  const recents = useRecentOpponents()
-
-  // Derived state for recents
-  const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
-
   // Mode: show recents immediately when cleared, otherwise wait for debounce
   // (Initial load works because useDebounce returns initial value immediately)
   const mode =
@@ -41,19 +36,16 @@ function NewMatch() {
         ? 'search'
         : 'recents'
 
-  // Player search - results will be rendered in FM-303
-  // Derived state examples:
-  //   searchResults = search.results
-  //   isSearchLoading = search.isLoading || search.isFetching
-  //   hasSearchResults = search.results !== null && search.results.length > 0
-  //   hasEmptySearchResults = search.status === 'success' && search.results?.length === 0
-  usePlayerSearch({
-    query: debouncedQuery,
-    enabled: mode === 'search',
-  })
+  // Player results - returns recents when query is empty, search results otherwise
+  const playerResults = usePlayerResults({ query: debouncedQuery })
+
+  // Derived state
+  const hasPlayersData = playerResults.players !== null && playerResults.players.length > 0
+  const isSearchMode = mode === 'search'
+  const hasSearchResults = isSearchMode && hasPlayersData
 
   // Error state (initial load failed, no cached data)
-  const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
+  const hasInitialLoadError = playerResults.status === 'error' && playerResults.players === null
 
   const handleSearchChange = (value: string) => {
     if (value) {
@@ -98,33 +90,49 @@ function NewMatch() {
 
   const handleRetry = async () => {
     setRetryCount((prev) => prev + 1)
-    const result = await recents.refetch()
+    const result = await playerResults.refetch()
     if (result.status === 'success') {
       setRetryCount(0)
     }
   }
 
+  // Show recents panel when in recents mode OR when searching but no results yet
+  const showRecentsPanel = mode === 'recents' || (mode === 'search' && !hasSearchResults)
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)] -mx-4 -mt-4">
       {/* Main Content Wrapper */}
       <div className="max-w-screen-sm mx-auto w-full flex flex-col flex-1">
-        <NewMatchHero hasRecentPlayers={hasRecentsData} />
+        <NewMatchHero hasRecentPlayers={hasPlayersData} />
         <NewMatchSearch
           value={queryParam}
           onChange={handleSearchChange}
           onClear={handleClear}
         />
         <NewMatchContent>
-          {mode === 'recents' && (
+          {showRecentsPanel && (
             <RecentPlayersPanel
-              isInitialLoading={recents.isInitialLoading}
-              isRefetching={recents.isRefetching}
+              isInitialLoading={playerResults.isInitialLoading}
+              isRefetching={playerResults.isRefetching}
               hasError={hasInitialLoadError}
-              players={recents.opponents}
+              players={playerResults.players}
               onSelectPlayer={handleSelectPlayer}
               onRetry={handleRetry}
               retryCount={retryCount}
             />
+          )}
+          {mode === 'search' && hasSearchResults && (
+            <>
+              <SectionHeader
+                title="SEARCH RESULTS"
+                isLoading={playerResults.isFetching}
+              />
+              <PlayerList
+                players={playerResults.players!}
+                context="search"
+                onSelectPlayer={handleSelectPlayer}
+              />
+            </>
           )}
         </NewMatchContent>
       </div>
