@@ -7,6 +7,7 @@ import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthCont
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
 import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
+import SearchTodoCard from './NewMatch/SearchTodoCard'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { usePlayerSearch } from './hooks/usePlayerSearch'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
@@ -126,6 +127,7 @@ function NewMatch() {
               retryCount={retryCount}
             />
           )}
+          {mode === 'search' && <SearchTodoCard />}
         </NewMatchContent>
       </div>
 
