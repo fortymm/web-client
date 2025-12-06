@@ -4,7 +4,7 @@ import SkeletonRows from './SkeletonRows'
 import PlayerList from './PlayerList'
 import RecentsErrorCard from './RecentsErrorCard'
 import NoRecentsEmptyState from './NoRecentsEmptyState'
-import SearchTodoCard from './SearchTodoCard'
+import SearchLoadingPlaceholder from './SearchLoadingPlaceholder'
 import { useFlash } from '../useFlash'
 import { type Opponent } from '../hooks/useOpponents'
 
@@ -85,7 +85,7 @@ function computeViewState(
 }
 
 function getHeaderConfig(viewState: ViewState): {
-  title: 'RECENT OPPONENTS' | 'SEARCH RESULTS'
+  title: 'RECENT PLAYERS' | 'SEARCH RESULTS'
   isLoading: boolean
 } {
   switch (viewState.type) {
@@ -93,14 +93,14 @@ function getHeaderConfig(viewState: ViewState): {
     case 'recents-idle':
     case 'recents-empty':
     case 'recents-error':
-      return { title: 'RECENT OPPONENTS', isLoading: false }
+      return { title: 'RECENT PLAYERS', isLoading: false }
 
     case 'recents-fetching':
-      return { title: 'RECENT OPPONENTS', isLoading: true }
+      return { title: 'RECENT PLAYERS', isLoading: true }
 
     case 'initial-load-search':
     case 'search-fetching-no-data':
-      return { title: 'SEARCH RESULTS', isLoading: false }
+      return { title: 'SEARCH RESULTS', isLoading: true }
 
     case 'search-idle':
     case 'search-empty':
@@ -154,8 +154,10 @@ const ContentPanel: FC<ContentPanelProps> = ({
     switch (viewState.type) {
       case 'initial-load-recents':
       case 'initial-load-search':
-      case 'search-fetching-no-data':
         return <SkeletonRows count={6} />
+
+      case 'search-fetching-no-data':
+        return <SearchLoadingPlaceholder />
 
       case 'recents-error':
         return <RecentsErrorCard onRetry={onRetry} retryCount={retryCount} />
@@ -179,10 +181,17 @@ const ContentPanel: FC<ContentPanelProps> = ({
 
       case 'search-idle':
       case 'search-fetching':
-        return <SearchTodoCard />
+        return (
+          <PlayerList
+            players={viewState.opponents}
+            context="search"
+            onSelectPlayer={onSelectPlayer}
+          />
+        )
 
       case 'search-empty':
-        return <SearchTodoCard />
+        // Empty search results - out of scope for FM-305
+        return null
     }
   }
 

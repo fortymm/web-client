@@ -9,6 +9,7 @@ import { skeletonRowsPage } from './SkeletonRows.page'
 import { playerListPage } from './PlayerList.page'
 import { recentsErrorCardPage } from './RecentsErrorCard.page'
 import { noRecentsEmptyStatePage } from './NoRecentsEmptyState.page'
+import { searchLoadingPlaceholderPage } from './SearchLoadingPlaceholder.page'
 import { type Opponent } from '../hooks/useOpponents'
 
 export const defaultOpponents: Opponent[] = [
@@ -94,16 +95,16 @@ export const contentPanelPage = {
   },
 
   // Header delegation
-  queryRecentOpponentsHeader() {
-    return screen.queryByRole('heading', { name: 'RECENT OPPONENTS', level: 2 })
+  queryRecentPlayersHeader() {
+    return screen.queryByRole('heading', { name: 'RECENT PLAYERS', level: 2 })
   },
 
   querySearchResultsHeader() {
     return screen.queryByRole('heading', { name: 'SEARCH RESULTS', level: 2 })
   },
 
-  get recentOpponentsHeader() {
-    return sectionHeaderPage.recentOpponentsHeader
+  get recentPlayersHeader() {
+    return sectionHeaderPage.recentPlayersHeader
   },
 
   get searchResultsHeader() {
@@ -162,12 +163,14 @@ export const contentPanelPage = {
     return this.queryEmptyState() !== null
   },
 
-  // Search todo card
-  querySearchTodoCard() {
-    return screen.queryByText(/Search results coming soon/i)
+  // Search loading placeholder
+  searchLoadingPlaceholder: searchLoadingPlaceholderPage,
+
+  querySearchLoadingPlaceholder() {
+    return searchLoadingPlaceholderPage.queryContainer()
   },
 
-  get hasSearchTodoCard() {
-    return this.querySearchTodoCard() !== null
+  get hasSearchLoadingPlaceholder() {
+    return this.querySearchLoadingPlaceholder() !== null
   },
 }

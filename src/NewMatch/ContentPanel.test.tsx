@@ -12,13 +12,13 @@ describe('ContentPanel', () => {
   })
 
   describe('Initial Load States', () => {
-    it('shows skeleton with "RECENT OPPONENTS" header during initial load', () => {
+    it('shows skeleton with "RECENT PLAYERS" header during initial load', () => {
       contentPanelPage.render({
         isInitialLoading: true,
         opponents: null,
       })
 
-      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.recentPlayersHeader).toBeInTheDocument()
       expect(contentPanelPage.isShowingSkeleton).toBe(true)
       expect(contentPanelPage.hasLoadingSpinner).toBe(false)
     })
@@ -32,27 +32,27 @@ describe('ContentPanel', () => {
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.isShowingSkeleton).toBe(true)
-      expect(contentPanelPage.hasLoadingSpinner).toBe(false)
+      expect(contentPanelPage.hasLoadingSpinner).toBe(true)
     })
   })
 
-  describe('Recent Opponents View', () => {
-    it('shows "RECENT OPPONENTS" header with player list when data loaded', () => {
+  describe('Recent Players View', () => {
+    it('shows "RECENT PLAYERS" header with player list when data loaded', () => {
       contentPanelPage.render({
         opponents: defaultOpponents,
       })
 
-      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.recentPlayersHeader).toBeInTheDocument()
       expect(contentPanelPage.playerRows).toHaveLength(2)
       expect(contentPanelPage.hasLoadingSpinner).toBe(false)
     })
 
-    it('shows empty state when no recent opponents', () => {
+    it('shows empty state when no recent players', () => {
       contentPanelPage.render({
         opponents: [],
       })
 
-      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.recentPlayersHeader).toBeInTheDocument()
       expect(contentPanelPage.hasEmptyState).toBe(true)
     })
 
@@ -62,7 +62,7 @@ describe('ContentPanel', () => {
         opponents: defaultOpponents,
       })
 
-      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.recentPlayersHeader).toBeInTheDocument()
       expect(contentPanelPage.hasLoadingSpinner).toBe(true)
       expect(contentPanelPage.playerRows).toHaveLength(2)
     })
@@ -73,13 +73,13 @@ describe('ContentPanel', () => {
         opponents: null,
       })
 
-      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.recentPlayersHeader).toBeInTheDocument()
       expect(contentPanelPage.hasErrorCard).toBe(true)
     })
   })
 
   describe('Searching State', () => {
-    it('shows "SEARCH RESULTS" header with spinner when fetching', () => {
+    it('shows "SEARCH RESULTS" header with spinner and player list when fetching with data', () => {
       contentPanelPage.render({
         queryParam: 'john',
         isFetching: true,
@@ -88,11 +88,22 @@ describe('ContentPanel', () => {
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.hasLoadingSpinner).toBe(true)
-      // Shows SearchTodoCard in search mode
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.playerRows).toHaveLength(2)
     })
 
-    it('shows skeleton when fetching with no data', () => {
+    it('shows search loading placeholder when fetching with no data', () => {
+      contentPanelPage.render({
+        queryParam: 'john',
+        isFetching: true,
+        opponents: null,
+      })
+
+      expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
+      expect(contentPanelPage.hasLoadingSpinner).toBe(true)
+      expect(contentPanelPage.hasSearchLoadingPlaceholder).toBe(true)
+    })
+
+    it('shows skeleton when initial load with search query', () => {
       contentPanelPage.render({
         queryParam: 'john',
         isFetching: true,
@@ -101,24 +112,24 @@ describe('ContentPanel', () => {
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasLoadingSpinner).toBe(false)
+      expect(contentPanelPage.hasLoadingSpinner).toBe(true)
       expect(contentPanelPage.isShowingSkeleton).toBe(true)
     })
   })
 
   describe('Search View', () => {
-    it('shows "SEARCH RESULTS" header with search todo card when search completes', () => {
+    it('shows "SEARCH RESULTS" header with player list when search completes', () => {
       contentPanelPage.render({
         queryParam: 'john',
         opponents: defaultOpponents,
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.playerRows).toHaveLength(2)
       expect(contentPanelPage.hasLoadingSpinner).toBe(false)
     })
 
-    it('shows loading spinner during search refetch', () => {
+    it('shows loading spinner during search refetch with stale results visible', () => {
       contentPanelPage.render({
         queryParam: 'john',
         isFetching: true,
@@ -127,28 +138,28 @@ describe('ContentPanel', () => {
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.hasLoadingSpinner).toBe(true)
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.playerRows).toHaveLength(2)
     })
 
-    it('shows search todo card for empty search results', () => {
+    it('shows "SEARCH RESULTS" header for empty search results (out of scope)', () => {
       contentPanelPage.render({
         queryParam: 'xyz',
         opponents: [],
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      // Empty search results state is out of scope for FM-305
     })
   })
 
   describe('Clearing Search', () => {
-    it('shows "RECENT OPPONENTS" header when query is cleared', () => {
+    it('shows "RECENT PLAYERS" header when query is cleared', () => {
       contentPanelPage.render({
         queryParam: '',
         opponents: defaultOpponents,
       })
 
-      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.recentPlayersHeader).toBeInTheDocument()
       expect(contentPanelPage.playerRows).toHaveLength(2)
     })
   })

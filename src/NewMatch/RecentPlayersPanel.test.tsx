@@ -24,11 +24,11 @@ describe('RecentPlayersPanel', () => {
   })
 
   describe('loaded state', () => {
-    it('shows header with RECENT OPPONENTS title', () => {
+    it('shows header with RECENT PLAYERS title', () => {
       recentPlayersPanelPage.render()
 
       expect(recentPlayersPanelPage.header).toBeInTheDocument()
-      expect(recentPlayersPanelPage.header).toHaveTextContent('RECENT OPPONENTS')
+      expect(recentPlayersPanelPage.header).toHaveTextContent('RECENT PLAYERS')
     })
 
     it('does not show skeleton rows when loaded', () => {

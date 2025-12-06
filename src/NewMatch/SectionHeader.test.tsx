@@ -2,13 +2,13 @@ import { describe, it, expect } from 'vitest'
 import { sectionHeaderPage } from './SectionHeader.page'
 
 describe('SectionHeader', () => {
-  it('displays the recent opponents section header', () => {
+  it('displays the recent players section header', () => {
     sectionHeaderPage.render()
-    expect(sectionHeaderPage.recentOpponentsHeader).toBeInTheDocument()
+    expect(sectionHeaderPage.recentPlayersHeader).toBeInTheDocument()
   })
 
   it('has correct heading level for accessibility', () => {
     sectionHeaderPage.render()
-    expect(sectionHeaderPage.recentOpponentsHeader.tagName).toBe('H2')
+    expect(sectionHeaderPage.recentPlayersHeader.tagName).toBe('H2')
   })
 })

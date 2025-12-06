@@ -2,12 +2,12 @@ import { render, screen } from '@testing-library/react'
 import SectionHeader from './SectionHeader'
 
 export const sectionHeaderPage = {
-  render(title: 'RECENT OPPONENTS' | 'SEARCH RESULTS' = 'RECENT OPPONENTS', isLoading?: boolean) {
+  render(title: 'RECENT PLAYERS' | 'SEARCH RESULTS' = 'RECENT PLAYERS', isLoading?: boolean) {
     render(<SectionHeader title={title} isLoading={isLoading} />)
   },
 
-  get recentOpponentsHeader() {
-    return screen.getByRole('heading', { name: 'RECENT OPPONENTS', level: 2 })
+  get recentPlayersHeader() {
+    return screen.getByRole('heading', { name: 'RECENT PLAYERS', level: 2 })
   },
 
   get searchResultsHeader() {

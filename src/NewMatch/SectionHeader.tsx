@@ -1,5 +1,5 @@
 interface SectionHeaderProps {
-  title: 'RECENT OPPONENTS' | 'SEARCH RESULTS'
+  title: 'RECENT PLAYERS' | 'SEARCH RESULTS'
   isLoading?: boolean
 }
 
