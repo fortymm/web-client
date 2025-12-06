@@ -6,8 +6,7 @@ import NewMatchContent from './NewMatch/NewMatchContent'
 import MatchLengthControl, { type MatchLength } from './NewMatch/MatchLengthControl'
 import QuickMatchButton from './NewMatch/QuickMatchButton'
 import CTAPanel from './CTAPanel'
-import RecentPlayersPanel from './NewMatch/RecentPlayersPanel'
-import SearchTodoCard from './NewMatch/SearchTodoCard'
+import ContentPanel from './NewMatch/ContentPanel'
 import { useRecentOpponents } from './hooks/useRecentOpponents'
 import { usePlayerSearch } from './hooks/usePlayerSearch'
 import { useCreateMatch } from './NewMatch/useCreateMatch'
@@ -33,28 +32,11 @@ function NewMatch() {
   // Derived state for recents
   const hasRecentsData = recents.opponents !== null && recents.opponents.length > 0
 
-  // Mode: show recents immediately when cleared, otherwise wait for debounce
-  // (Initial load works because useDebounce returns initial value immediately)
-  const mode =
-    queryParam.trim() === ''
-      ? 'recents'
-      : debouncedQuery.trim() !== ''
-        ? 'search'
-        : 'recents'
-
-  // Player search - results will be rendered in FM-303
-  // Derived state examples:
-  //   searchResults = search.results
-  //   isSearchLoading = search.isLoading || search.isFetching
-  //   hasSearchResults = search.results !== null && search.results.length > 0
-  //   hasEmptySearchResults = search.status === 'success' && search.results?.length === 0
-  usePlayerSearch({
+  // Player search
+  const search = usePlayerSearch({
     query: debouncedQuery,
-    enabled: mode === 'search',
+    enabled: debouncedQuery.trim() !== '',
   })
-
-  // Error state (initial load failed, no cached data)
-  const hasInitialLoadError = recents.status === 'error' && recents.opponents === null
 
   const handleSearchChange = (value: string) => {
     if (value) {
@@ -116,18 +98,24 @@ function NewMatch() {
           onClear={handleClear}
         />
         <NewMatchContent>
-          {mode === 'recents' && (
-            <RecentPlayersPanel
-              isInitialLoading={recents.isInitialLoading}
-              isRefetching={recents.isRefetching}
-              hasError={hasInitialLoadError}
-              players={recents.opponents}
-              onSelectPlayer={handleSelectPlayer}
-              onRetry={handleRetry}
-              retryCount={retryCount}
-            />
-          )}
-          {mode === 'search' && <SearchTodoCard />}
+          <ContentPanel
+            queryParam={queryParam}
+            recents={{
+              isInitialLoading: recents.isInitialLoading,
+              isRefetching: recents.isRefetching,
+              hasError: recents.status === 'error',
+              opponents: recents.opponents,
+            }}
+            search={{
+              isLoading: search.isLoading,
+              isFetching: search.isFetching,
+              hasError: search.status === 'error',
+              results: search.results,
+            }}
+            onSelectPlayer={handleSelectPlayer}
+            onRetry={handleRetry}
+            retryCount={retryCount}
+          />
         </NewMatchContent>
       </div>
 
