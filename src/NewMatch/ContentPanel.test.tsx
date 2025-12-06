@@ -32,7 +32,7 @@ describe('ContentPanel', () => {
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.isShowingSkeleton).toBe(true)
-      expect(contentPanelPage.hasLoadingSpinner).toBe(true)
+      expect(contentPanelPage.hasLoadingSpinner).toBe(false)
     })
   })
 
@@ -101,7 +101,7 @@ describe('ContentPanel', () => {
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasLoadingSpinner).toBe(true)
+      expect(contentPanelPage.hasLoadingSpinner).toBe(false)
       expect(contentPanelPage.isShowingSkeleton).toBe(true)
     })
   })

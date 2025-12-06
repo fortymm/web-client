@@ -100,7 +100,7 @@ function getHeaderConfig(viewState: ViewState): {
 
     case 'initial-load-search':
     case 'search-fetching-no-data':
-      return { title: 'SEARCH RESULTS', isLoading: true }
+      return { title: 'SEARCH RESULTS', isLoading: false }
 
     case 'search-idle':
     case 'search-empty':
