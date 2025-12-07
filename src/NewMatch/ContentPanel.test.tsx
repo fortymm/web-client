@@ -79,7 +79,7 @@ describe('ContentPanel', () => {
   })
 
   describe('Searching State', () => {
-    it('shows "SEARCH RESULTS" header with spinner when fetching', () => {
+    it('shows "SEARCH RESULTS" header with spinner and player list when fetching', () => {
       contentPanelPage.render({
         queryParam: 'john',
         isFetching: true,
@@ -88,8 +88,7 @@ describe('ContentPanel', () => {
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.hasLoadingSpinner).toBe(true)
-      // Shows SearchTodoCard in search mode
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.playerRows).toHaveLength(2)
     })
 
     it('shows skeleton when fetching with no data', () => {
@@ -107,14 +106,14 @@ describe('ContentPanel', () => {
   })
 
   describe('Search View', () => {
-    it('shows "SEARCH RESULTS" header with search todo card when search completes', () => {
+    it('shows "SEARCH RESULTS" header with player list when search completes', () => {
       contentPanelPage.render({
         queryParam: 'john',
         opponents: defaultOpponents,
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.playerRows).toHaveLength(2)
       expect(contentPanelPage.hasLoadingSpinner).toBe(false)
     })
 
@@ -127,17 +126,17 @@ describe('ContentPanel', () => {
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.hasLoadingSpinner).toBe(true)
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.playerRows).toHaveLength(2)
     })
 
-    it('shows search todo card for empty search results', () => {
+    it('shows empty state for empty search results', () => {
       contentPanelPage.render({
         queryParam: 'xyz',
         opponents: [],
       })
 
       expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
-      expect(contentPanelPage.hasSearchTodoCard).toBe(true)
+      expect(contentPanelPage.hasSearchEmptyState).toBe(true)
     })
   })
 
@@ -149,6 +148,30 @@ describe('ContentPanel', () => {
       })
 
       expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.playerRows).toHaveLength(2)
+    })
+  })
+
+  describe('Debounce Behavior', () => {
+    it('shows "RECENT OPPONENTS" header while debounce is pending', () => {
+      contentPanelPage.render({
+        queryParam: 'john',
+        activeQuery: '',
+        opponents: defaultOpponents,
+      })
+
+      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.playerRows).toHaveLength(2)
+    })
+
+    it('switches to "SEARCH RESULTS" header when debounce completes', () => {
+      contentPanelPage.render({
+        queryParam: 'john',
+        activeQuery: 'john',
+        opponents: defaultOpponents,
+      })
+
+      expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
       expect(contentPanelPage.playerRows).toHaveLength(2)
     })
   })

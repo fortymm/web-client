@@ -93,6 +93,7 @@ function NewMatch() {
         <NewMatchContent>
           <ContentPanel
             queryParam={queryParam}
+            activeQuery={debouncedQuery}
             opponents={opponents.opponents}
             isInitialLoading={opponents.isInitialLoading}
             isFetching={opponents.isFetching}
