@@ -55,7 +55,10 @@ export const gameScoreFormPage = {
     return screen.getByText(/game \d+ ·/i)
   },
 
-  getSubtitleFor(gameNumber: number) {
+  getSubtitleFor(gameNumber: number, totalGames?: number) {
+    if (totalGames) {
+      return screen.getByText(new RegExp(`game ${gameNumber} of ${totalGames} ·`, 'i'))
+    }
     return screen.getByText(new RegExp(`game ${gameNumber} ·`, 'i'))
   },
 
