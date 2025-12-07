@@ -1,7 +1,6 @@
 import { type FC, useState } from 'react'
 import CTAPanel from '../CTAPanel'
 import PlayerScoreInput from './PlayerScoreInput'
-import WinnerSummary from './WinnerSummary'
 
 interface Player {
   id: string
@@ -91,6 +90,11 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
       player2Score: result.num2,
       winnerId,
     })
+
+    // Reset form for next game
+    setScore1('')
+    setScore2('')
+    setSubmitted(false)
   }
 
   const handleScore1Change = (value: string) => {
@@ -152,29 +156,15 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               disabled={disabled}
             />
           </div>
-          <p className="text-[10px] text-base-content/30 text-center">
-            First to 11, win by 2. You can override if needed.
-          </p>
         </div>
       </div>
 
-      {/* Winner summary / validation feedback */}
-      <div className="min-h-[56px]">
-        <WinnerSummary
-          player1={player1}
-          player2={player2}
-          score1={score1}
-          score2={score2}
-        />
-        {errors.general && !isTied && (
-          <div
-            className="bg-error/10 border border-error/20 rounded-lg p-3 text-center"
-            role="alert"
-          >
-            <p className="text-error text-sm font-medium">{errors.general}</p>
-          </div>
-        )}
-      </div>
+      {/* Validation error */}
+      {(errors.general || isTied) && (
+        <p className="text-error text-sm text-center" role="alert">
+          Game scores must have a winner.
+        </p>
+      )}
 
       <CTAPanel>
         <button

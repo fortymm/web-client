@@ -19,12 +19,6 @@ describe('GameScoreForm', () => {
       expect(gameScoreFormPage.subtitle).toHaveTextContent('Game 2 · Alice vs Bob')
     })
 
-    it('displays rules hint', () => {
-      gameScoreFormPage.render()
-
-      expect(gameScoreFormPage.rulesHint).toHaveTextContent('First to 11, win by 2')
-    })
-
     it('displays score inputs for both players', () => {
       gameScoreFormPage.render({
         player1: { id: 'p1', name: 'Alice' },

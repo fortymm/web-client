@@ -4,12 +4,20 @@ const DB_NAME = 'fortymm'
 const DB_VERSION = 1
 const MATCHES_STORE = 'matches'
 
+export interface GameScore {
+  player1Score: number
+  player2Score: number
+  winnerId: string
+}
+
 export interface StoredMatch {
   id: string
   playerId: string | null
   opponentId: string | null
   matchLength: number
-  status: string
+  status: 'in_progress' | 'completed'
+  games: GameScore[]
+  winnerId: string | null
   createdAt: Date
 }
 
