@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { NewMatchButton } from './NewMatchButton'
 import CTAPanel from './CTAPanel'
+import { usePrefetchRecentOpponents } from './usePrefetchRecentOpponents'
 
 function LandingPage() {
   const navigate = useNavigate()
+  usePrefetchRecentOpponents()
 
   return (
     <>
