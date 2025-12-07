@@ -3,7 +3,7 @@ import { waitFor } from '@testing-library/react'
 import { HttpResponse } from 'msw'
 import { newMatchPage } from './NewMatch.page'
 import { landingPagePage } from './LandingPage.page'
-import { matchDetailPagePage } from './MatchDetailPage.page'
+import { matchScorePagePage } from './MatchScorePage.page'
 import { useOpponentsPage } from './hooks/useOpponents.page'
 import { server } from './test/mocks/server'
 
@@ -127,12 +127,12 @@ describe('NewMatch', () => {
       )
     })
 
-    it('navigates to match detail page when clicking a player', async () => {
+    it('navigates to scoring page when clicking a player', async () => {
       newMatchPage.render()
       await newMatchPage.waitForPlayersToLoad()
       await newMatchPage.clickPlayerByIndex(0)
 
-      expect(matchDetailPagePage.heading).toBeInTheDocument()
+      expect(matchScorePagePage.gameScoreForm.heading).toBeInTheDocument()
     })
 
     it('saves match with opponentId when clicking a player', async () => {
@@ -196,12 +196,12 @@ describe('NewMatch', () => {
       })
     })
 
-    it('navigates to match detail page immediately with generated id', async () => {
+    it('navigates to scoring page immediately with generated id', async () => {
       newMatchPage.render()
       await newMatchPage.clickQuickMatch()
 
       // Navigation happens optimistically, so it should be immediate
-      expect(matchDetailPagePage.heading).toBeInTheDocument()
+      expect(matchScorePagePage.gameScoreForm.heading).toBeInTheDocument()
     })
 
     it('can change match length and create match in sequence', async () => {
@@ -343,7 +343,7 @@ describe('NewMatch', () => {
 
       // Quick match should still work
       await newMatchPage.clickQuickMatch()
-      expect(matchDetailPagePage.heading).toBeInTheDocument()
+      expect(matchScorePagePage.gameScoreForm.heading).toBeInTheDocument()
     })
   })
 })
