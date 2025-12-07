@@ -43,6 +43,7 @@ export const defaultOpponents: Opponent[] = [
 
 interface RenderOptions {
   queryParam?: string
+  activeQuery?: string
   opponents?: Opponent[] | null
   isInitialLoading?: boolean
   isFetching?: boolean
@@ -56,6 +57,7 @@ export const contentPanelPage = {
   render(options: RenderOptions = {}) {
     const {
       queryParam = '',
+      activeQuery = options.queryParam ?? '',
       opponents = defaultOpponents,
       isInitialLoading = false,
       isFetching = false,
@@ -71,6 +73,7 @@ export const contentPanelPage = {
       <FlashTestWrapper>
         <ContentPanel
           queryParam={queryParam}
+          activeQuery={activeQuery}
           opponents={opponents}
           isInitialLoading={isInitialLoading}
           isFetching={isFetching}

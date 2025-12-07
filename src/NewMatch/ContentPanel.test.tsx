@@ -152,6 +152,30 @@ describe('ContentPanel', () => {
     })
   })
 
+  describe('Debounce Behavior', () => {
+    it('shows "RECENT OPPONENTS" header while debounce is pending', () => {
+      contentPanelPage.render({
+        queryParam: 'john',
+        activeQuery: '',
+        opponents: defaultOpponents,
+      })
+
+      expect(contentPanelPage.recentOpponentsHeader).toBeInTheDocument()
+      expect(contentPanelPage.playerRows).toHaveLength(2)
+    })
+
+    it('switches to "SEARCH RESULTS" header when debounce completes', () => {
+      contentPanelPage.render({
+        queryParam: 'john',
+        activeQuery: 'john',
+        opponents: defaultOpponents,
+      })
+
+      expect(contentPanelPage.searchResultsHeader).toBeInTheDocument()
+      expect(contentPanelPage.playerRows).toHaveLength(2)
+    })
+  })
+
   describe('Player Selection', () => {
     it('calls onSelectPlayer when a player is clicked', async () => {
       const { onSelectPlayer } = contentPanelPage.render({

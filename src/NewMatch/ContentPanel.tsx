@@ -10,6 +10,7 @@ import { type Opponent } from '../hooks/useOpponents'
 
 export interface ContentPanelProps {
   queryParam: string
+  activeQuery: string
   opponents: Opponent[] | null
   isInitialLoading: boolean
   isFetching: boolean
@@ -32,13 +33,13 @@ type ViewState =
   | { type: 'search-fetching-no-data' }
 
 function computeViewState(
-  queryParam: string,
+  activeQuery: string,
   opponents: Opponent[] | null,
   isInitialLoading: boolean,
   isFetching: boolean,
   hasError: boolean
 ): ViewState {
-  const hasQuery = queryParam.trim() !== ''
+  const hasQuery = activeQuery.trim() !== ''
   const hasData = opponents !== null
 
   // Initial load (no data yet)
@@ -113,6 +114,7 @@ function getHeaderConfig(viewState: ViewState): {
 
 const ContentPanel: FC<ContentPanelProps> = ({
   queryParam,
+  activeQuery,
   opponents,
   isInitialLoading,
   isFetching,
@@ -124,7 +126,7 @@ const ContentPanel: FC<ContentPanelProps> = ({
   const { showFlash } = useFlash()
 
   const viewState = computeViewState(
-    queryParam,
+    activeQuery,
     opponents,
     isInitialLoading,
     isFetching,
@@ -140,14 +142,14 @@ const ContentPanel: FC<ContentPanelProps> = ({
     const hasBackgroundError = hasError && opponents !== null
 
     if (hasBackgroundError && !prevErrorRef.current) {
-      const message = queryParam.trim() !== ''
+      const message = activeQuery.trim() !== ''
         ? 'Failed to search players'
         : 'Failed to refresh recent opponents'
       showFlash(message, { type: 'error', timeout: 5000 })
     }
 
     prevErrorRef.current = hasBackgroundError
-  }, [hasError, opponents, queryParam, showFlash])
+  }, [hasError, opponents, activeQuery, showFlash])
 
   // Render content based on view state
   const renderContent = () => {
