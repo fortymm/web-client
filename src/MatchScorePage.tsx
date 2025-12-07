@@ -76,7 +76,6 @@ function MatchScorePage() {
           totalGames={matchLength}
           player1={DEFAULT_PLAYER_1}
           player2={DEFAULT_PLAYER_2}
-          matchState={{ player1Wins, player2Wins, gamesToWin }}
           onSave={handleSave}
           onCancel={handleCancel}
           disabled={saveGame.isPending}
