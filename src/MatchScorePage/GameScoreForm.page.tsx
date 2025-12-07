@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import GameScoreForm from './GameScoreForm'
 import { playerScoreInputPage } from './PlayerScoreInput.page'
-import { winnerSummaryPage } from './WinnerSummary.page'
 
 interface Player {
   id: string
@@ -62,10 +61,6 @@ export const gameScoreFormPage = {
     return screen.getByText(new RegExp(`game ${gameNumber} ·`, 'i'))
   },
 
-  get rulesHint() {
-    return screen.getByText(/first to 11/i)
-  },
-
   get saveButton() {
     return screen.getByRole('button', { name: /save score/i })
   },
@@ -108,7 +103,4 @@ export const gameScoreFormPage = {
   async clickCancel() {
     await userEvent.click(this.cancelButton)
   },
-
-  // Winner summary delegation
-  winnerSummary: winnerSummaryPage,
 }

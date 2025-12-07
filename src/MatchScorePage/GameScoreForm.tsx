@@ -1,7 +1,6 @@
 import { type FC, useState } from 'react'
 import CTAPanel from '../CTAPanel'
 import PlayerScoreInput from './PlayerScoreInput'
-import WinnerSummary from './WinnerSummary'
 
 interface Player {
   id: string
@@ -14,11 +13,18 @@ interface GameScore {
   winnerId: string
 }
 
+interface MatchState {
+  player1Wins: number
+  player2Wins: number
+  gamesToWin: number
+}
+
 interface GameScoreFormProps {
   gameNumber: number
   totalGames?: number
   player1: Player
   player2: Player
+  matchState?: MatchState
   onSave: (score: GameScore) => void
   onCancel: () => void
   disabled?: boolean
@@ -28,6 +34,36 @@ interface FormErrors {
   score1?: string
   score2?: string
   general?: string
+}
+
+function getMatchContextMessage(matchState: MatchState): string | null {
+  const { player1Wins, player2Wins, gamesToWin } = matchState
+  const player1NeedsToWin = gamesToWin - player1Wins
+  const player2NeedsToWin = gamesToWin - player2Wins
+
+  // First game - no context needed, header shows "First to X wins"
+  if (player1Wins === 0 && player2Wins === 0) {
+    return null
+  }
+
+  if (player1Wins > player2Wins) {
+    // Ahead
+    if (player1NeedsToWin === 1) {
+      return `You lead ${player1Wins}–${player2Wins}. Win 1 more game to win the match.`
+    }
+    return `You lead ${player1Wins}–${player2Wins} in the match.`
+  }
+
+  if (player1Wins === player2Wins) {
+    // Tied
+    if (player1NeedsToWin === 1) {
+      return `Match tied ${player1Wins}–${player2Wins}. Winner of this game wins the match.`
+    }
+    return `Match tied ${player1Wins}–${player2Wins}.`
+  }
+
+  // Behind
+  return `You trail ${player1Wins}–${player2Wins}. You need ${player2NeedsToWin} more game win${player2NeedsToWin > 1 ? 's' : ''} to take the match.`
 }
 
 function validateForm(
@@ -63,6 +99,7 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
   totalGames,
   player1,
   player2,
+  matchState,
   onSave,
   onCancel,
   disabled = false,
@@ -152,27 +189,21 @@ const GameScoreForm: FC<GameScoreFormProps> = ({
               disabled={disabled}
             />
           </div>
-          <p className="text-[10px] text-base-content/30 text-center">
-            First to 11, win by 2. You can override if needed.
-          </p>
         </div>
       </div>
 
-      {/* Winner summary / validation feedback */}
-      <div className="min-h-[56px]">
-        <WinnerSummary
-          player1={player1}
-          player2={player2}
-          score1={score1}
-          score2={score2}
-        />
-        {errors.general && !isTied && (
-          <div
-            className="bg-error/10 border border-error/20 rounded-lg p-3 text-center"
-            role="alert"
-          >
-            <p className="text-error text-sm font-medium">{errors.general}</p>
-          </div>
+      {/* Match context or validation error */}
+      <div className="text-center">
+        {errors.general || isTied ? (
+          <p className="text-error text-sm" role="alert">
+            Game scores must have a winner.
+          </p>
+        ) : (
+          matchState && getMatchContextMessage(matchState) && (
+            <p className="text-xs text-base-content/50">
+              {getMatchContextMessage(matchState)}
+            </p>
+          )
         )}
       </div>
 
