@@ -47,7 +47,7 @@ function NewMatch() {
     const id = crypto.randomUUID()
 
     // Optimistically redirect immediately
-    navigate(`/matches/${id}`)
+    navigate(`/matches/${id}/score`)
 
     // Persist the match in the background
     createMatch.mutate(
