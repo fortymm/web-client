@@ -23,6 +23,8 @@ export function useCreateMatch() {
         opponentId: validatedPayload.opponentId,
         matchLength: validatedPayload.matchLength,
         status: 'in_progress',
+        games: [],
+        winnerId: null,
         createdAt: new Date(),
       }
 

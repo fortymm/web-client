@@ -52,11 +52,12 @@ export const gameScoreFormPage = {
   },
 
   get subtitle() {
-    return screen.getByText(/game \d+ ·/i)
+    return screen.getByText(/game \d+/i)
   },
 
   getSubtitleFor(gameNumber: number) {
-    return screen.getByText(new RegExp(`game ${gameNumber} ·`, 'i'))
+    // Matches "Game X" or "Game X of Y"
+    return screen.getByText(new RegExp(`game ${gameNumber}(\\s|$|\\sof)`, 'i'))
   },
 
   get rulesHint() {
