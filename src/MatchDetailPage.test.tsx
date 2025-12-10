@@ -59,9 +59,7 @@ describe('MatchDetailPage', () => {
 
       await waitFor(() => {
         expect(matchDetailPagePage.getMatchLengthInfo(5)).toBeInTheDocument()
-        expect(matchDetailPagePage.progressInfo).toHaveTextContent(
-          'First to 3 wins'
-        )
+        expect(matchDetailPagePage.progressInfo).toHaveTextContent('First to 3')
       })
     })
 

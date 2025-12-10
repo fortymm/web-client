@@ -117,11 +117,11 @@ export const matchDetailPagePage = {
   },
 
   getMatchLengthInfo(length: number) {
-    return screen.queryByText(`Best of ${length}`)
+    return screen.queryByText(new RegExp(`Best of ${length}`))
   },
 
   get progressInfo() {
-    return screen.queryByText(/first to \d+ wins/i)
+    return screen.queryByText(/first to \d+/i)
   },
 
   get winnerMessage() {
@@ -133,7 +133,9 @@ export const matchDetailPagePage = {
   },
 
   getGameRow(gameNumber: number) {
-    return screen.queryByText(`Game ${gameNumber}`)?.closest('div')
+    return screen
+      .queryByText(new RegExp(`Game ${gameNumber}`))
+      ?.closest('.bg-base-200')
   },
 
   get continueMatchLink() {

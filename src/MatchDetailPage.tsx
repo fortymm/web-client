@@ -43,24 +43,21 @@ function MatchDetailPage() {
   return (
     <div className="max-w-md mx-auto pb-40">
       {/* Match summary card */}
-      <div className="card bg-base-200/50 border border-base-300 mb-3">
+      <div className="card bg-base-200/50 border border-base-300 mb-2">
         <div className="card-body px-4 py-3">
-          {/* Status badge row */}
-          <div className="flex justify-between items-center">
+          {/* Status badge - left aligned, no competing element */}
+          <div>
             <span
               className={`badge badge-sm ${isCompleted ? 'badge-success' : 'badge-warning'}`}
             >
               {isCompleted ? 'Completed' : 'In progress'}
             </span>
-            <span className="text-xs text-base-content/40">
-              Best of {match.matchLength}
-            </span>
           </div>
 
           {/* Score - names on top, numbers below */}
-          <div className="flex items-center justify-center gap-8 py-3">
+          <div className="flex items-center justify-center gap-8 py-2">
             <div className="text-center">
-              <p className="text-sm font-medium text-base-content/70 mb-1">
+              <p className="text-sm font-semibold text-base-content mb-0.5">
                 {DEFAULT_PLAYER_1.name}
               </p>
               <p
@@ -71,7 +68,7 @@ function MatchDetailPage() {
             </div>
             <span className="text-2xl text-base-content/20 font-light">–</span>
             <div className="text-center">
-              <p className="text-sm text-base-content/50 mb-1">
+              <p className="text-sm text-base-content/50 mb-0.5">
                 {DEFAULT_PLAYER_2.name}
               </p>
               <p
@@ -82,24 +79,29 @@ function MatchDetailPage() {
             </div>
           </div>
 
-          {/* Footer line */}
-          <p className="text-center text-xs text-base-content/40">
-            {isCompleted
-              ? player1Won
-                ? `You won ${player1Wins}–${player2Wins}`
-                : `Opponent won ${player2Wins}–${player1Wins}`
-              : `First to ${gamesToWin} wins`}
-          </p>
+          {/* Result + meta line */}
+          <div className="text-center space-y-0.5">
+            {isCompleted && (
+              <p className="text-sm text-success font-medium">
+                {player1Won
+                  ? `You won ${player1Wins}–${player2Wins}`
+                  : `Opponent won ${player2Wins}–${player1Wins}`}
+              </p>
+            )}
+            <p className="text-xs text-base-content/40">
+              Best of {match.matchLength} · First to {gamesToWin}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Games list */}
       {match.games.length > 0 && (
-        <div className="mb-3">
-          <h2 className="text-xs font-medium text-base-content/50 mb-2 px-1 uppercase tracking-wide">
+        <div className="mb-2">
+          <h2 className="text-xs font-semibold text-base-content/50 mb-1.5 px-1">
             Games
           </h2>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {match.games.map((game: GameScore, index: number) => (
               <GameRow key={index} gameNumber={index + 1} game={game} />
             ))}
@@ -138,8 +140,14 @@ function GameRow({ gameNumber, game }: GameRowProps) {
 
   return (
     <div className="flex items-center justify-between bg-base-200 rounded-lg px-3 py-2.5">
-      <span className="text-base-content/50 text-sm">Game {gameNumber}</span>
-      <div className="flex items-center gap-1.5 text-sm">
+      <div className="flex items-center gap-2">
+        <span className="text-base-content/60 text-sm">Game {gameNumber}</span>
+        {player1Won && (
+          <span className="badge badge-success badge-xs">W</span>
+        )}
+      </div>
+      <div className="flex items-center gap-1 text-sm">
+        <span className="text-base-content/50">You</span>
         <span
           className={
             player1Won ? 'font-semibold text-success' : 'text-base-content/50'
@@ -147,7 +155,7 @@ function GameRow({ gameNumber, game }: GameRowProps) {
         >
           {game.player1Score}
         </span>
-        <span className="text-base-content/30">–</span>
+        <span className="text-base-content/30 mx-0.5">–</span>
         <span
           className={
             !player1Won ? 'font-semibold text-success' : 'text-base-content/50'
@@ -155,6 +163,7 @@ function GameRow({ gameNumber, game }: GameRowProps) {
         >
           {game.player2Score}
         </span>
+        <span className="text-base-content/50">Opp</span>
       </div>
     </div>
   )
