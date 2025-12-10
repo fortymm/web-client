@@ -44,11 +44,11 @@ describe('MatchDetailPage', () => {
       })
     })
 
-    it('shows match score heading', async () => {
+    it('shows summary card', async () => {
       await matchDetailPagePage.render()
 
       await waitFor(() => {
-        expect(matchDetailPagePage.matchScoreHeading).toBeInTheDocument()
+        expect(matchDetailPagePage.summaryCard).toBeInTheDocument()
       })
     })
 
@@ -58,8 +58,9 @@ describe('MatchDetailPage', () => {
       })
 
       await waitFor(() => {
-        expect(matchDetailPagePage.matchInfo).toHaveTextContent(
-          'Best of 5 · First to 3'
+        expect(matchDetailPagePage.getMatchLengthInfo(5)).toBeInTheDocument()
+        expect(matchDetailPagePage.progressInfo).toHaveTextContent(
+          'First to 3 wins'
         )
       })
     })
@@ -82,16 +83,16 @@ describe('MatchDetailPage', () => {
       })
     })
 
-    it('does not show winner alert for in-progress match', async () => {
+    it('does not show winner message for in-progress match', async () => {
       await matchDetailPagePage.render({
         match: { status: 'in_progress' },
       })
 
       await waitFor(() => {
-        expect(matchDetailPagePage.matchScoreHeading).toBeInTheDocument()
+        expect(matchDetailPagePage.summaryCard).toBeInTheDocument()
       })
 
-      expect(matchDetailPagePage.winnerAlert).not.toBeInTheDocument()
+      expect(matchDetailPagePage.winnerMessage).not.toBeInTheDocument()
     })
   })
 
@@ -114,7 +115,7 @@ describe('MatchDetailPage', () => {
       })
     })
 
-    it('shows winner alert', async () => {
+    it('shows winner message with score', async () => {
       await matchDetailPagePage.render({
         match: {
           status: 'completed',
@@ -128,9 +129,9 @@ describe('MatchDetailPage', () => {
       })
 
       await waitFor(() => {
-        expect(matchDetailPagePage.winnerAlert).toBeInTheDocument()
-        expect(matchDetailPagePage.winnerAlert).toHaveTextContent(
-          'You wins the match!'
+        expect(matchDetailPagePage.winnerMessage).toBeInTheDocument()
+        expect(matchDetailPagePage.winnerMessage).toHaveTextContent(
+          'You won 3–0'
         )
       })
     })
@@ -149,8 +150,8 @@ describe('MatchDetailPage', () => {
       })
 
       await waitFor(() => {
-        expect(matchDetailPagePage.winnerAlert).toHaveTextContent(
-          'Opponent wins the match!'
+        expect(matchDetailPagePage.winnerMessage).toHaveTextContent(
+          'Opponent won 3–0'
         )
       })
     })
@@ -197,7 +198,7 @@ describe('MatchDetailPage', () => {
       })
 
       await waitFor(() => {
-        expect(matchDetailPagePage.matchScoreHeading).toBeInTheDocument()
+        expect(matchDetailPagePage.summaryCard).toBeInTheDocument()
       })
 
       expect(matchDetailPagePage.gamesHeading).not.toBeInTheDocument()
@@ -230,8 +231,8 @@ describe('MatchDetailPage', () => {
 
       await waitFor(() => {
         const gameRow = matchDetailPagePage.getGameRow(1)
-        expect(gameRow).toHaveTextContent('You: 11')
-        expect(gameRow).toHaveTextContent('Opponent: 5')
+        expect(gameRow).toHaveTextContent('11')
+        expect(gameRow).toHaveTextContent('5')
       })
     })
   })

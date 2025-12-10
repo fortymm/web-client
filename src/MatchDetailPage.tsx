@@ -37,82 +37,75 @@ function MatchDetailPage() {
   const player2Wins = getGameWins(match.games, DEFAULT_PLAYER_2.id)
   const gamesToWin = getGamesToWin(match.matchLength)
   const isCompleted = match.status === 'completed'
-  const winnerName =
-    match.winnerId === DEFAULT_PLAYER_1.id
-      ? DEFAULT_PLAYER_1.name
-      : match.winnerId === DEFAULT_PLAYER_2.id
-        ? DEFAULT_PLAYER_2.name
-        : null
+  const player1Won = match.winnerId === DEFAULT_PLAYER_1.id
+  const player2Won = match.winnerId === DEFAULT_PLAYER_2.id
 
   return (
     <div className="max-w-md mx-auto pb-40">
-      {/* Status badge */}
-      <div className="mb-6 text-center">
-        <div
-          className={`badge ${isCompleted ? 'badge-success' : 'badge-warning'} badge-lg`}
-        >
-          {isCompleted ? 'Completed' : 'In Progress'}
+      {/* Match summary card */}
+      <div className="card bg-base-200/50 border border-base-300 mb-4">
+        <div className="card-body p-4">
+          {/* Status badge */}
+          <div className="flex justify-between items-center mb-2">
+            <span
+              className={`badge ${isCompleted ? 'badge-success' : 'badge-warning'}`}
+            >
+              {isCompleted ? 'Completed' : 'In progress'}
+            </span>
+            <span className="text-xs text-base-content/50">
+              Best of {match.matchLength}
+            </span>
+          </div>
+
+          {/* Score */}
+          <div className="flex items-center justify-center gap-6 py-2">
+            <div className="text-center">
+              <p
+                className={`text-3xl font-bold ${player1Won ? 'text-success' : ''}`}
+              >
+                {player1Wins}
+              </p>
+              <p className="text-sm text-base-content/60">
+                {DEFAULT_PLAYER_1.name}
+              </p>
+            </div>
+            <span className="text-xl text-base-content/30">–</span>
+            <div className="text-center">
+              <p
+                className={`text-3xl font-bold ${player2Won ? 'text-success' : ''}`}
+              >
+                {player2Wins}
+              </p>
+              <p className="text-sm text-base-content/60">
+                {DEFAULT_PLAYER_2.name}
+              </p>
+            </div>
+          </div>
+
+          {/* Winner message or progress */}
+          {isCompleted ? (
+            <p className="text-center text-sm text-success font-medium">
+              {player1Won
+                ? `You won ${player1Wins}–${player2Wins}`
+                : `Opponent won ${player2Wins}–${player1Wins}`}
+            </p>
+          ) : (
+            <p className="text-center text-xs text-base-content/50">
+              First to {gamesToWin} wins
+            </p>
+          )}
         </div>
       </div>
-
-      {/* Score summary */}
-      <div className="text-center mb-8">
-        <h1 className="text-lg font-semibold text-base-content/60 mb-2">
-          Match Score
-        </h1>
-        <div className="flex items-center justify-center gap-4">
-          <div className="text-center">
-            <p className="text-base-content/60 text-sm mb-1">
-              {DEFAULT_PLAYER_1.name}
-            </p>
-            <p className="text-4xl font-bold">{player1Wins}</p>
-          </div>
-          <span className="text-2xl text-base-content/30">–</span>
-          <div className="text-center">
-            <p className="text-base-content/60 text-sm mb-1">
-              {DEFAULT_PLAYER_2.name}
-            </p>
-            <p className="text-4xl font-bold">{player2Wins}</p>
-          </div>
-        </div>
-        <p className="text-sm text-base-content/50 mt-2">
-          Best of {match.matchLength} · First to {gamesToWin}
-        </p>
-      </div>
-
-      {/* Winner announcement */}
-      {isCompleted && winnerName && (
-        <div className="alert alert-success mb-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span className="font-medium">{winnerName} wins the match!</span>
-        </div>
-      )}
 
       {/* Games list */}
       {match.games.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3">Games</h2>
-          <div className="space-y-2">
+        <div className="mb-4">
+          <h2 className="text-sm font-medium text-base-content/60 mb-2 px-1">
+            Games
+          </h2>
+          <div className="space-y-1">
             {match.games.map((game: GameScore, index: number) => (
-              <GameRow
-                key={index}
-                gameNumber={index + 1}
-                game={game}
-                player1Name={DEFAULT_PLAYER_1.name}
-                player2Name={DEFAULT_PLAYER_2.name}
-              />
+              <GameRow key={index} gameNumber={index + 1} game={game} />
             ))}
           </div>
         </div>
@@ -142,23 +135,21 @@ function MatchDetailPage() {
 interface GameRowProps {
   gameNumber: number
   game: GameScore
-  player1Name: string
-  player2Name: string
 }
 
-function GameRow({ gameNumber, game, player1Name, player2Name }: GameRowProps) {
+function GameRow({ gameNumber, game }: GameRowProps) {
   const player1Won = game.winnerId === 'player-1'
 
   return (
-    <div className="flex items-center justify-between bg-base-200/50 rounded-lg px-4 py-3">
-      <span className="text-base-content/60 text-sm">Game {gameNumber}</span>
-      <div className="flex items-center gap-3">
-        <span className={`font-medium ${player1Won ? 'text-success' : ''}`}>
-          {player1Name}: {game.player1Score}
+    <div className="flex items-center justify-between bg-base-200/50 rounded-lg px-3 py-2">
+      <span className="text-base-content/50 text-xs">Game {gameNumber}</span>
+      <div className="flex items-center gap-2 text-sm">
+        <span className={player1Won ? 'font-medium text-success' : 'text-base-content/60'}>
+          {game.player1Score}
         </span>
         <span className="text-base-content/30">–</span>
-        <span className={`font-medium ${!player1Won ? 'text-success' : ''}`}>
-          {player2Name}: {game.player2Score}
+        <span className={!player1Won ? 'font-medium text-success' : 'text-base-content/60'}>
+          {game.player2Score}
         </span>
       </div>
     </div>

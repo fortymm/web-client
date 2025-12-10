@@ -58,7 +58,7 @@ export const matchDetailPagePage = {
     await waitFor(() => {
       expect(
         screen.queryByText('loading', { selector: '.loading-spinner' }) ||
-          screen.queryByText(/match score/i) ||
+          screen.queryByText(/best of \d+/i) ||
           screen.queryByText(/match not found/i)
       ).toBeTruthy()
     })
@@ -100,7 +100,7 @@ export const matchDetailPagePage = {
 
   get statusBadge() {
     return (
-      screen.queryByText('Completed') || screen.queryByText('In Progress')
+      screen.queryByText('Completed') || screen.queryByText('In progress')
     )
   },
 
@@ -109,31 +109,27 @@ export const matchDetailPagePage = {
   },
 
   get inProgressBadge() {
-    return screen.queryByText('In Progress')
+    return screen.queryByText('In progress')
   },
 
-  get matchScoreHeading() {
-    return screen.queryByRole('heading', { name: /match score/i })
+  get summaryCard() {
+    return screen.queryByText(/best of \d+/i)?.closest('.card')
   },
 
-  get player1Score() {
-    return screen.getAllByText(/^\d+$/)[0]
+  getMatchLengthInfo(length: number) {
+    return screen.queryByText(`Best of ${length}`)
   },
 
-  get player2Score() {
-    return screen.getAllByText(/^\d+$/)[1]
+  get progressInfo() {
+    return screen.queryByText(/first to \d+ wins/i)
   },
 
-  get matchInfo() {
-    return screen.queryByText(/best of \d+ · first to \d+/i)
-  },
-
-  get winnerAlert() {
-    return screen.queryByText(/wins the match!/i)
+  get winnerMessage() {
+    return screen.queryByText(/won \d+–\d+/i)
   },
 
   get gamesHeading() {
-    return screen.queryByRole('heading', { name: /games/i })
+    return screen.queryByText('Games')
   },
 
   getGameRow(gameNumber: number) {
