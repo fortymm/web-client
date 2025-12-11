@@ -46,7 +46,7 @@ function LandingPage() {
 
       <CTAPanel>
         {inProgressMatch ? (
-          <>
+          <div className="space-y-2">
             <Link
               to={`/matches/${inProgressMatch.id}/score`}
               className="btn btn-primary btn-block h-12"
@@ -55,16 +55,31 @@ function LandingPage() {
             </Link>
             <button
               onClick={() => navigate('/matches/new')}
-              className="btn btn-ghost btn-block h-10 text-base-content/70"
+              className="btn btn-outline btn-block h-10"
             >
+              <PlusIcon />
               New match
             </button>
-          </>
+          </div>
         ) : (
           <NewMatchButton onClick={() => navigate('/matches/new')} />
         )}
       </CTAPanel>
     </>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg
+      className="w-4 h-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
   )
 }
 

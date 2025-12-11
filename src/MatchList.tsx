@@ -101,17 +101,11 @@ function MatchCard({ match }: MatchCardProps) {
           )}
         </div>
 
-        {/* Row 2: Match info and action hint */}
-        <div className="flex items-center justify-between mt-1">
+        {/* Row 2: Match info */}
+        <div className="mt-1">
           <span className="text-xs text-base-content/50">
             Best of {match.matchLength} · First to {gamesToWin}
           </span>
-          {!isCompleted && (
-            <div className="flex items-center gap-1 text-xs text-primary font-medium">
-              <span>Continue</span>
-              <ChevronRightIcon />
-            </div>
-          )}
         </div>
 
         {/* Progress indicator for in-progress matches */}
@@ -166,20 +160,6 @@ function GameProgressBar({
         )
       })}
     </div>
-  )
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={2}
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-    </svg>
   )
 }
 
