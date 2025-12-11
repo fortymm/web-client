@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { NewMatchButton } from './NewMatchButton'
 import CTAPanel from './CTAPanel'
 import { usePrefetchRecentOpponents } from './usePrefetchRecentOpponents'
@@ -11,6 +11,7 @@ function LandingPage() {
   const { matches, isLoading } = useMatches()
 
   const hasMatches = matches.length > 0
+  const inProgressMatch = matches.find((m) => m.status === 'in_progress')
 
   if (isLoading) {
     return (
@@ -44,7 +45,24 @@ function LandingPage() {
       )}
 
       <CTAPanel>
-        <NewMatchButton onClick={() => navigate('/matches/new')} />
+        {inProgressMatch ? (
+          <>
+            <Link
+              to={`/matches/${inProgressMatch.id}/score`}
+              className="btn btn-primary btn-block h-12"
+            >
+              Continue match
+            </Link>
+            <button
+              onClick={() => navigate('/matches/new')}
+              className="btn btn-ghost btn-block h-10 text-base-content/70"
+            >
+              New match
+            </button>
+          </>
+        ) : (
+          <NewMatchButton onClick={() => navigate('/matches/new')} />
+        )}
       </CTAPanel>
     </>
   )
