@@ -1,6 +1,8 @@
-import { within } from '@testing-library/react'
+import { screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { expect } from 'vitest'
 import { appPage } from './App.page'
+import { matchListPage } from './MatchList.page'
 
 export const landingPagePage = {
   render() {
@@ -14,4 +16,21 @@ export const landingPagePage = {
   async clickNewMatchButton() {
     await userEvent.click(landingPagePage.newMatchButton)
   },
+
+  get emptyState() {
+    return screen.queryByText(/no matches yet/i)
+  },
+
+  get loadingSpinner() {
+    return document.querySelector('.loading-spinner')
+  },
+
+  async waitForLoaded() {
+    await waitFor(() => {
+      expect(landingPagePage.loadingSpinner).not.toBeInTheDocument()
+    })
+  },
+
+  // Delegate to MatchList page object
+  matchList: matchListPage,
 }
