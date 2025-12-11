@@ -95,6 +95,6 @@ export function getGamesToWin(matchLength: number): number {
   return Math.ceil(matchLength / 2)
 }
 
-export function getGameWins(games: GameScore[], playerId: string): number {
-  return games.filter(game => game.winnerId === playerId).length
+export function getGameWins(games: GameScore[] | undefined, playerId: string): number {
+  return (games ?? []).filter(game => game.winnerId === playerId).length
 }

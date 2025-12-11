@@ -33,8 +33,9 @@ function MatchDetailPage() {
     )
   }
 
-  const player1Wins = getGameWins(match.games, DEFAULT_PLAYER_1.id)
-  const player2Wins = getGameWins(match.games, DEFAULT_PLAYER_2.id)
+  const games = match.games ?? []
+  const player1Wins = getGameWins(games, DEFAULT_PLAYER_1.id)
+  const player2Wins = getGameWins(games, DEFAULT_PLAYER_2.id)
   const gamesToWin = getGamesToWin(match.matchLength)
   const isCompleted = match.status === 'completed'
   const player1Won = match.winnerId === DEFAULT_PLAYER_1.id
@@ -96,13 +97,13 @@ function MatchDetailPage() {
       </div>
 
       {/* Games list */}
-      {match.games.length > 0 && (
+      {games.length > 0 && (
         <div className="mb-2">
           <h2 className="text-xs font-semibold text-base-content/50 mb-1.5 px-1">
             Games
           </h2>
           <div className="space-y-1">
-            {match.games.map((game: GameScore, index: number) => (
+            {games.map((game: GameScore, index: number) => (
               <GameRow key={index} gameNumber={index + 1} game={game} />
             ))}
           </div>
