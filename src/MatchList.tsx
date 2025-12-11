@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { type StoredMatch } from './lib/matchesDb'
-import { getGameWins, getGamesToWin } from './MatchScorePage/useSaveGame'
+import { getGameWins } from './MatchScorePage/useSaveGame'
 
 const DEFAULT_PLAYER_1_ID = 'player-1'
 const DEFAULT_PLAYER_2_ID = 'player-2'
@@ -51,7 +51,6 @@ interface MatchCardProps {
 function MatchCard({ match }: MatchCardProps) {
   const player1Wins = getGameWins(match.games, DEFAULT_PLAYER_1_ID)
   const player2Wins = getGameWins(match.games, DEFAULT_PLAYER_2_ID)
-  const gamesToWin = getGamesToWin(match.matchLength)
   const gamesPlayed = player1Wins + player2Wins
   const isCompleted = match.status === 'completed'
   const player1Won = match.winnerId === DEFAULT_PLAYER_1_ID
@@ -104,7 +103,7 @@ function MatchCard({ match }: MatchCardProps) {
         {/* Row 2: Match info */}
         <div className="mt-1">
           <span className="text-xs text-base-content/50">
-            Best of {match.matchLength} · First to {gamesToWin}
+            {match.matchLength === 1 ? 'Single game' : `Best of ${match.matchLength}`}
           </span>
         </div>
 
@@ -139,23 +138,23 @@ function GameProgressBar({
   const gamesPlayed = player1Wins + player2Wins
   return (
     <div
-      className="flex gap-1"
+      className="flex gap-1.5"
       role="progressbar"
       aria-valuenow={gamesPlayed}
       aria-valuemin={0}
       aria-valuemax={totalGames}
     >
       {Array.from({ length: totalGames }).map((_, i) => {
-        let segmentClass = 'bg-base-300' // Unplayed
+        let segmentClass = 'bg-base-300 border border-base-content/10' // Unplayed
         if (i < player1Wins) {
-          segmentClass = 'bg-success' // Player 1 win
+          segmentClass = 'bg-success border border-success' // Player 1 win
         } else if (i < player1Wins + player2Wins) {
-          segmentClass = 'bg-error/70' // Player 2 win
+          segmentClass = 'bg-error/70 border border-error/50' // Player 2 win
         }
         return (
           <div
             key={i}
-            className={`h-1.5 flex-1 rounded-full ${segmentClass} transition-colors`}
+            className={`h-2 flex-1 rounded ${segmentClass} transition-colors`}
           />
         )
       })}
