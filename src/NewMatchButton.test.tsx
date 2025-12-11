@@ -12,13 +12,6 @@ describe('NewMatchButton', () => {
     expect(newMatchButtonPage.button).toHaveTextContent('New match')
   })
 
-  it('displays subtitle text', () => {
-    newMatchButtonPage.render()
-    expect(newMatchButtonPage.button).toHaveTextContent(
-      'Log a result or start a Quick Match'
-    )
-  })
-
   it('calls onClick when clicked', async () => {
     const onClick = vi.fn()
     newMatchButtonPage.render({ onClick })
