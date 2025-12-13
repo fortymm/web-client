@@ -51,7 +51,7 @@ export const activeMatchBannerPage = {
   },
 
   get endButton() {
-    return screen.getByRole('button', { name: /end/i })
+    return screen.getByRole('button', { name: /abort/i })
   },
 
   async clickBanner() {
@@ -72,22 +72,22 @@ export const activeMatchBannerPage = {
   },
 
   get confirmDialogTitle() {
-    return screen.queryByText(/end this match\?/i)
+    return screen.queryByText(/abort this match\?/i)
   },
 
   get confirmDialogMessage() {
-    return screen.queryByText(/you can only have one active match/i)
+    return screen.queryByText(/this will mark the match as aborted/i)
   },
 
   get cancelButton() {
-    return screen.getByRole('button', { name: /cancel/i })
+    return screen.getByRole('button', { name: /resume match/i })
   },
 
   get confirmEndButton() {
-    // Get the button inside the modal (not the "End…" button in the banner)
+    // Get the button inside the modal (not the "Abort" button in the banner)
     const dialog = this.confirmDialog
     if (!dialog) return null
-    return within(dialog).getByRole('button', { name: /end match/i })
+    return within(dialog).getByRole('button', { name: /abort match/i })
   },
 
   async clickCancelButton() {
@@ -100,8 +100,9 @@ export const activeMatchBannerPage = {
   },
 
   get scoreDisplay() {
-    // The score line shows "You vs Opp"
-    return screen.getByText(/you vs opp/i)
+    // The score line shows "You vs Opp" - get the one in the banner, not the dialog
+    const banner = this.banner
+    return within(banner).getByText(/you vs opp/i)
   },
 
   getMatchLengthText(matchLength: number) {
