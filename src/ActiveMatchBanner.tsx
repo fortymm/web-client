@@ -43,7 +43,7 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
       <div
         role="banner"
         onClick={handleBannerClick}
-        className="w-full bg-base-200/50 border border-base-300 rounded-lg cursor-pointer hover:bg-base-200/70 active:bg-base-200 transition-colors"
+        className="w-full bg-base-200/50 border border-base-300 cursor-pointer hover:bg-base-200/70 active:bg-base-200 transition-colors"
       >
         <div className="flex items-center gap-4 px-4 py-2.5">
           {/* Left group: pill + summary - truncates on overflow */}
@@ -70,7 +70,7 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
               onClick={handleEndClick}
               className="text-sm text-base-content/50 hover:text-error transition-colors whitespace-nowrap"
             >
-              End match
+              Abort
             </button>
           </div>
         </div>
@@ -78,17 +78,31 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
 
       {/* Confirm dialog */}
       <dialog ref={modalRef} className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">End this match?</h3>
-          <p className="py-4 text-base-content/70">
-            This will delete the match. You can only have one active match at a time.
+        <div className="modal-box relative">
+          <button
+            onClick={handleCancelEnd}
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+          <h3 className="font-bold text-lg pr-8">Abort this match?</h3>
+          <div className="mt-2 mb-1">
+            <p className="text-sm font-medium text-base-content">
+              You vs Opp
+              <span className="text-base-content/40 mx-1.5">·</span>
+              <span className="tabular-nums font-bold">{player1Wins}–{player2Wins}</span>
+            </p>
+          </div>
+          <p className="py-2 text-base-content/70">
+            This will mark the match as aborted. It will stay in your history, but you can’t resume it.
           </p>
-          <div className="modal-action">
-            <button onClick={handleCancelEnd} className="btn">
-              Cancel
+          <div className="modal-action gap-2 mt-4 flex-col sm:flex-row">
+            <button onClick={handleCancelEnd} className="btn btn-primary w-full sm:w-auto">
+              Resume match
             </button>
-            <button onClick={handleConfirmEnd} className="btn btn-error">
-              End match
+            <button onClick={handleConfirmEnd} className="btn btn-outline btn-error w-full sm:w-auto">
+              Abort match
             </button>
           </div>
         </div>

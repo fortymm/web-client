@@ -69,7 +69,7 @@ function LandingPage() {
         <NewMatchButton
           onClick={() => navigate('/matches/new')}
           disabled={!!inProgressMatch}
-          disabledReason="Finish or end your current match to start a new one"
+          disabledReason="Finish or abort your current match to start a new one"
         />
       </CTAPanel>
     </>

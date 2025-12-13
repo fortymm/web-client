@@ -36,7 +36,7 @@ describe('ActiveMatchBanner', () => {
       expect(activeMatchBannerPage.resumeButton).toBeInTheDocument()
     })
 
-    it('displays End button', () => {
+    it('displays Abort button', () => {
       activeMatchBannerPage.render()
       expect(activeMatchBannerPage.endButton).toBeInTheDocument()
     })
@@ -50,7 +50,7 @@ describe('ActiveMatchBanner', () => {
     })
   })
 
-  describe('End button', () => {
+  describe('Abort button', () => {
     it('has muted styling that shows error on hover', () => {
       activeMatchBannerPage.render()
       expect(activeMatchBannerPage.endButton).toHaveClass('hover:text-error')
@@ -58,7 +58,7 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('confirm dialog', () => {
-    it('opens confirm dialog when End button is clicked', async () => {
+    it('opens confirm dialog when Abort button is clicked', async () => {
       activeMatchBannerPage.render()
 
       await activeMatchBannerPage.clickEndButton()
@@ -66,7 +66,7 @@ describe('ActiveMatchBanner', () => {
       expect(activeMatchBannerPage.confirmDialogTitle).toBeInTheDocument()
     })
 
-    it('displays the one-active-match constraint message', async () => {
+    it('displays the abort match message', async () => {
       activeMatchBannerPage.render()
 
       await activeMatchBannerPage.clickEndButton()
@@ -96,9 +96,9 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('banner styling', () => {
-    it('has card-like styling with border and rounding', () => {
+    it('has card-like styling with border', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('border', 'rounded-lg')
+      expect(activeMatchBannerPage.banner).toHaveClass('border')
     })
 
     it('is full width', () => {
