@@ -1,18 +1,24 @@
 import { type ReactNode, useEffect, useRef } from 'react'
-import { FlashContext, useFlashState } from '../useFlash'
+import FlashProvider from '@lib/useFlash/FlashProvider'
+import { useFlash } from '@lib/useFlash'
 import { flashStateRef } from './flashStateRef'
 
-export function FlashTestWrapper({ children }: { children: ReactNode }) {
-  const flashState = useFlashState()
+function FlashStateCapture() {
+  const flashState = useFlash()
   const ref = useRef(flashStateRef)
 
   useEffect(() => {
     ref.current.current = flashState
   }, [flashState])
 
+  return null
+}
+
+export function FlashTestWrapper({ children }: { children: ReactNode }) {
   return (
-    <FlashContext.Provider value={flashState}>
+    <FlashProvider>
+      <FlashStateCapture />
       {children}
-    </FlashContext.Provider>
+    </FlashProvider>
   )
 }

@@ -1,73 +1,41 @@
 import { type FC } from 'react'
-import SectionHeader from './SectionHeader'
-import SkeletonRows from './SkeletonRows'
-import PlayerList from './PlayerList'
-import RecentsErrorCard from './RecentsErrorCard'
-import NoRecentsEmptyState from './NoRecentsEmptyState'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
+import LoadingState, {
+  type LoadingStateData,
+} from './RecentPlayersPanel/LoadingState'
+import ErrorState, {
+  type ErrorStateData,
+} from './RecentPlayersPanel/ErrorState'
+import EmptyState, {
+  type EmptyStateData,
+} from './RecentPlayersPanel/EmptyState'
+import SuccessState, {
+  type SuccessStateData,
+} from './RecentPlayersPanel/SuccessState'
 
-export interface RecentPlayersPanelProps {
-  isInitialLoading: boolean
-  isRefetching: boolean
-  hasError: boolean
-  players: RecentOpponent[] | null
+type RecentPlayersPanelData =
+  | LoadingStateData
+  | ErrorStateData
+  | EmptyStateData
+  | SuccessStateData
+
+export type RecentPlayersPanelProps = RecentPlayersPanelData & {
   onSelectPlayer: (playerId: string) => void
-  onRetry: () => Promise<void> | void
-  retryCount: number
 }
 
-const RecentPlayersPanel: FC<RecentPlayersPanelProps> = ({
-  isInitialLoading,
-  isRefetching,
-  hasError,
-  players,
-  onSelectPlayer,
-  onRetry,
-  retryCount,
-}) => {
-  if (isInitialLoading) {
-    return (
-      <>
-        <SectionHeader title="RECENT OPPONENTS" isLoading={false} />
-        <SkeletonRows count={6} />
-      </>
-    )
+const RecentPlayersPanel: FC<RecentPlayersPanelProps> = (props) => {
+  if (props.state === 'loading') {
+    return <LoadingState {...props} />
   }
 
-  if (hasError) {
-    return (
-      <>
-        <SectionHeader title="RECENT OPPONENTS" isLoading={false} />
-        <RecentsErrorCard onRetry={onRetry} retryCount={retryCount} />
-      </>
-    )
+  if (props.state === 'error') {
+    return <ErrorState {...props} />
   }
 
-  if (players === null) {
-    return null
+  if (props.state === 'empty') {
+    return <EmptyState {...props} />
   }
 
-  if (players.length === 0) {
-    return (
-      <>
-        <SectionHeader title="RECENT OPPONENTS" isLoading={false} />
-        <div className="mx-4 rounded-lg border border-base-300 bg-base-200/30">
-          <NoRecentsEmptyState />
-        </div>
-      </>
-    )
-  }
-
-  return (
-    <>
-      <SectionHeader title="RECENT OPPONENTS" isLoading={isRefetching} />
-      <PlayerList
-        players={players}
-        context="recents"
-        onSelectPlayer={onSelectPlayer}
-      />
-    </>
-  )
+  return <SuccessState {...props} />
 }
 
 export default RecentPlayersPanel

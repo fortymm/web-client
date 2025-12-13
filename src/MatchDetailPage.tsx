@@ -1,8 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 import { useMatch } from './MatchScorePage/useMatch'
 import { getGamesToWin, getGameWins } from './MatchScorePage/useSaveGame'
-import type { GameScore } from './lib/matchesDb'
-import CTAPanel from './CTAPanel'
+import type { GameScore } from '@lib/matchesDb'
+import CTAPanel from '@common/CTAPanel'
 
 const DEFAULT_PLAYER_1 = { id: 'player-1', name: 'You' }
 const DEFAULT_PLAYER_2 = { id: 'player-2', name: 'Opponent' }

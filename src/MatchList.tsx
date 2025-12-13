@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { type StoredMatch } from './lib/matchesDb'
+import { type StoredMatch } from '@lib/matchesDb'
 import { getGameWins } from './MatchScorePage/useSaveGame'
 
 const DEFAULT_PLAYER_1_ID = 'player-1'

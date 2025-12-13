@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { expect } from 'vitest'
 import MatchScorePage from './MatchScorePage'
 import { createTestQueryClient } from './test/utils'
-import { saveMatch, type StoredMatch } from './lib/matchesDb'
+import { saveMatch, type StoredMatch } from '@lib/matchesDb'
 
 interface RenderOptions {
   matchId?: string

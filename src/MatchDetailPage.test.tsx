@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { waitFor } from '@testing-library/react'
 import { matchDetailPagePage } from './MatchDetailPage.page'
-import { clearAllMatches } from './lib/matchesDb'
+import { clearAllMatches } from '@lib/matchesDb'
 
 describe('MatchDetailPage', () => {
   beforeEach(async () => {

@@ -5,7 +5,7 @@ import PlayerList from './PlayerList'
 import RecentsErrorCard from './RecentsErrorCard'
 import NoRecentsEmptyState from './NoRecentsEmptyState'
 import NoSearchResultsEmptyState from './NoSearchResultsEmptyState'
-import { useFlash } from '../useFlash'
+import { useFlash } from '@lib/useFlash'
 import { type Opponent } from '../hooks/useOpponents'
 
 export interface ContentPanelProps {

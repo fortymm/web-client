@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { createElement, type ReactNode } from 'react'
 import { useFlash, useFlashState, FlashContext } from './useFlash'
-import FlashProvider from './FlashProvider'
+import FlashProvider from './useFlash/FlashProvider'
 
 export const useFlashPage = {
   renderState() {

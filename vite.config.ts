@@ -2,9 +2,16 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@lib': path.resolve(__dirname, './src/lib'),
+      '@common': path.resolve(__dirname, './src/common'),
+    },
+  },
   plugins: [
     tailwindcss(),
     react({

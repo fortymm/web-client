@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import MatchList from './MatchList'
-import { type StoredMatch } from './lib/matchesDb'
+import { type StoredMatch } from '@lib/matchesDb'
 
 export function createTestMatch(overrides: Partial<StoredMatch> = {}): StoredMatch {
   return {

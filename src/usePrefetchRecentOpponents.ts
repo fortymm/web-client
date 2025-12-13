@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { api } from './lib/api'
+import { api } from '@lib/api'
 import { opponentsResponseSchema, OPPONENTS_ENDPOINT } from './hooks/useOpponents'
 
 export function usePrefetchRecentOpponents(): void {

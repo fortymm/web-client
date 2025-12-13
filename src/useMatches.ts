@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAllMatches, type StoredMatch } from './lib/matchesDb'
+import { getAllMatches, type StoredMatch } from '@lib/matchesDb'
 
 export interface UseMatchesReturn {
   matches: StoredMatch[]

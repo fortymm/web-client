@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getMatch, type StoredMatch } from '../lib/matchesDb'
+import { getMatch, type StoredMatch } from '@lib/matchesDb'
 
 export interface UseMatchReturn {
   match: StoredMatch | null

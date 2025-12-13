@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
-import { saveMatch, type StoredMatch } from '../lib/matchesDb'
+import { saveMatch, type StoredMatch } from '@lib/matchesDb'
 
 export const createMatchPayloadSchema = z.object({
   id: z.string().uuid(),

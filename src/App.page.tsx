@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { routes } from './routes'
 import { TestQueryProvider, createTestQueryClient } from './test/utils'
 import { type QueryClient } from '@tanstack/react-query'
-import FlashProvider from './FlashProvider'
+import FlashProvider from '@lib/useFlash/FlashProvider'
 
 interface RenderOptions {
   queryClient?: QueryClient

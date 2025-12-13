@@ -1,5 +1,5 @@
 import { type ReactNode, createElement } from 'react'
-import { FlashContext, useFlashState } from './useFlash'
+import { FlashContext, useFlashState } from '../useFlash'
 import Flash from './Flash'
 
 interface FlashProviderProps {
