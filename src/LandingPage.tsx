@@ -34,7 +34,7 @@ function LandingPage() {
     setIsModalOpen(false)
   }
 
-  const handleEndAndStartNew = async () => {
+  const handleEndMatch = async () => {
     if (inProgressMatch) {
       await deleteMatch(inProgressMatch.id)
       await queryClient.invalidateQueries({ queryKey: ['matches'] })
@@ -105,7 +105,7 @@ function LandingPage() {
           match={inProgressMatch}
           isOpen={isModalOpen}
           onContinue={handleContinueMatch}
-          onEndAndStartNew={handleEndAndStartNew}
+          onEndMatch={handleEndMatch}
           onClose={handleCloseModal}
         />
       )}

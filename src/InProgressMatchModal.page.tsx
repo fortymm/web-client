@@ -23,9 +23,7 @@ export function buildStoredMatch(
   }
 }
 
-export function buildGameScore(
-  overrides: Partial<GameScore> = {}
-): GameScore {
+export function buildGameScore(overrides: Partial<GameScore> = {}): GameScore {
   const player1Score = faker.number.int({ min: 0, max: 11 })
   const player2Score = faker.number.int({ min: 0, max: 11 })
   return {
@@ -41,7 +39,7 @@ interface RenderOptions {
   opponentName?: string
   isOpen?: boolean
   onContinue?: () => void
-  onEndAndStartNew?: () => void
+  onEndMatch?: () => void
   onClose?: () => void
 }
 
@@ -52,7 +50,7 @@ export const inProgressMatchModalPage = {
       opponentName,
       isOpen = true,
       onContinue = vi.fn(),
-      onEndAndStartNew = vi.fn(),
+      onEndMatch = vi.fn(),
       onClose = vi.fn(),
     } = options
 
@@ -61,13 +59,13 @@ export const inProgressMatchModalPage = {
       opponentName,
       isOpen,
       onContinue,
-      onEndAndStartNew,
+      onEndMatch,
       onClose,
     }
 
     render(<InProgressMatchModal {...props} />)
 
-    return { onContinue, onEndAndStartNew, onClose }
+    return { onContinue, onEndMatch, onClose }
   },
 
   get dialog() {
@@ -78,49 +76,90 @@ export const inProgressMatchModalPage = {
   },
 
   get title() {
-    return screen.getByText('You have a match in progress')
+    return screen.getByText('Match in progress')
   },
 
-  get opponentInfo() {
-    return screen.getByText(/^vs /)
+  get helperText() {
+    return screen.getByText(
+      /You can't start a new match until you finish or end the current one/i
+    )
   },
 
-  getOpponentName() {
-    const text = this.opponentInfo.textContent || ''
-    return text.replace('vs ', '')
+  get inProgressBadge() {
+    // Use querySelector scoped to modal-box to avoid matching badges in MatchList
+    const modalBox = document.querySelector('.modal-box')
+    if (!modalBox) throw new Error('Modal box not found')
+    return modalBox.querySelector('.badge-warning')!
   },
 
-  get scoreAndTime() {
-    return screen.getByText(/·/)
+  get progressBar() {
+    return screen.getByRole('progressbar')
   },
 
-  getScore() {
-    const text = this.scoreAndTime.textContent || ''
-    const match = text.match(/^(\d+-\d+)/)
-    return match ? match[1] : ''
+  getMatchLength() {
+    const text = screen.getByText(/Best of \d|Single game/).textContent || ''
+    return text
   },
 
-  get continueButton() {
-    return screen.getByText(/continue that match/i).closest('button')!
+  getStartedTime() {
+    const text = screen.getByText(/Started/).textContent || ''
+    return text
   },
 
-  get endAndStartNewButton() {
-    return screen.getByText(/end it and start new/i).closest('button')!
+  get resumeButton() {
+    return screen.getByText(/resume match/i).closest('button')!
+  },
+
+  get cancelButton() {
+    return screen.getByText(/^cancel$/i).closest('button')!
+  },
+
+  get endMatchButton() {
+    return screen.getByText(/^end match$/i).closest('button')!
   },
 
   get closeButton() {
     return screen.getByLabelText(/close modal/i)
   },
 
-  async clickContinue() {
-    await userEvent.click(this.continueButton)
+  // Confirmation dialog
+  get confirmTitle() {
+    return screen.getByText('End match?')
   },
 
-  async clickEndAndStartNew() {
-    await userEvent.click(this.endAndStartNewButton)
+  get confirmMessage() {
+    return screen.getByText(/This can't be undone/)
+  },
+
+  get confirmEndButton() {
+    return screen.getAllByText(/^end match$/i)[0].closest('button')!
+  },
+
+  get goBackButton() {
+    return screen.getByText(/go back/i).closest('button')!
+  },
+
+  async clickResume() {
+    await userEvent.click(this.resumeButton)
+  },
+
+  async clickCancel() {
+    await userEvent.click(this.cancelButton)
+  },
+
+  async clickEndMatch() {
+    await userEvent.click(this.endMatchButton)
   },
 
   async clickClose() {
     await userEvent.click(this.closeButton)
+  },
+
+  async clickConfirmEnd() {
+    await userEvent.click(this.confirmEndButton)
+  },
+
+  async clickGoBack() {
+    await userEvent.click(this.goBackButton)
   },
 }

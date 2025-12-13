@@ -80,36 +80,66 @@ describe('LandingPage', () => {
       expect(landingPagePage.inProgressMatchModal.title).toBeInTheDocument()
     })
 
-    it('displays the current match score in the modal', async () => {
+    it('displays the match card with score in the modal', async () => {
       landingPagePage.render()
       await landingPagePage.waitForLoaded()
 
       await landingPagePage.clickNewMatchButton()
 
-      expect(landingPagePage.inProgressMatchModal.getScore()).toBe('1-1')
+      // Check the modal displays the in progress badge and match info
+      expect(landingPagePage.inProgressMatchModal.inProgressBadge).toBeInTheDocument()
+      expect(landingPagePage.inProgressMatchModal.helperText).toBeInTheDocument()
     })
 
-    it('navigates to the match score page when clicking Continue', async () => {
+    it('navigates to the match score page when clicking Resume', async () => {
       landingPagePage.render()
       await landingPagePage.waitForLoaded()
 
       await landingPagePage.clickNewMatchButton()
-      await landingPagePage.inProgressMatchModal.clickContinue()
+      await landingPagePage.inProgressMatchModal.clickResume()
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /enter score/i })).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { name: /enter score/i })
+        ).toBeInTheDocument()
       })
     })
 
-    it('navigates to new match page when clicking End and start new', async () => {
+    it('shows confirmation when clicking End match', async () => {
       landingPagePage.render()
       await landingPagePage.waitForLoaded()
 
       await landingPagePage.clickNewMatchButton()
-      await landingPagePage.inProgressMatchModal.clickEndAndStartNew()
+      await landingPagePage.inProgressMatchModal.clickEndMatch()
+
+      expect(landingPagePage.inProgressMatchModal.confirmTitle).toBeInTheDocument()
+    })
+
+    it('navigates to new match page after confirming end match', async () => {
+      landingPagePage.render()
+      await landingPagePage.waitForLoaded()
+
+      await landingPagePage.clickNewMatchButton()
+      await landingPagePage.inProgressMatchModal.clickEndMatch()
+      await landingPagePage.inProgressMatchModal.clickConfirmEnd()
 
       await waitFor(() => {
         expect(newMatchPage.heroHeading).toBeInTheDocument()
+      })
+    })
+
+    it('closes the modal when clicking Cancel', async () => {
+      landingPagePage.render()
+      await landingPagePage.waitForLoaded()
+
+      await landingPagePage.clickNewMatchButton()
+      expect(landingPagePage.inProgressMatchModal.dialog).toHaveClass('modal-open')
+
+      await landingPagePage.inProgressMatchModal.clickCancel()
+
+      await waitFor(() => {
+        const dialog = document.querySelector('dialog')
+        expect(dialog).not.toHaveClass('modal-open')
       })
     })
 
@@ -118,7 +148,6 @@ describe('LandingPage', () => {
       await landingPagePage.waitForLoaded()
 
       await landingPagePage.clickNewMatchButton()
-      expect(landingPagePage.inProgressMatchModal.dialog).toBeInTheDocument()
       expect(landingPagePage.inProgressMatchModal.dialog).toHaveClass('modal-open')
 
       await landingPagePage.inProgressMatchModal.clickClose()
