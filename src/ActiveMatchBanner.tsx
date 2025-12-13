@@ -43,27 +43,26 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
       <div
         role="banner"
         onClick={handleBannerClick}
-        className="w-full bg-base-200/60 cursor-pointer hover:bg-base-200/80 active:bg-base-200 transition-colors"
+        className="w-full bg-base-200/50 border border-base-300 rounded-lg cursor-pointer hover:bg-base-200/70 active:bg-base-200 transition-colors"
       >
-        <div className="flex items-center justify-between gap-3 px-4 py-2">
-          {/* Match info - single row */}
-          <div className="flex items-center gap-2 min-w-0 text-sm">
-            <span className="text-base-content/60">Match in progress</span>
-            <span className="text-base-content/30">•</span>
-            <span className="font-medium whitespace-nowrap">
+        <div className="flex items-center justify-between gap-4 px-4 py-2.5">
+          {/* Left group: pill + summary (tight) */}
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="badge badge-sm badge-warning whitespace-nowrap">In progress</span>
+            <span className="text-sm font-medium whitespace-nowrap">
               You vs Opp
-              <span className="text-base-content/30 mx-1.5">•</span>
+              <span className="text-base-content/40 mx-1.5">•</span>
               <span className="tabular-nums font-bold">{player1Wins}–{player2Wins}</span>
-              <span className="text-base-content/30 mx-1.5">•</span>
-              <span className="text-base-content/60">{matchLengthLabel}</span>
+              <span className="text-base-content/40 mx-1.5">•</span>
+              <span className="text-base-content/70">{matchLengthLabel}</span>
             </span>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Right group: actions */}
+          <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={handleBannerClick}
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-outline btn-sm"
             >
               Resume
             </button>
@@ -71,7 +70,7 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
               onClick={handleEndClick}
               className="text-sm text-base-content/50 hover:text-error transition-colors"
             >
-              End
+              End match
             </button>
           </div>
         </div>

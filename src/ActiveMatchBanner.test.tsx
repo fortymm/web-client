@@ -3,9 +3,9 @@ import { activeMatchBannerPage, createTestMatch } from './ActiveMatchBanner.page
 
 describe('ActiveMatchBanner', () => {
   describe('display', () => {
-    it('displays "Match in progress" text', () => {
+    it('displays "In progress" badge', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.matchInProgressText).toBeInTheDocument()
+      expect(activeMatchBannerPage.inProgressBadge).toBeInTheDocument()
     })
 
     it('displays the score', () => {
@@ -95,9 +95,9 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('banner styling', () => {
-    it('has subtle neutral background', () => {
+    it('has card-like styling with border and rounding', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('bg-base-200/60')
+      expect(activeMatchBannerPage.banner).toHaveClass('border', 'rounded-lg')
     })
 
     it('is full width', () => {

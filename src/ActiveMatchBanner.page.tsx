@@ -42,8 +42,8 @@ export const activeMatchBannerPage = {
     return screen.getByRole('banner')
   },
 
-  get matchInProgressText() {
-    return screen.getByText(/match in progress/i)
+  get inProgressBadge() {
+    return screen.getByText(/in progress/i)
   },
 
   get resumeButton() {
