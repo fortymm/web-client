@@ -43,7 +43,7 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
       <div
         role="banner"
         onClick={handleBannerClick}
-        className="w-full bg-base-200/40 cursor-pointer hover:bg-base-200/70 active:bg-base-200 transition-colors"
+        className="w-full bg-base-200/60 cursor-pointer hover:bg-base-200/80 active:bg-base-200 transition-colors"
       >
         <div className="flex items-center justify-between gap-3 px-4 py-2">
           {/* Match info - single row */}

@@ -97,7 +97,7 @@ describe('ActiveMatchBanner', () => {
   describe('banner styling', () => {
     it('has subtle neutral background', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('bg-base-200/40')
+      expect(activeMatchBannerPage.banner).toHaveClass('bg-base-200/60')
     })
 
     it('is full width', () => {
