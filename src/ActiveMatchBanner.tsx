@@ -18,6 +18,8 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
   const player1Wins = getGameWins(match.games, DEFAULT_PLAYER_1_ID)
   const player2Wins = getGameWins(match.games, DEFAULT_PLAYER_2_ID)
 
+  const matchLengthLabel = match.matchLength === 1 ? 'Single' : `Bo${match.matchLength}`
+
   const handleBannerClick = () => {
     navigate(`/matches/${match.id}/score`)
   }
@@ -41,40 +43,40 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
       <div
         role="banner"
         onClick={handleBannerClick}
-        className="relative flex items-center justify-between gap-3 px-4 py-3 bg-warning/10 border-l-4 border-warning rounded-r-lg cursor-pointer hover:bg-warning/15 active:bg-warning/20 transition-colors"
+        className="w-full mb-5 bg-warning/10 border-l-4 border-warning rounded-r-lg cursor-pointer hover:bg-warning/15 active:bg-warning/20 transition-colors"
       >
-        {/* Match info */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Match in progress</span>
-            <span className="text-base-content/50">·</span>
-            <span className="text-sm">
-              You <span className="font-bold tabular-nums">{player1Wins}</span>
-              <span className="text-base-content/30 mx-1">–</span>
-              <span className="font-bold tabular-nums">{player2Wins}</span> Opp
-            </span>
-            <span className="text-base-content/50">·</span>
-            <span className="text-xs text-base-content/60">
-              {match.matchLength === 1 ? 'Single game' : `Best of ${match.matchLength}`}
-            </span>
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
+          {/* Match info - stacked on mobile, inline on desktop */}
+          <div className="min-w-0">
+            {/* Eyebrow label */}
+            <div className="text-xs font-medium text-base-content/60 uppercase tracking-wide">
+              Match in progress
+            </div>
+            {/* Main line - compact format */}
+            <div className="text-sm font-medium whitespace-nowrap">
+              <span>You vs Opp</span>
+              <span className="text-base-content/40 mx-2">•</span>
+              <span className="tabular-nums font-bold">{player1Wins}–{player2Wins}</span>
+              <span className="text-base-content/40 mx-2">•</span>
+              <span className="text-base-content/70">{matchLengthLabel}</span>
+            </div>
           </div>
-        </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={handleBannerClick}
-            className="btn btn-primary btn-sm"
-          >
-            Resume
-          </button>
-          <button
-            onClick={handleEndClick}
-            className="btn btn-ghost btn-sm text-error hover:bg-error/10"
-            aria-label="End match"
-          >
-            End…
-          </button>
+          {/* Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={handleBannerClick}
+              className="btn btn-primary btn-sm"
+            >
+              Resume
+            </button>
+            <button
+              onClick={handleEndClick}
+              className="btn btn-ghost btn-sm text-error hover:bg-error/10"
+            >
+              End match
+            </button>
+          </div>
         </div>
       </div>
 

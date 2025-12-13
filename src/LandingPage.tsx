@@ -36,12 +36,10 @@ function LandingPage() {
       <div className="max-w-md mx-auto pb-40">
         {/* Active match banner */}
         {inProgressMatch && (
-          <div className="mb-5">
-            <ActiveMatchBanner
-              match={inProgressMatch}
-              onEndMatch={handleEndMatch}
-            />
-          </div>
+          <ActiveMatchBanner
+            match={inProgressMatch}
+            onEndMatch={handleEndMatch}
+          />
         )}
 
         {/* Match history or empty state */}
@@ -66,7 +64,11 @@ function LandingPage() {
       </div>
 
       <CTAPanel>
-        <NewMatchButton onClick={() => navigate('/matches/new')} />
+        <NewMatchButton
+          onClick={() => navigate('/matches/new')}
+          disabled={!!inProgressMatch}
+          disabledReason="Finish or end your current match first"
+        />
       </CTAPanel>
     </>
   )

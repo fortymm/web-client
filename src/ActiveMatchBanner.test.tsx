@@ -19,16 +19,16 @@ describe('ActiveMatchBanner', () => {
       expect(activeMatchBannerPage.scoreDisplay).toBeInTheDocument()
     })
 
-    it('displays best of X for multi-game matches', () => {
+    it('displays Bo5 for multi-game matches', () => {
       const match = createTestMatch({ matchLength: 5 })
       activeMatchBannerPage.render({ match })
-      expect(activeMatchBannerPage.getBestOfText(5)).toBeInTheDocument()
+      expect(activeMatchBannerPage.getMatchLengthText(5)).toBeInTheDocument()
     })
 
-    it('displays "Single game" for single-game matches', () => {
+    it('displays "Single" for single-game matches', () => {
       const match = createTestMatch({ matchLength: 1 })
       activeMatchBannerPage.render({ match })
-      expect(activeMatchBannerPage.getBestOfText(1)).toBeInTheDocument()
+      expect(activeMatchBannerPage.getMatchLengthText(1)).toBeInTheDocument()
     })
 
     it('displays Resume button', () => {

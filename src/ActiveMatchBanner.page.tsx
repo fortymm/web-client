@@ -100,14 +100,14 @@ export const activeMatchBannerPage = {
   },
 
   get scoreDisplay() {
-    // The score is inside the banner, starting with "You"
-    return screen.getByText(/^you /i)
+    // The score line shows "You vs Opp"
+    return screen.getByText(/you vs opp/i)
   },
 
-  getBestOfText(matchLength: number) {
+  getMatchLengthText(matchLength: number) {
     if (matchLength === 1) {
-      return screen.getByText(/single game/i)
+      return screen.getByText(/single/i)
     }
-    return screen.getByText(new RegExp(`best of ${matchLength}`, 'i'))
+    return screen.getByText(new RegExp(`bo${matchLength}`, 'i'))
   },
 }
