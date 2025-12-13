@@ -119,12 +119,6 @@ function MatchDetailPage() {
             Continue match
           </Link>
         )}
-        <Link
-          to="/matches/new"
-          className={`btn ${isCompleted ? 'btn-primary' : 'btn-ghost'} btn-block h-12`}
-        >
-          New match
-        </Link>
       </CTAPanel>
     </div>
   )
