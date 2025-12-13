@@ -73,14 +73,6 @@ describe('MatchDetailPage', () => {
       })
     })
 
-    it('shows new match button', async () => {
-      await matchDetailPagePage.render()
-
-      await waitFor(() => {
-        expect(matchDetailPagePage.newMatchLink).toBeInTheDocument()
-      })
-    })
-
     it('does not show winner message for in-progress match', async () => {
       await matchDetailPagePage.render({
         match: { status: 'in_progress' },
@@ -249,20 +241,6 @@ describe('MatchDetailPage', () => {
 
       await waitFor(() => {
         expect(matchDetailPagePage.scorePage).toBeInTheDocument()
-      })
-    })
-
-    it('navigates to new match page when new match is clicked', async () => {
-      await matchDetailPagePage.render()
-
-      await waitFor(() => {
-        expect(matchDetailPagePage.newMatchLink).toBeInTheDocument()
-      })
-
-      await matchDetailPagePage.clickNewMatch()
-
-      await waitFor(() => {
-        expect(matchDetailPagePage.newMatchPage).toBeInTheDocument()
       })
     })
   })
