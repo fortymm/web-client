@@ -50,9 +50,9 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('End button', () => {
-    it('has error text styling', () => {
+    it('has muted styling that shows error on hover', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.endButton).toHaveClass('text-error')
+      expect(activeMatchBannerPage.endButton).toHaveClass('hover:text-error')
     })
   })
 
@@ -95,19 +95,14 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('banner styling', () => {
-    it('has primary accent border', () => {
+    it('has subtle neutral background', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('border-primary')
+      expect(activeMatchBannerPage.banner).toHaveClass('bg-base-200/40')
     })
 
-    it('has neutral tinted background', () => {
+    it('is full width', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('bg-base-200/50')
-    })
-
-    it('has left border accent', () => {
-      activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('border-l-4')
+      expect(activeMatchBannerPage.banner).toHaveClass('w-full')
     })
   })
 })

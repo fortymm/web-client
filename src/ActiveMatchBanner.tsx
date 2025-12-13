@@ -43,23 +43,20 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
       <div
         role="banner"
         onClick={handleBannerClick}
-        className="w-full bg-base-200/50 border-l-4 border-primary cursor-pointer hover:bg-base-200 active:bg-base-300/50 transition-colors"
+        className="w-full bg-base-200/40 cursor-pointer hover:bg-base-200/70 active:bg-base-200 transition-colors"
       >
-        <div className="flex items-center justify-between gap-3 px-4 py-3">
-          {/* Match info */}
-          <div className="min-w-0">
-            {/* Eyebrow label - lighter, not shouty */}
-            <div className="text-xs font-medium text-base-content/50">
-              Match in progress
-            </div>
-            {/* Main line - compact format */}
-            <div className="text-sm font-medium whitespace-nowrap">
-              <span>You vs Opp</span>
-              <span className="text-base-content/40 mx-2">•</span>
+        <div className="flex items-center justify-between gap-3 px-4 py-2">
+          {/* Match info - single row */}
+          <div className="flex items-center gap-2 min-w-0 text-sm">
+            <span className="text-base-content/60">Match in progress</span>
+            <span className="text-base-content/30">•</span>
+            <span className="font-medium whitespace-nowrap">
+              You vs Opp
+              <span className="text-base-content/30 mx-1.5">•</span>
               <span className="tabular-nums font-bold">{player1Wins}–{player2Wins}</span>
-              <span className="text-base-content/40 mx-2">•</span>
-              <span className="text-base-content/70">{matchLengthLabel}</span>
-            </div>
+              <span className="text-base-content/30 mx-1.5">•</span>
+              <span className="text-base-content/60">{matchLengthLabel}</span>
+            </span>
           </div>
 
           {/* Actions */}
@@ -72,9 +69,9 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
             </button>
             <button
               onClick={handleEndClick}
-              className="btn btn-ghost btn-sm text-error hover:bg-error/10"
+              className="text-sm text-base-content/50 hover:text-error transition-colors"
             >
-              End match
+              End
             </button>
           </div>
         </div>
