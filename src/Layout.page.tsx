@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Layout'
 import { navbarPage } from './Navbar.page'
+import { TestQueryProvider } from './test/utils'
 
 export const layoutPage = {
   render(outletContent: React.ReactNode = null) {
@@ -18,7 +19,11 @@ export const layoutPage = {
       },
     ]
     const router = createMemoryRouter(routes, { initialEntries: ['/'] })
-    render(<RouterProvider router={router} />)
+    render(
+      <TestQueryProvider>
+        <RouterProvider router={router} />
+      </TestQueryProvider>
+    )
   },
 
   get navbar() {
