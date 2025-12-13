@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { appPage } from './App.page'
 import { matchListPage } from './MatchList.page'
+import { inProgressMatchModalPage } from './InProgressMatchModal.page'
 
 export const landingPagePage = {
   render() {
@@ -33,4 +34,7 @@ export const landingPagePage = {
 
   // Delegate to MatchList page object
   matchList: matchListPage,
+
+  // Delegate to InProgressMatchModal page object
+  inProgressMatchModal: inProgressMatchModalPage,
 }
