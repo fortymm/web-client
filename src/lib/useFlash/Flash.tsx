@@ -1,4 +1,4 @@
-import { useFlash, type FlashType } from './useFlash'
+import { useFlash, type FlashType } from '../useFlash'
 
 const alertClasses: Record<FlashType, string> = {
   info: 'alert-info',

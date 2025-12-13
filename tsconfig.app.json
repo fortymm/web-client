@@ -8,6 +8,13 @@
     "types": ["vite/client", "vite-plugin-pwa/react"],
     "skipLibCheck": true,
 
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["./src/lib/*"],
+      "@common/*": ["./src/common/*"]
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
