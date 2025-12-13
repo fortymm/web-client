@@ -1,17 +1,51 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { NewMatchButton } from './NewMatchButton'
 import CTAPanel from '@common/CTAPanel'
 import { usePrefetchRecentOpponents } from './usePrefetchRecentOpponents'
 import { useMatches } from './useMatches'
 import MatchList from './MatchList'
+import InProgressMatchModal from './InProgressMatchModal'
+import { deleteMatch } from '@lib/matchesDb'
 
 function LandingPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   usePrefetchRecentOpponents()
   const { matches, isLoading } = useMatches()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const hasMatches = matches.length > 0
   const inProgressMatch = matches.find((m) => m.status === 'in_progress')
+
+  const handleNewMatchClick = () => {
+    if (inProgressMatch) {
+      setIsModalOpen(true)
+    } else {
+      navigate('/matches/new')
+    }
+  }
+
+  const handleContinueMatch = () => {
+    if (inProgressMatch) {
+      navigate(`/matches/${inProgressMatch.id}/score`)
+    }
+    setIsModalOpen(false)
+  }
+
+  const handleEndAndStartNew = async () => {
+    if (inProgressMatch) {
+      await deleteMatch(inProgressMatch.id)
+      await queryClient.invalidateQueries({ queryKey: ['matches'] })
+    }
+    setIsModalOpen(false)
+    navigate('/matches/new')
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
 
   if (isLoading) {
     return (
@@ -54,7 +88,7 @@ function LandingPage() {
               Continue match
             </Link>
             <button
-              onClick={() => navigate('/matches/new')}
+              onClick={handleNewMatchClick}
               className="btn btn-outline btn-block h-10"
             >
               <PlusIcon />
@@ -62,9 +96,19 @@ function LandingPage() {
             </button>
           </div>
         ) : (
-          <NewMatchButton onClick={() => navigate('/matches/new')} />
+          <NewMatchButton onClick={handleNewMatchClick} />
         )}
       </CTAPanel>
+
+      {inProgressMatch && (
+        <InProgressMatchModal
+          match={inProgressMatch}
+          isOpen={isModalOpen}
+          onContinue={handleContinueMatch}
+          onEndAndStartNew={handleEndAndStartNew}
+          onClose={handleCloseModal}
+        />
+      )}
     </>
   )
 }
