@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { type QueryClient } from '@tanstack/react-query'
 import { useMatches } from './useMatches'
 import { createTestQueryClient, createWrapper } from './test/utils'
-import { type StoredMatch } from './lib/matchesDb'
+import { type StoredMatch } from '@lib/matchesDb'
 
 interface RenderOptions {
   queryClient?: QueryClient

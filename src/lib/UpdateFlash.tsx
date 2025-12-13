@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { useServiceWorkerUpdate } from './useServiceWorkerUpdate'
-import { useFlash } from './useFlash'
+import { useServiceWorkerUpdate } from '../useServiceWorkerUpdate'
+import { useFlash } from '@lib/useFlash'
 
 function UpdateFlash() {
   const { needRefresh, refresh } = useServiceWorkerUpdate()

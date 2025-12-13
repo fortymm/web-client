@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { NewMatchButton } from './NewMatchButton'
-import CTAPanel from './CTAPanel'
+import CTAPanel from '@common/CTAPanel'
 import { usePrefetchRecentOpponents } from './usePrefetchRecentOpponents'
 import { useMatches } from './useMatches'
 import MatchList from './MatchList'

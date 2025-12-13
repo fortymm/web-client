@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import GameScoreForm from './MatchScorePage/GameScoreForm'
 import { useMatch } from './MatchScorePage/useMatch'
 import { useSaveGame, getGamesToWin, getGameWins } from './MatchScorePage/useSaveGame'
-import type { GameScore } from './lib/matchesDb'
+import type { GameScore } from '@lib/matchesDb'
 
 // Placeholder player data until we have match context
 const DEFAULT_PLAYER_1 = { id: 'player-1', name: 'You' }
