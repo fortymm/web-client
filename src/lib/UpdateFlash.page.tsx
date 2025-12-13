@@ -1,14 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi, type Mock } from 'vitest'
-import UpdateFlash from './UpdateFlash'
-import { FlashTestWrapper } from './test/FlashTestWrapper'
-import Flash from './Flash'
+import UpdateFlash from '@lib/UpdateFlash'
+import { FlashTestWrapper } from '../test/FlashTestWrapper'
 
 let mockNeedRefresh = false
 let mockRefresh: Mock
 
-vi.mock('./useServiceWorkerUpdate', () => ({
+vi.mock('../useServiceWorkerUpdate', () => ({
   useServiceWorkerUpdate: () => ({
     needRefresh: mockNeedRefresh,
     refresh: mockRefresh,
@@ -33,7 +32,6 @@ export const updateFlashPage = {
     render(
       <FlashTestWrapper>
         <UpdateFlash />
-        <Flash />
       </FlashTestWrapper>
     )
   },

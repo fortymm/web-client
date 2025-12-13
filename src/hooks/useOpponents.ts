@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { useQuery, keepPreviousData, type QueryObserverResult } from '@tanstack/react-query'
-import { api } from '../lib/api'
+import { api } from '@lib/api'
 
 const ENDPOINT = '/matches/new/opponents'
 

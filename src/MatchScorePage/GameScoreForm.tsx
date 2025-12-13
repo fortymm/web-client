@@ -1,6 +1,6 @@
 import { type FC, useState } from 'react'
-import CTAPanel from '../CTAPanel'
-import PlayerScoreInput from './PlayerScoreInput'
+import CTAPanel from '@common/CTAPanel'
+import PlayerScoreInput from './GameScoreForm/PlayerScoreInput'
 
 interface Player {
   id: string

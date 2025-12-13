@@ -1,16 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import Flash from './Flash'
-import { FlashTestWrapper } from './test/FlashTestWrapper'
-import { flashStateRef } from './test/flashStateRef'
-import type { ShowFlashOptions } from './useFlash'
+import { FlashTestWrapper } from '../../test/FlashTestWrapper'
+import { flashStateRef } from '../../test/flashStateRef'
+import type { ShowFlashOptions } from '../useFlash'
 
 export const flashPage = {
   render() {
     render(
-      <FlashTestWrapper>
-        <Flash />
-      </FlashTestWrapper>
+      <FlashTestWrapper>{null}</FlashTestWrapper>
     )
   },
 

@@ -1,6 +1,6 @@
 import { type FC, type ReactNode } from 'react'
 import PlayerAvatar from './PlayerAvatar'
-import { formatRelativeTime } from '../lib/formatRelativeTime'
+import { formatRelativeTime } from '@lib/formatRelativeTime'
 
 export interface PlayerRowProps {
   player: {

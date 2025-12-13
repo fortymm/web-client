@@ -154,12 +154,49 @@ export const createMatchPayloadSchema = z.object({
 export type CreateMatchPayload = z.infer<typeof createMatchPayloadSchema>
 ```
 
+## Test Data Factories
+
+Use Faker.js to generate test data via factory functions. Keep factories colocated with the components they support.
+
+```typescript
+// RecentPlayersPanel/factories.ts
+import { faker } from '@faker-js/faker'
+import { type Opponent } from '../../hooks/useOpponents'
+
+export function buildOpponent(overrides: Partial<Opponent> = {}): Opponent {
+  return {
+    id: faker.string.uuid(),
+    username: faker.internet.username(),
+    avatarUrl: faker.helpers.arrayElement([null, faker.image.avatar()]),
+    isEphemeral: faker.datatype.boolean(),
+    headToHead: {
+      wins: faker.number.int({ min: 0, max: 20 }),
+      losses: faker.number.int({ min: 0, max: 20 }),
+    },
+    lastMatch: {
+      id: faker.string.uuid(),
+      result: faker.helpers.arrayElement(['win', 'loss'] as const),
+      score: `${faker.number.int({ min: 0, max: 11 })}-${faker.number.int({ min: 0, max: 11 })}`,
+      playedAt: faker.date.recent({ days: 30 }).toISOString(),
+    },
+    ...overrides,
+  }
+}
+
+// Use in page objects
+const defaultPlayers = [
+  buildOpponent({ id: 'player-1', username: 'Player1' }),
+  buildOpponent({ id: 'player-2', username: 'Player2' }),
+]
+```
+
 ## Code Conventions
 
 - **Queries**: Prefer `getByRole()` > `getByText()` > `getByLabelText()`
 - **Styling**: Tailwind utilities + DaisyUI classes directly in JSX
 - **Props**: Use TypeScript interfaces; discriminated unions for restricted strings
 - **Tests**: Always use page objects; never query DOM directly in tests
+- **Test Data**: Use Faker.js factories for generating test data; allows overrides for specific test needs
 - **API Mocking**: Use hook page objects' `requestHandler` method - never hardcode URLs in tests
 
 ## No Barrel Files

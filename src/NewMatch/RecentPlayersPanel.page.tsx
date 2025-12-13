@@ -4,79 +4,77 @@ import { vi } from 'vitest'
 import RecentPlayersPanel, {
   type RecentPlayersPanelProps,
 } from './RecentPlayersPanel'
-import { type RecentOpponent } from '../hooks/useRecentOpponents'
+import { type Opponent } from '../hooks/useOpponents'
 import { sectionHeaderPage } from './SectionHeader.page'
 import { skeletonRowsPage } from './SkeletonRows.page'
 import { playerListPage } from './PlayerList.page'
 import { recentsErrorCardPage } from './RecentsErrorCard.page'
 import { noRecentsEmptyStatePage } from './NoRecentsEmptyState.page'
+import { buildOpponent } from './RecentPlayersPanel/factories'
 
-interface RenderOptions {
-  isInitialLoading?: boolean
-  isRefetching?: boolean
-  hasError?: boolean
-  players?: RecentOpponent[] | null
-  onSelectPlayer?: RecentPlayersPanelProps['onSelectPlayer']
-  onRetry?: RecentPlayersPanelProps['onRetry']
-  retryCount?: number
+type RenderOptions =
+  | { state: 'loading' }
+  | { state: 'error'; retryCount?: number; onRetry?: () => Promise<void> | void }
+  | { state: 'empty' }
+  | { state?: 'success'; players?: Opponent[]; isRefetching?: boolean }
+
+type CommonOptions = {
+  onSelectPlayer?: (playerId: string) => void
 }
 
-const defaultPlayers: RecentOpponent[] = [
-  {
+const defaultPlayers: Opponent[] = [
+  buildOpponent({
     id: 'player-1',
     username: 'Player1',
-    avatarUrl: null,
-    isEphemeral: false,
-    headToHead: { wins: 3, losses: 2 },
-    lastMatch: {
-      id: 'match-1',
-      result: 'win',
-      score: '11-7',
-      playedAt: '2025-03-20T10:00:00.000Z',
-    },
-  },
-  {
+  }),
+  buildOpponent({
     id: 'player-2',
     username: 'Player2',
-    avatarUrl: null,
-    isEphemeral: false,
-    headToHead: { wins: 1, losses: 4 },
-    lastMatch: {
-      id: 'match-2',
-      result: 'loss',
-      score: '7-11',
-      playedAt: '2025-03-19T10:00:00.000Z',
-    },
-  },
+  }),
 ]
 
 export const recentPlayersPanelPage = {
-  render(options: RenderOptions = {}) {
-    const {
-      isInitialLoading = false,
-      isRefetching = false,
-      hasError = false,
-      players = defaultPlayers,
-      onSelectPlayer = vi.fn(),
-      onRetry = vi.fn(),
-      retryCount = 0,
-    } = options
-
+  render(
+    options: RenderOptions & CommonOptions = { state: 'success' }
+  ) {
     const user = userEvent.setup()
+    const onSelectPlayer = options.onSelectPlayer ?? vi.fn()
 
-    render(
-      <RecentPlayersPanel
-        isInitialLoading={isInitialLoading}
-        isRefetching={isRefetching}
-        hasError={hasError}
-        players={players}
-        onSelectPlayer={onSelectPlayer}
-        onRetry={onRetry}
-        retryCount={retryCount}
-      />
-    )
+    let props: RecentPlayersPanelProps
 
-    return { onSelectPlayer, onRetry, user }
+    if (options.state === 'loading') {
+      props = {
+        state: 'loading',
+        onSelectPlayer,
+      }
+    } else if (options.state === 'error') {
+      props = {
+        state: 'error',
+        onRetry: options.onRetry ?? vi.fn(),
+        retryCount: options.retryCount ?? 0,
+        onSelectPlayer,
+      }
+    } else if (options.state === 'empty') {
+      props = {
+        state: 'empty',
+        onSelectPlayer,
+      }
+    } else {
+      props = {
+        state: 'success',
+        players: options.players ?? defaultPlayers,
+        isRefetching: options.isRefetching ?? false,
+        onSelectPlayer,
+      }
+    }
+
+    render(<RecentPlayersPanel {...props} />)
+
+    return {
+      onSelectPlayer,
+      onRetry: props.state === 'error' ? props.onRetry : undefined,
+      user,
+    }
   },
 
   // Delegate to SectionHeader page object

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import GameScoreForm from './GameScoreForm'
-import { playerScoreInputPage } from './PlayerScoreInput.page'
+import { playerScoreInputPage } from './GameScoreForm/PlayerScoreInput.page'
 
 interface Player {
   id: string

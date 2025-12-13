@@ -5,19 +5,19 @@ import { recentPlayersPanelPage } from './RecentPlayersPanel.page'
 describe('RecentPlayersPanel', () => {
   describe('loading state', () => {
     it('shows skeleton rows when initially loading', () => {
-      recentPlayersPanelPage.render({ isInitialLoading: true })
+      recentPlayersPanelPage.render({ state: 'loading' })
 
       expect(recentPlayersPanelPage.isShowingSkeleton).toBe(true)
     })
 
     it('shows header when initially loading', () => {
-      recentPlayersPanelPage.render({ isInitialLoading: true })
+      recentPlayersPanelPage.render({ state: 'loading' })
 
       expect(recentPlayersPanelPage.header).toBeInTheDocument()
     })
 
     it('does not show loading spinner in header when initially loading', () => {
-      recentPlayersPanelPage.render({ isInitialLoading: true })
+      recentPlayersPanelPage.render({ state: 'loading' })
 
       expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument()
     })
@@ -86,25 +86,25 @@ describe('RecentPlayersPanel', () => {
 
   describe('error state', () => {
     it('shows error card when hasError is true', () => {
-      recentPlayersPanelPage.render({ hasError: true, players: null })
+      recentPlayersPanelPage.render({ state: 'error' })
 
       expect(recentPlayersPanelPage.errorCard.alert).toBeInTheDocument()
     })
 
     it('shows header when error card is displayed', () => {
-      recentPlayersPanelPage.render({ hasError: true, players: null })
+      recentPlayersPanelPage.render({ state: 'error' })
 
       expect(recentPlayersPanelPage.header).toBeInTheDocument()
     })
 
     it('does not show player list when error card is displayed', () => {
-      recentPlayersPanelPage.render({ hasError: true, players: null })
+      recentPlayersPanelPage.render({ state: 'error' })
 
       expect(screen.queryByTestId('player-list')).not.toBeInTheDocument()
     })
 
     it('does not show skeleton when error card is displayed', () => {
-      recentPlayersPanelPage.render({ hasError: true, players: null })
+      recentPlayersPanelPage.render({ state: 'error' })
 
       expect(recentPlayersPanelPage.isShowingSkeleton).toBe(false)
     })
@@ -112,19 +112,19 @@ describe('RecentPlayersPanel', () => {
 
   describe('empty state', () => {
     it('shows empty state when players array is empty', () => {
-      recentPlayersPanelPage.render({ players: [] })
+      recentPlayersPanelPage.render({ state: 'empty' })
 
       expect(recentPlayersPanelPage.emptyState.title).toBeInTheDocument()
     })
 
     it('shows header when empty state is displayed', () => {
-      recentPlayersPanelPage.render({ players: [] })
+      recentPlayersPanelPage.render({ state: 'empty' })
 
       expect(recentPlayersPanelPage.header).toBeInTheDocument()
     })
 
     it('displays correct empty state message', () => {
-      recentPlayersPanelPage.render({ players: [] })
+      recentPlayersPanelPage.render({ state: 'empty' })
 
       expect(recentPlayersPanelPage.emptyState.title).toHaveTextContent(
         'Your recent opponents will appear here'
@@ -133,19 +133,19 @@ describe('RecentPlayersPanel', () => {
     })
 
     it('does not show player list when empty state is displayed', () => {
-      recentPlayersPanelPage.render({ players: [] })
+      recentPlayersPanelPage.render({ state: 'empty' })
 
       expect(screen.queryByTestId('player-list')).not.toBeInTheDocument()
     })
 
     it('does not show skeleton when empty state is displayed', () => {
-      recentPlayersPanelPage.render({ players: [] })
+      recentPlayersPanelPage.render({ state: 'empty' })
 
       expect(recentPlayersPanelPage.isShowingSkeleton).toBe(false)
     })
 
     it('does not show error card when empty state is displayed', () => {
-      recentPlayersPanelPage.render({ players: [] })
+      recentPlayersPanelPage.render({ state: 'empty' })
 
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     })
