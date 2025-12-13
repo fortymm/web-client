@@ -45,30 +45,30 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
         onClick={handleBannerClick}
         className="w-full bg-base-200/50 border border-base-300 rounded-lg cursor-pointer hover:bg-base-200/70 active:bg-base-200 transition-colors"
       >
-        <div className="flex items-center justify-between gap-4 px-4 py-2.5">
-          {/* Left group: pill + summary (tight) */}
-          <div className="flex items-center gap-3 min-w-0">
-            <span className="badge badge-sm badge-warning whitespace-nowrap">In progress</span>
-            <span className="text-sm font-medium whitespace-nowrap">
+        <div className="flex items-center gap-4 px-4 py-2.5">
+          {/* Left group: pill + summary - truncates on overflow */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className="badge badge-sm badge-ghost border-base-content/20 whitespace-nowrap">In progress</span>
+            <span className="text-sm font-medium truncate">
               You vs Opp
               <span className="text-base-content/40 mx-1.5">•</span>
               <span className="tabular-nums font-bold">{player1Wins}–{player2Wins}</span>
-              <span className="text-base-content/40 mx-1.5">•</span>
-              <span className="text-base-content/70">{matchLengthLabel}</span>
+              <span className="text-base-content/40 mx-1.5 hidden sm:inline">•</span>
+              <span className="text-base-content/70 hidden sm:inline">{matchLengthLabel}</span>
             </span>
           </div>
 
-          {/* Right group: actions */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Right group: actions - never shrinks */}
+          <div className="flex items-center gap-3 flex-none">
             <button
               onClick={handleBannerClick}
-              className="btn btn-primary btn-outline btn-sm"
+              className="btn btn-primary btn-sm"
             >
               Resume
             </button>
             <button
               onClick={handleEndClick}
-              className="text-sm text-base-content/50 hover:text-error transition-colors"
+              className="text-sm text-base-content/50 hover:text-error transition-colors whitespace-nowrap"
             >
               End match
             </button>

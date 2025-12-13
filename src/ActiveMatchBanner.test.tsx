@@ -43,9 +43,10 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('Resume button', () => {
-    it('has primary styling', () => {
+    it('has solid primary styling', () => {
       activeMatchBannerPage.render()
       expect(activeMatchBannerPage.resumeButton).toHaveClass('btn-primary')
+      expect(activeMatchBannerPage.resumeButton).not.toHaveClass('btn-outline')
     })
   })
 
