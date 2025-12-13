@@ -33,15 +33,17 @@ function LandingPage() {
 
   return (
     <>
-      <div className="max-w-md mx-auto pb-40">
-        {/* Active match banner */}
-        {inProgressMatch && (
+      {/* Active match banner - full width, breaks out of main padding */}
+      {inProgressMatch && (
+        <div className="-mx-4 -mt-4 mb-4">
           <ActiveMatchBanner
             match={inProgressMatch}
             onEndMatch={handleEndMatch}
           />
-        )}
+        </div>
+      )}
 
+      <div className="max-w-md mx-auto pb-40">
         {/* Match history or empty state */}
         {hasCompletedMatches ? (
           <MatchList matches={completedMatches} />

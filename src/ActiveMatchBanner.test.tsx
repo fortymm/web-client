@@ -105,9 +105,9 @@ describe('ActiveMatchBanner', () => {
       expect(activeMatchBannerPage.banner).toHaveClass('bg-warning/10')
     })
 
-    it('has left border only', () => {
+    it('has bottom border accent', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('border-l-4')
+      expect(activeMatchBannerPage.banner).toHaveClass('border-b-2')
     })
   })
 })
