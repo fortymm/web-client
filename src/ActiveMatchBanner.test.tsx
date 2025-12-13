@@ -95,19 +95,19 @@ describe('ActiveMatchBanner', () => {
   })
 
   describe('banner styling', () => {
-    it('has warning accent border', () => {
+    it('has primary accent border', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('border-warning')
+      expect(activeMatchBannerPage.banner).toHaveClass('border-primary')
     })
 
-    it('has warning tinted background', () => {
+    it('has neutral tinted background', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('bg-warning/10')
+      expect(activeMatchBannerPage.banner).toHaveClass('bg-base-200/50')
     })
 
-    it('has bottom border accent', () => {
+    it('has left border accent', () => {
       activeMatchBannerPage.render()
-      expect(activeMatchBannerPage.banner).toHaveClass('border-b-2')
+      expect(activeMatchBannerPage.banner).toHaveClass('border-l-4')
     })
   })
 })

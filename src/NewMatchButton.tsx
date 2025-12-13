@@ -19,7 +19,7 @@ export function NewMatchButton({ onClick, disabled, disabledReason }: NewMatchBu
         <span>New match</span>
       </button>
       {disabled && disabledReason && (
-        <p className="text-xs text-center text-base-content/50 mt-2">
+        <p className="text-xs text-center text-base-content/60 mt-2">
           {disabledReason}
         </p>
       )}

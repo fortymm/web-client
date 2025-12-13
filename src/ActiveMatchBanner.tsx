@@ -43,13 +43,13 @@ function ActiveMatchBanner({ match, onEndMatch }: ActiveMatchBannerProps) {
       <div
         role="banner"
         onClick={handleBannerClick}
-        className="w-full bg-warning/10 border-b-2 border-warning cursor-pointer hover:bg-warning/15 active:bg-warning/20 transition-colors"
+        className="w-full bg-base-200/50 border-l-4 border-primary cursor-pointer hover:bg-base-200 active:bg-base-300/50 transition-colors"
       >
         <div className="flex items-center justify-between gap-3 px-4 py-3">
-          {/* Match info - stacked on mobile, inline on desktop */}
+          {/* Match info */}
           <div className="min-w-0">
-            {/* Eyebrow label */}
-            <div className="text-xs font-medium text-base-content/60 uppercase tracking-wide">
+            {/* Eyebrow label - lighter, not shouty */}
+            <div className="text-xs font-medium text-base-content/50">
               Match in progress
             </div>
             {/* Main line - compact format */}
