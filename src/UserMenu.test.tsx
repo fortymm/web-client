@@ -12,6 +12,16 @@ describe('UserMenu', () => {
     expect(userMenuPage.menuButton).toHaveAccessibleName('User menu')
   })
 
+  it('contains account link', () => {
+    userMenuPage.render()
+    expect(userMenuPage.accountLink).toBeInTheDocument()
+  })
+
+  it('account link points to account settings page', () => {
+    userMenuPage.render()
+    expect(userMenuPage.accountHref).toBe('/settings/account')
+  })
+
   it('contains appearance link', () => {
     userMenuPage.render()
     expect(userMenuPage.appearanceLink).toBeInTheDocument()

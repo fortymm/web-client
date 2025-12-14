@@ -4,6 +4,7 @@ import MatchDetailPage from './MatchDetailPage'
 import NewMatch from './NewMatch'
 import MatchScorePage from './MatchScorePage'
 import AppearanceSettings from './AppearanceSettings'
+import AccountSettings from './AccountSettings'
 
 export const routes = [
   {
@@ -29,6 +30,10 @@ export const routes = [
       {
         path: 'settings/appearance',
         element: <AppearanceSettings />,
+      },
+      {
+        path: 'settings/account',
+        element: <AccountSettings />,
       },
     ],
   },
