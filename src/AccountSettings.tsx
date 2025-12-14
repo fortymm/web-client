@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import { useState, type FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from './hooks/useSession'
@@ -7,6 +7,7 @@ import CTAPanel from '@common/CTAPanel'
 import {
   useUpdateAccount,
   updateAccountPayloadSchema,
+  extractValidationErrors,
   type UpdateAccountPayload,
 } from './AccountSettings/useUpdateAccount'
 
@@ -14,6 +15,7 @@ const AccountSettings: FC = () => {
   const { username, isLoading } = useSession()
   const updateAccount = useUpdateAccount()
   const { showFlash } = useFlash()
+  const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({})
 
   const {
     register,
@@ -31,29 +33,30 @@ const AccountSettings: FC = () => {
       showFlash('No changes to save.', { type: 'info', timeout: 3000 })
       return
     }
+    setApiErrors({})
     updateAccount.mutate(data, {
       onSuccess: () => {
         showFlash('Your changes have been saved.', { type: 'success', timeout: 3000 })
       },
-      onError: () => {
-        showFlash('Failed to save changes. Please try again.', { type: 'error', timeout: 5000 })
+      onError: (error) => {
+        const validationErrors = extractValidationErrors(error)
+        if (validationErrors) {
+          setApiErrors(validationErrors)
+        } else {
+          showFlash('Failed to save changes. Please try again.', { type: 'error', timeout: 5000 })
+        }
       },
     })
   }
 
-  if (isLoading) {
-    return (
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">Account settings</h1>
-        <p className="text-base-content/70 mb-8">
-          Update how you appear to other players.
-        </p>
-        <div className="flex justify-center py-8">
-          <span className="loading loading-spinner loading-lg" />
-        </div>
-      </div>
-    )
+  const handleSaveClick = (e: React.MouseEvent) => {
+    if (isLoading) {
+      e.preventDefault()
+      showFlash('No changes to save.', { type: 'info', timeout: 3000 })
+    }
   }
+
+  const usernameError = errors.username?.message || apiErrors.username?.[0]
 
   return (
     <div className="max-w-3xl mx-auto pb-24">
@@ -67,16 +70,20 @@ const AccountSettings: FC = () => {
           <label className="label" htmlFor="username">
             <span className="label-text">Username</span>
           </label>
-          <input
-            id="username"
-            type="text"
-            className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
-            {...register('username')}
-          />
-          {errors.username && (
+          {isLoading ? (
+            <div className="skeleton h-12 w-full" />
+          ) : (
+            <input
+              id="username"
+              type="text"
+              className={`input input-bordered w-full ${usernameError ? 'input-error' : ''}`}
+              {...register('username')}
+            />
+          )}
+          {usernameError && (
             <label className="label">
               <span className="label-text-alt text-error">
-                {errors.username.message}
+                {usernameError}
               </span>
             </label>
           )}
@@ -87,6 +94,7 @@ const AccountSettings: FC = () => {
             type="submit"
             className="btn btn-primary w-full"
             disabled={updateAccount.isPending}
+            onClick={handleSaveClick}
           >
             {updateAccount.isPending ? (
               <span className="loading loading-spinner loading-sm" />
