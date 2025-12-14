@@ -2,6 +2,8 @@ import type { FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from './hooks/useSession'
+import { useFlash } from '@lib/useFlash'
+import CTAPanel from '@common/CTAPanel'
 import {
   useUpdateAccount,
   updateAccountPayloadSchema,
@@ -11,6 +13,7 @@ import {
 const AccountSettings: FC = () => {
   const { username, isLoading } = useSession()
   const updateAccount = useUpdateAccount()
+  const { showFlash } = useFlash()
 
   const {
     register,
@@ -24,7 +27,18 @@ const AccountSettings: FC = () => {
   })
 
   const onSubmit = (data: UpdateAccountPayload) => {
-    updateAccount.mutate(data)
+    if (!isDirty) {
+      showFlash('No changes to save.', { type: 'info', timeout: 3000 })
+      return
+    }
+    updateAccount.mutate(data, {
+      onSuccess: () => {
+        showFlash('Your changes have been saved.', { type: 'success', timeout: 3000 })
+      },
+      onError: () => {
+        showFlash('Failed to save changes. Please try again.', { type: 'error', timeout: 5000 })
+      },
+    })
   }
 
   if (isLoading) {
@@ -42,7 +56,7 @@ const AccountSettings: FC = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-24">
       <h1 className="text-2xl font-bold mb-2">Account settings</h1>
       <p className="text-base-content/70 mb-8">
         Manage your account information and preferences.
@@ -70,33 +84,21 @@ const AccountSettings: FC = () => {
               </label>
             )}
           </div>
-
-          <div className="mt-6">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!isDirty || updateAccount.isPending}
-            >
-              {updateAccount.isPending ? (
-                <span className="loading loading-spinner loading-sm" />
-              ) : (
-                'Save changes'
-              )}
-            </button>
-          </div>
-
-          {updateAccount.isSuccess && (
-            <div className="alert alert-success mt-4">
-              <span>Your changes have been saved.</span>
-            </div>
-          )}
-
-          {updateAccount.isError && (
-            <div className="alert alert-error mt-4">
-              <span>Failed to save changes. Please try again.</span>
-            </div>
-          )}
         </fieldset>
+
+        <CTAPanel>
+          <button
+            type="submit"
+            className="btn btn-primary w-full"
+            disabled={updateAccount.isPending}
+          >
+            {updateAccount.isPending ? (
+              <span className="loading loading-spinner loading-sm" />
+            ) : (
+              'Save changes'
+            )}
+          </button>
+        </CTAPanel>
       </form>
     </div>
   )

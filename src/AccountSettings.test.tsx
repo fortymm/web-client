@@ -49,28 +49,32 @@ describe('AccountSettings', () => {
     })
   })
 
-  it('disables save button when form is not dirty', async () => {
+  it('keeps save button enabled when form is not dirty', async () => {
     accountSettingsPage.render()
     await accountSettingsPage.waitForLoaded()
 
     await waitFor(() => {
       expect(accountSettingsPage.usernameInput).toHaveValue('CurrentUser')
     })
-
-    expect(accountSettingsPage.saveButton).toBeDisabled()
-  })
-
-  it('enables save button when username is changed', async () => {
-    accountSettingsPage.render()
-    await accountSettingsPage.waitForLoaded()
-
-    await waitFor(() => {
-      expect(accountSettingsPage.usernameInput).toHaveValue('CurrentUser')
-    })
-
-    await accountSettingsPage.fillUsername('NewUsername')
 
     expect(accountSettingsPage.saveButton).not.toBeDisabled()
+  })
+
+  it('shows no changes toast when clicking save without changes', async () => {
+    accountSettingsPage.render()
+    await accountSettingsPage.waitForLoaded()
+
+    await waitFor(() => {
+      expect(accountSettingsPage.usernameInput).toHaveValue('CurrentUser')
+    })
+
+    await accountSettingsPage.clickSave()
+
+    await waitFor(() => {
+      const flash = accountSettingsPage.getLatestFlash()
+      expect(flash?.message).toBe('No changes to save.')
+      expect(flash?.type).toBe('info')
+    })
   })
 
   it('submits the form when save is clicked', async () => {
@@ -98,7 +102,7 @@ describe('AccountSettings', () => {
     })
   })
 
-  it('shows success message after saving', async () => {
+  it('shows success toast after saving', async () => {
     server.use(
       useUpdateAccountPage.requestHandler(() => {
         return HttpResponse.json({ username: 'NewUsername' })
@@ -116,11 +120,13 @@ describe('AccountSettings', () => {
     await accountSettingsPage.clickSave()
 
     await waitFor(() => {
-      expect(accountSettingsPage.successMessage).toBeInTheDocument()
+      const flash = accountSettingsPage.getLatestFlash()
+      expect(flash?.message).toBe('Your changes have been saved.')
+      expect(flash?.type).toBe('success')
     })
   })
 
-  it('shows error message when save fails', async () => {
+  it('shows error toast when save fails', async () => {
     server.use(
       useUpdateAccountPage.requestHandler(() => {
         return HttpResponse.error()
@@ -138,7 +144,9 @@ describe('AccountSettings', () => {
     await accountSettingsPage.clickSave()
 
     await waitFor(() => {
-      expect(accountSettingsPage.errorMessage).toBeInTheDocument()
+      const flash = accountSettingsPage.getLatestFlash()
+      expect(flash?.message).toBe('Failed to save changes. Please try again.')
+      expect(flash?.type).toBe('error')
     })
   })
 

@@ -4,13 +4,17 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import AccountSettings from './AccountSettings'
 import { TestQueryProvider } from './test/utils'
+import { FlashTestWrapper } from './test/FlashTestWrapper'
+import { flashStateRef } from './test/flashStateRef'
 
 export const accountSettingsPage = {
   render() {
     render(
       <MemoryRouter>
         <TestQueryProvider>
-          <AccountSettings />
+          <FlashTestWrapper>
+            <AccountSettings />
+          </FlashTestWrapper>
         </TestQueryProvider>
       </MemoryRouter>
     )
@@ -50,20 +54,18 @@ export const accountSettingsPage = {
     await userEvent.click(this.saveButton)
   },
 
-  get successMessage() {
-    return screen.getByText('Your changes have been saved.')
+  // Flash state access
+  getFlashState() {
+    return flashStateRef.current
   },
 
-  get errorMessage() {
-    return screen.getByText('Failed to save changes. Please try again.')
+  get flashes() {
+    return flashStateRef.current?.flashes ?? []
   },
 
-  querySuccessMessage() {
-    return screen.queryByText('Your changes have been saved.')
-  },
-
-  queryErrorMessage() {
-    return screen.queryByText('Failed to save changes. Please try again.')
+  getLatestFlash() {
+    const flashes = this.flashes
+    return flashes[flashes.length - 1] ?? null
   },
 
   get usernameError() {
