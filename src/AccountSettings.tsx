@@ -46,7 +46,7 @@ const AccountSettings: FC = () => {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold mb-2">Account settings</h1>
         <p className="text-base-content/70 mb-8">
-          Manage your account information and preferences.
+          Update how you appear to other players.
         </p>
         <div className="flex justify-center py-8">
           <span className="loading loading-spinner loading-lg" />
@@ -59,7 +59,7 @@ const AccountSettings: FC = () => {
     <div className="max-w-3xl mx-auto pb-24">
       <h1 className="text-2xl font-bold mb-2">Account settings</h1>
       <p className="text-base-content/70 mb-8">
-        Manage your account information and preferences.
+        Update how you appear to other players.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
