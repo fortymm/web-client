@@ -22,16 +22,12 @@ export const accountSettingsPage = {
 
   async waitForLoaded() {
     await waitFor(() => {
-      expect(screen.getByRole('group', { name: 'Profile' })).toBeInTheDocument()
+      expect(screen.getByRole('textbox', { name: 'Username' })).toBeInTheDocument()
     })
   },
 
   get heading() {
     return screen.getByRole('heading', { name: 'Account settings' })
-  },
-
-  get profileFieldset() {
-    return screen.getByRole('group', { name: 'Profile' })
   },
 
   get usernameInput() {

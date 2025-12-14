@@ -63,28 +63,24 @@ const AccountSettings: FC = () => {
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset>
-          <legend className="text-sm font-medium mb-6">Profile</legend>
-
-          <div className="form-control w-full max-w-md">
-            <label className="label" htmlFor="username">
-              <span className="label-text">Username</span>
+        <div className="form-control w-full max-w-md">
+          <label className="label" htmlFor="username">
+            <span className="label-text">Username</span>
+          </label>
+          <input
+            id="username"
+            type="text"
+            className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
+            {...register('username')}
+          />
+          {errors.username && (
+            <label className="label">
+              <span className="label-text-alt text-error">
+                {errors.username.message}
+              </span>
             </label>
-            <input
-              id="username"
-              type="text"
-              className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
-              {...register('username')}
-            />
-            {errors.username && (
-              <label className="label">
-                <span className="label-text-alt text-error">
-                  {errors.username.message}
-                </span>
-              </label>
-            )}
-          </div>
-        </fieldset>
+          )}
+        </div>
 
         <CTAPanel>
           <button

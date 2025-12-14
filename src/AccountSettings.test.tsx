@@ -22,12 +22,6 @@ describe('AccountSettings', () => {
     expect(accountSettingsPage.heading).toBeInTheDocument()
   })
 
-  it('renders the profile fieldset after loading', async () => {
-    accountSettingsPage.render()
-    await accountSettingsPage.waitForLoaded()
-    expect(accountSettingsPage.profileFieldset).toBeInTheDocument()
-  })
-
   it('renders the username input after loading', async () => {
     accountSettingsPage.render()
     await accountSettingsPage.waitForLoaded()
