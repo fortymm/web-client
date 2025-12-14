@@ -20,6 +20,14 @@ export const userMenuPage = {
     await userEvent.click(userMenuPage.menuButton)
   },
 
+  get accountLink() {
+    return screen.getByRole('link', { name: /account/i })
+  },
+
+  get accountHref() {
+    return userMenuPage.accountLink.getAttribute('href')
+  },
+
   get appearanceLink() {
     return screen.getByRole('link', { name: /appearance/i })
   },
