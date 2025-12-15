@@ -65,8 +65,8 @@ const AccountSettings: FC = () => {
         Update how you appear to other players.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="form-control w-full max-w-md">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <fieldset className="fieldset w-full max-w-md">
           <label className="label" htmlFor="username">
             <span className="label-text">Username</span>
           </label>
@@ -76,18 +76,14 @@ const AccountSettings: FC = () => {
             <input
               id="username"
               type="text"
-              className={`input input-bordered w-full ${usernameError ? 'input-error' : ''}`}
+              className={`input validator w-full ${usernameError ? 'input-error' : ''}`}
               {...register('username')}
             />
           )}
-          {usernameError && (
-            <label className="label">
-              <span className="label-text-alt text-error">
-                {usernameError}
-              </span>
-            </label>
-          )}
-        </div>
+          <div className={`validator-hint ${usernameError ? '!visible' : ''}`}>
+            {usernameError}
+          </div>
+        </fieldset>
 
         <CTAPanel>
           <button
