@@ -80,7 +80,9 @@ const AccountSettings: FC = () => {
               {...register('username')}
             />
           )}
-          <div className={`validator-hint ${usernameError ? '!visible' : ''}`}>
+          <div
+            className={`validator-hint text-error ${usernameError ? '!visible' : ''}`}
+          >
             {usernameError}
           </div>
         </fieldset>
