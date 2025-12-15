@@ -71,4 +71,20 @@ export const accountSettingsPage = {
   queryUsernameError() {
     return screen.queryByText('Username is required')
   },
+
+  getUsernameErrorByText(text: string) {
+    return screen.getByText(text)
+  },
+
+  queryUsernameErrorByText(text: string) {
+    return screen.queryByText(text)
+  },
+
+  get skeleton() {
+    return document.querySelector('.skeleton')
+  },
+
+  querySkeleton() {
+    return document.querySelector('.skeleton')
+  },
 }
