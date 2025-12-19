@@ -3,12 +3,10 @@ import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { api } from '@lib/api'
 
-const ENDPOINT = '/sessions'
+const ENDPOINT = '/sessions/email'
 
-export const loginPayloadSchema = z.object({
+export const loginWithEmailPayloadSchema = z.object({
   email: z.string().email('Email must be valid'),
-  password: z.string().min(1, 'Password is required'),
-  remember_me: z.boolean(),
 })
 
 export const validationErrorSchema = z.object({
@@ -29,25 +27,25 @@ export function extractValidationErrors(
   return parsed.data.errors
 }
 
-export type LoginPayload = z.infer<typeof loginPayloadSchema>
+export type LoginWithEmailPayload = z.infer<typeof loginWithEmailPayloadSchema>
 
-export const loginResponseSchema = z.object({
+export const loginWithEmailResponseSchema = z.object({
   email: z.string(),
 })
 
-export type LoginResponse = z.infer<typeof loginResponseSchema>
+export type LoginWithEmailResponse = z.infer<typeof loginWithEmailResponseSchema>
 
-export function useLogin() {
+export function useLoginWithEmail() {
   return useMutation({
-    mutationFn: async (payload: LoginPayload) => {
-      const validatedPayload = loginPayloadSchema.parse(payload)
-      const response = await api.post<LoginResponse>(
+    mutationFn: async (payload: LoginWithEmailPayload) => {
+      const validatedPayload = loginWithEmailPayloadSchema.parse(payload)
+      const response = await api.post<LoginWithEmailResponse>(
         ENDPOINT,
         validatedPayload
       )
-      return loginResponseSchema.parse(response.data)
+      return loginWithEmailResponseSchema.parse(response.data)
     },
   })
 }
 
-export { ENDPOINT as LOGIN_ENDPOINT }
+export { ENDPOINT as LOGIN_WITH_EMAIL_ENDPOINT }

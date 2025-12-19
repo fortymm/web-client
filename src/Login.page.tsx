@@ -20,15 +20,37 @@ export const loginPage = {
   },
 
   get heading() {
-    return screen.getByRole('heading', { name: 'Log in to your account' })
+    return screen.getByRole('heading', { name: 'Log in' })
   },
 
-  get emailInput() {
-    return screen.getByRole('textbox', { name: 'Email' })
+  // Magic link form
+  get magicLinkEmailInput() {
+    return screen.getByLabelText('Email', { selector: '#magic-link-email' })
   },
 
-  async fillEmail(value: string) {
-    const input = this.emailInput
+  async fillMagicLinkEmail(value: string) {
+    const input = this.magicLinkEmailInput
+    await userEvent.clear(input)
+    if (value) {
+      await userEvent.type(input, value)
+    }
+  },
+
+  get loginWithEmailButton() {
+    return screen.getByRole('button', { name: /log in with email/i })
+  },
+
+  async clickLoginWithEmail() {
+    await userEvent.click(this.loginWithEmailButton)
+  },
+
+  // Password form
+  get passwordEmailInput() {
+    return screen.getByLabelText('Email', { selector: '#password-email' })
+  },
+
+  async fillPasswordEmail(value: string) {
+    const input = this.passwordEmailInput
     await userEvent.clear(input)
     if (value) {
       await userEvent.type(input, value)
@@ -47,16 +69,24 @@ export const loginPage = {
     }
   },
 
-  get submitButton() {
-    return screen.getByRole('button', { name: /log in/i })
+  get stayLoggedInButton() {
+    return screen.getByRole('button', { name: /log in and stay logged in/i })
   },
 
-  async clickSubmit() {
-    await userEvent.click(this.submitButton)
+  async clickStayLoggedIn() {
+    await userEvent.click(this.stayLoggedInButton)
   },
 
-  get registerLink() {
-    return screen.getByRole('link', { name: 'Register' })
+  get loginOnlyThisTimeButton() {
+    return screen.getByRole('button', { name: /log in only this time/i })
+  },
+
+  async clickLoginOnlyThisTime() {
+    await userEvent.click(this.loginOnlyThisTimeButton)
+  },
+
+  get signUpLink() {
+    return screen.getByRole('link', { name: 'Sign up' })
   },
 
   // Flash state access

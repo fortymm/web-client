@@ -4,6 +4,7 @@ import { HttpResponse } from 'msw'
 import { AxiosError } from 'axios'
 import { loginPage } from './Login.page'
 import { useLoginPage } from './Login/useLogin.page'
+import { useLoginWithEmailPage } from './Login/useLoginWithEmail.page'
 import { extractValidationErrors } from './Login/useLogin'
 import { server } from './test/mocks/server'
 
@@ -13,9 +14,19 @@ describe('Login', () => {
     expect(loginPage.heading).toBeInTheDocument()
   })
 
-  it('renders the email input', () => {
+  it('renders the magic link email input', () => {
     loginPage.render()
-    expect(loginPage.emailInput).toBeInTheDocument()
+    expect(loginPage.magicLinkEmailInput).toBeInTheDocument()
+  })
+
+  it('renders the login with email button', () => {
+    loginPage.render()
+    expect(loginPage.loginWithEmailButton).toBeInTheDocument()
+  })
+
+  it('renders the password email input', () => {
+    loginPage.render()
+    expect(loginPage.passwordEmailInput).toBeInTheDocument()
   })
 
   it('renders the password input', () => {
@@ -23,162 +34,263 @@ describe('Login', () => {
     expect(loginPage.passwordInput).toBeInTheDocument()
   })
 
-  it('renders the submit button', () => {
+  it('renders the stay logged in button', () => {
     loginPage.render()
-    expect(loginPage.submitButton).toBeInTheDocument()
+    expect(loginPage.stayLoggedInButton).toBeInTheDocument()
   })
 
-  it('renders the register link', () => {
+  it('renders the login only this time button', () => {
     loginPage.render()
-    expect(loginPage.registerLink).toBeInTheDocument()
-    expect(loginPage.registerLink).toHaveAttribute('href', '/register')
+    expect(loginPage.loginOnlyThisTimeButton).toBeInTheDocument()
   })
 
-  it('submits the form with email and password', async () => {
-    let capturedPayload: unknown = null
+  it('renders the sign up link', () => {
+    loginPage.render()
+    expect(loginPage.signUpLink).toBeInTheDocument()
+    expect(loginPage.signUpLink).toHaveAttribute('href', '/register')
+  })
 
-    server.use(
-      useLoginPage.requestHandler(async ({ request }) => {
-        capturedPayload = await request.json()
-        return HttpResponse.json({ email: 'test@example.com' })
+  describe('magic link login', () => {
+    it('submits the form with email', async () => {
+      let capturedPayload: unknown = null
+
+      server.use(
+        useLoginWithEmailPage.requestHandler(async ({ request }) => {
+          capturedPayload = await request.json()
+          return HttpResponse.json({ email: 'test@example.com' })
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillMagicLinkEmail('test@example.com')
+      await loginPage.clickLoginWithEmail()
+
+      await waitFor(() => {
+        expect(capturedPayload).toEqual({ email: 'test@example.com' })
       })
-    )
+    })
 
-    loginPage.render()
-    await loginPage.fillEmail('test@example.com')
-    await loginPage.fillPassword('password123')
-    await loginPage.clickSubmit()
+    it('shows success flash after sending magic link', async () => {
+      server.use(
+        useLoginWithEmailPage.requestHandler(() => {
+          return HttpResponse.json({ email: 'test@example.com' })
+        })
+      )
 
-    await waitFor(() => {
-      expect(capturedPayload).toEqual({
-        email: 'test@example.com',
-        password: 'password123',
+      loginPage.render()
+      await loginPage.fillMagicLinkEmail('test@example.com')
+      await loginPage.clickLoginWithEmail()
+
+      await waitFor(() => {
+        const flash = loginPage.getLatestFlash()
+        expect(flash?.message).toBe(
+          'A login link was sent to test@example.com. Please check your inbox.'
+        )
+        expect(flash?.type).toBe('success')
+      })
+    })
+
+    it('shows error flash when magic link request fails', async () => {
+      server.use(
+        useLoginWithEmailPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillMagicLinkEmail('test@example.com')
+      await loginPage.clickLoginWithEmail()
+
+      await waitFor(() => {
+        const flash = loginPage.getLatestFlash()
+        expect(flash?.message).toBe('Failed to send login link. Please try again.')
+        expect(flash?.type).toBe('error')
+      })
+    })
+
+    it('shows validation error when magic link email is invalid', async () => {
+      loginPage.render()
+      await loginPage.fillMagicLinkEmail('invalid-email')
+      await loginPage.clickLoginWithEmail()
+
+      await waitFor(() => {
+        expect(loginPage.emailError).toBeInTheDocument()
       })
     })
   })
 
-  it('shows success flash after login', async () => {
-    server.use(
-      useLoginPage.requestHandler(() => {
-        return HttpResponse.json({ email: 'test@example.com' })
+  describe('password login', () => {
+    it('submits the form with stay logged in', async () => {
+      let capturedPayload: unknown = null
+
+      server.use(
+        useLoginPage.requestHandler(async ({ request }) => {
+          capturedPayload = await request.json()
+          return HttpResponse.json({ email: 'test@example.com' })
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('test@example.com')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        expect(capturedPayload).toEqual({
+          email: 'test@example.com',
+          password: 'password123',
+          remember_me: true,
+        })
       })
-    )
+    })
 
-    loginPage.render()
-    await loginPage.fillEmail('test@example.com')
-    await loginPage.fillPassword('password123')
-    await loginPage.clickSubmit()
+    it('submits the form with login only this time', async () => {
+      let capturedPayload: unknown = null
 
-    await waitFor(() => {
+      server.use(
+        useLoginPage.requestHandler(async ({ request }) => {
+          capturedPayload = await request.json()
+          return HttpResponse.json({ email: 'test@example.com' })
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('test@example.com')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickLoginOnlyThisTime()
+
+      await waitFor(() => {
+        expect(capturedPayload).toEqual({
+          email: 'test@example.com',
+          password: 'password123',
+          remember_me: false,
+        })
+      })
+    })
+
+    it('shows success flash after login', async () => {
+      server.use(
+        useLoginPage.requestHandler(() => {
+          return HttpResponse.json({ email: 'test@example.com' })
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('test@example.com')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        const flash = loginPage.getLatestFlash()
+        expect(flash?.message).toBe('You have been logged in successfully.')
+        expect(flash?.type).toBe('success')
+      })
+    })
+
+    it('shows error flash when request fails', async () => {
+      server.use(
+        useLoginPage.requestHandler(() => {
+          return HttpResponse.error()
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('test@example.com')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        const flash = loginPage.getLatestFlash()
+        expect(flash?.message).toBe('Failed to log in. Please try again.')
+        expect(flash?.type).toBe('error')
+      })
+    })
+
+    it('shows validation error when email is invalid', async () => {
+      loginPage.render()
+      await loginPage.fillPasswordEmail('invalid-email')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        expect(loginPage.emailError).toBeInTheDocument()
+      })
+    })
+
+    it('shows validation error when password is empty', async () => {
+      loginPage.render()
+      await loginPage.fillPasswordEmail('test@example.com')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        expect(loginPage.passwordError).toBeInTheDocument()
+      })
+    })
+
+    it('shows API validation error on email field', async () => {
+      server.use(
+        useLoginPage.requestHandler(() => {
+          return HttpResponse.json(
+            { errors: { email: ['Email not found'] } },
+            { status: 422 }
+          )
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('unknown@example.com')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        expect(loginPage.getErrorByText('Email not found')).toBeInTheDocument()
+      })
+    })
+
+    it('shows API validation error on password field', async () => {
+      server.use(
+        useLoginPage.requestHandler(() => {
+          return HttpResponse.json(
+            { errors: { password: ['Password is incorrect'] } },
+            { status: 422 }
+          )
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('test@example.com')
+      await loginPage.fillPassword('wrongpassword')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        expect(
+          loginPage.getErrorByText('Password is incorrect')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('does not show generic error flash for 422 validation errors', async () => {
+      server.use(
+        useLoginPage.requestHandler(() => {
+          return HttpResponse.json(
+            { errors: { email: ['Email not found'] } },
+            { status: 422 }
+          )
+        })
+      )
+
+      loginPage.render()
+      await loginPage.fillPasswordEmail('unknown@example.com')
+      await loginPage.fillPassword('password123')
+      await loginPage.clickStayLoggedIn()
+
+      await waitFor(() => {
+        expect(loginPage.getErrorByText('Email not found')).toBeInTheDocument()
+      })
+
       const flash = loginPage.getLatestFlash()
-      expect(flash?.message).toBe('You have been logged in successfully.')
-      expect(flash?.type).toBe('success')
+      expect(flash?.message).not.toBe('Failed to log in. Please try again.')
     })
-  })
-
-  it('shows error flash when request fails', async () => {
-    server.use(
-      useLoginPage.requestHandler(() => {
-        return HttpResponse.error()
-      })
-    )
-
-    loginPage.render()
-    await loginPage.fillEmail('test@example.com')
-    await loginPage.fillPassword('password123')
-    await loginPage.clickSubmit()
-
-    await waitFor(() => {
-      const flash = loginPage.getLatestFlash()
-      expect(flash?.message).toBe('Failed to log in. Please try again.')
-      expect(flash?.type).toBe('error')
-    })
-  })
-
-  it('shows validation error when email is invalid', async () => {
-    loginPage.render()
-    await loginPage.fillEmail('invalid-email')
-    await loginPage.fillPassword('password123')
-    await loginPage.clickSubmit()
-
-    await waitFor(() => {
-      expect(loginPage.emailError).toBeInTheDocument()
-    })
-  })
-
-  it('shows validation error when password is empty', async () => {
-    loginPage.render()
-    await loginPage.fillEmail('test@example.com')
-    await loginPage.clickSubmit()
-
-    await waitFor(() => {
-      expect(loginPage.passwordError).toBeInTheDocument()
-    })
-  })
-
-  it('shows API validation error on email field', async () => {
-    server.use(
-      useLoginPage.requestHandler(() => {
-        return HttpResponse.json(
-          { errors: { email: ['Email not found'] } },
-          { status: 422 }
-        )
-      })
-    )
-
-    loginPage.render()
-    await loginPage.fillEmail('unknown@example.com')
-    await loginPage.fillPassword('password123')
-    await loginPage.clickSubmit()
-
-    await waitFor(() => {
-      expect(loginPage.getErrorByText('Email not found')).toBeInTheDocument()
-    })
-  })
-
-  it('shows API validation error on password field', async () => {
-    server.use(
-      useLoginPage.requestHandler(() => {
-        return HttpResponse.json(
-          { errors: { password: ['Password is incorrect'] } },
-          { status: 422 }
-        )
-      })
-    )
-
-    loginPage.render()
-    await loginPage.fillEmail('test@example.com')
-    await loginPage.fillPassword('wrongpassword')
-    await loginPage.clickSubmit()
-
-    await waitFor(() => {
-      expect(
-        loginPage.getErrorByText('Password is incorrect')
-      ).toBeInTheDocument()
-    })
-  })
-
-  it('does not show generic error flash for 422 validation errors', async () => {
-    server.use(
-      useLoginPage.requestHandler(() => {
-        return HttpResponse.json(
-          { errors: { email: ['Email not found'] } },
-          { status: 422 }
-        )
-      })
-    )
-
-    loginPage.render()
-    await loginPage.fillEmail('unknown@example.com')
-    await loginPage.fillPassword('password123')
-    await loginPage.clickSubmit()
-
-    await waitFor(() => {
-      expect(loginPage.getErrorByText('Email not found')).toBeInTheDocument()
-    })
-
-    const flash = loginPage.getLatestFlash()
-    expect(flash?.message).not.toBe('Failed to log in. Please try again.')
   })
 })
 
