@@ -6,6 +6,7 @@ import MatchScorePage from './MatchScorePage'
 import AppearanceSettings from './AppearanceSettings'
 import AccountSettings from './AccountSettings'
 import Registration from './Registration'
+import Login from './Login'
 
 export const routes = [
   {
@@ -39,6 +40,10 @@ export const routes = [
       {
         path: 'register',
         element: <Registration />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
       },
     ],
   },
