@@ -1,111 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+/* =========================================================================
+   FortyMM — self-hosted display + mono fonts; Space Grotesk via Google CDN
+   ========================================================================= */
+
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Italic-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* =========================================================================
+   Theme — single source of truth for colors / type / spacing / radii / shadow
+   Tailwind v4 reads these and generates utilities (bg-ink-950, font-display, etc).
+   ========================================================================= */
+@theme {
+  /* ---------- Palette: ink (backgrounds + borders) ---------- */
+  --color-ink-950: #0b0d12;
+  --color-ink-900: #11141b;
+  --color-ink-800: #171b24;
+  --color-ink-700: #1f2430;
+  --color-ink-600: #2a3040;
+  --color-ink-500: #3a4152;
+  --color-ink-400: #535b6e;
+
+  /* ---------- Palette: chalk (foregrounds) ---------- */
+  --color-chalk-50: #f7f8fb;
+  --color-chalk-100: #e4e7ef;
+  --color-chalk-300: #a9b0c2;
+  --color-chalk-500: #6b7283;
+
+  /* ---------- Palette: ball (hero orange) ---------- */
+  --color-ball-50: #fff4ed;
+  --color-ball-200: #ffcfa8;
+  --color-ball-400: #ff9a4a;
+  --color-ball-500: #ff7a1a;
+  --color-ball-600: #e85e00;
+  --color-ball-700: #b94700;
+
+  /* ---------- Palette: serve (live cyan-green) ---------- */
+  --color-serve-300: #8cffd4;
+  --color-serve-500: #00e29a;
+  --color-serve-700: #009968;
+
+  /* ---------- Semantic status colors ---------- */
+  --color-win: #00e29a;
+  --color-loss: #ff4d6d;
+  --color-warn: #ffc43d;
+  --color-info: #6fb5ff;
+
+  /* ---------- Type stacks ---------- */
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bebas Neue', 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ---------- Spacing: 4px base. p-10 = 40px (the brand 40mm nod) ---------- */
+  --spacing: 4px;
+
+  /* ---------- Radii ---------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* ---------- Shadows (elevation) ---------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 0 1px rgba(255, 122, 26, 0.35), 0 8px 24px rgba(255, 122, 26, 0.25);
+  --shadow-live-glow: 0 0 0 1px rgba(0, 226, 154, 0.4), 0 0 24px rgba(0, 226, 154, 0.3);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* ---------- Motion ---------- */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-snap: cubic-bezier(0.5, 1.6, 0.4, 1);
+
+  /* ---------- Brand keyframe ---------- */
+  --animate-ball-pulse: ball-pulse 1.4s ease-in-out infinite;
+  @keyframes ball-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(0.88);
+    }
+  }
+}
+
+/* =========================================================================
+   Shadcn semantic vars — mapped to FortyMM ink/chalk/ball.
+   Shadcn primitives (Button, Card, etc) inherit the brand look from these.
+   ========================================================================= */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --background: var(--color-ink-950);
+  --foreground: var(--color-chalk-50);
+  --card: var(--color-ink-800);
+  --card-foreground: var(--color-chalk-50);
+  --popover: var(--color-ink-800);
+  --popover-foreground: var(--color-chalk-50);
+  --primary: var(--color-ball-500);
+  --primary-foreground: var(--color-chalk-50);
+  --secondary: var(--color-ink-700);
+  --secondary-foreground: var(--color-chalk-100);
+  --muted: var(--color-ink-700);
+  --muted-foreground: var(--color-chalk-300);
+  --accent: var(--color-ink-700);
+  --accent-foreground: var(--color-chalk-50);
+  --destructive: var(--color-loss);
+  --destructive-foreground: var(--color-chalk-50);
+  --border: var(--color-ink-600);
+  --input: var(--color-ink-600);
+  --ring: var(--color-ball-500);
+  --radius: 10px;
+}
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
+  }
+  html,
+  body,
+  #root {
+    background: var(--color-ink-950);
+    color: var(--color-chalk-50);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    margin: 0;
+    min-height: 100svh;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* =========================================================================
+   Brand-specific decoration classes — kept as plain CSS, not utilities.
+   ========================================================================= */
+.ball-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-ball-500);
+  box-shadow: 0 0 10px rgba(255, 122, 26, 0.55);
+}
+.ball-dot--live {
+  background: var(--color-serve-500);
+  box-shadow: 0 0 10px rgba(0, 226, 154, 0.65);
+  animation: ball-pulse 1.4s ease-in-out infinite;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* The 40mm dot grid — 40px spacing, faint orange. Hero backgrounds only. */
+.fortymm-grid-bg {
+  background-image: radial-gradient(circle at center, rgba(255, 122, 26, 0.14) 1.5px, transparent 2px);
+  background-size: 40px 40px;
+  background-position: 0 0;
 }
