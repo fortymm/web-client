@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { PencilLine, Trophy, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Ball } from './ball'
@@ -40,9 +41,11 @@ export function IdleHero() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="primary">
-            <PencilLine />
-            Log match
+          <Button variant="primary" asChild>
+            <Link to="/new-match">
+              <PencilLine />
+              Log match
+            </Link>
           </Button>
           <Button variant="ghost-secondary">
             <Users />

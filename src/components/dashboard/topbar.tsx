@@ -22,12 +22,12 @@ const NAV_ITEM_DISABLED =
   'text-chalk-500 cursor-not-allowed hover:text-chalk-500'
 
 type TopBarProps = {
-  state: DashboardState
-  onCycleState: () => void
+  state?: DashboardState
+  onCycleState?: () => void
 }
 
 export function TopBar({ state, onCycleState }: TopBarProps) {
-  const s = STATE_LABELS[state]
+  const s = state ? STATE_LABELS[state] : null
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-5 border-b border-ink-600 bg-ink-950/75 px-10 backdrop-blur-xl">
       <div className="flex items-center gap-3">
@@ -64,23 +64,27 @@ export function TopBar({ state, onCycleState }: TopBarProps) {
 
       <div className="flex-1" />
 
-      <button
-        type="button"
-        onClick={onCycleState}
-        aria-label={`Cycle dashboard state (current: ${s.label})`}
-        title="Click to cycle states"
-        className="inline-flex items-center gap-2.5 rounded-pill border border-ink-500 bg-ink-900 py-1.5 pr-3 pl-2.5"
-      >
-        <Zap size={13} className="text-chalk-300" />
-        <span className="font-mono text-[11px] tracking-[0.1em]">
-          <span className="text-chalk-300">STATE · </span>
-          <span className="font-bold text-ball-500">
-            {s.label.toUpperCase()}
-          </span>
-        </span>
-      </button>
+      {s && onCycleState && (
+        <>
+          <button
+            type="button"
+            onClick={onCycleState}
+            aria-label={`Cycle dashboard state (current: ${s.label})`}
+            title="Click to cycle states"
+            className="inline-flex items-center gap-2.5 rounded-pill border border-ink-500 bg-ink-900 py-1.5 pr-3 pl-2.5"
+          >
+            <Zap size={13} className="text-chalk-300" />
+            <span className="font-mono text-[11px] tracking-[0.1em]">
+              <span className="text-chalk-300">STATE · </span>
+              <span className="font-bold text-ball-500">
+                {s.label.toUpperCase()}
+              </span>
+            </span>
+          </button>
 
-      <Separator orientation="vertical" className="!h-6 bg-ink-600" />
+          <Separator orientation="vertical" className="!h-6 bg-ink-600" />
+        </>
+      )}
 
       <button
         type="button"
