@@ -1,10 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 /* =========================================================================
-   FortyMM — self-hosted display + mono fonts; Space Grotesk via Google CDN
+   FortyMM — all three brand faces self-hosted from /public/fonts.
+   No third-party font CDN: keeps the manifesto promise ("no trackers,
+   no third-party analytics") honest.
    ========================================================================= */
-
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/fonts/SpaceGrotesk-VariableFont_wght.woff2') format('woff2-variations');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
 @font-face {
   font-family: 'Bebas Neue';
   src: url('/fonts/BebasNeue-Regular.ttf') format('truetype');

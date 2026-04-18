@@ -1,10 +1,10 @@
-type PromiseProps = {
+type PledgeProps = {
   number: string
   title: string
   body: string
 }
 
-export function Promise({ number, title, body }: PromiseProps) {
+export function Pledge({ number, title, body }: PledgeProps) {
   return (
     <div>
       <div className="mb-2.5 font-mono text-[13px] font-bold tracking-[0.1em] text-ball-500">

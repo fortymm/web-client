@@ -1,6 +1,6 @@
-import { Promise } from './promise'
+import { Pledge } from './pledge'
 
-const PROMISES = [
+const PLEDGES = [
   {
     number: '01',
     title: 'No ads. Not now, not ever.',
@@ -35,8 +35,8 @@ export function Manifesto() {
           For the love of the game.
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {PROMISES.map((p) => (
-            <Promise key={p.number} {...p} />
+          {PLEDGES.map((p) => (
+            <Pledge key={p.number} {...p} />
           ))}
         </div>
       </div>
