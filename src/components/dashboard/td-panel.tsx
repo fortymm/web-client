@@ -7,6 +7,7 @@ import {
   UserX,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { CourtStatus, NeedsYouKind, TDEvent } from './data'
 import { TD_EVENT } from './data'
 import { Card, LiveDot, Mono, Overline, TextLink } from './primitives'
@@ -52,21 +53,19 @@ export function TDPanel() {
           label="Check-in"
           value={`${t.players.checkedIn}/${t.players.total}`}
           sub={`${t.players.noShow} no-show`}
-          accent={t.players.noShow ? 'var(--color-warn)' : undefined}
+          accent={t.players.noShow ? 'text-warn' : undefined}
         />
         <TDStat
           label="Unscored"
           value={String(t.matches.unscored)}
           sub="needs your attention"
-          accent={
-            t.matches.unscored ? 'var(--color-warn)' : 'var(--color-serve-500)'
-          }
+          accent={t.matches.unscored ? 'text-warn' : 'text-serve-500'}
         />
         <TDStat
           label="Solver"
           value={`${t.solver.ms}ms`}
           sub={`${t.solver.conflicts} conflicts · optimal`}
-          accent="var(--color-serve-500)"
+          accent="text-serve-500"
         />
       </div>
 
@@ -110,7 +109,7 @@ function TDStat({ label, value, sub, accent }: TDStatProps) {
   return (
     <div className="border-r border-ink-600 px-5 py-4 last:border-r-0">
       <Overline className="mb-2 text-[10px]">{label}</Overline>
-      <Mono size={26} color={accent ?? 'var(--color-chalk-50)'} weight={700}>
+      <Mono size={26} weight={700} className={accent ?? 'text-chalk-50'}>
         {value}
       </Mono>
       <div className="mt-0.5 text-[11px] text-chalk-300">{sub}</div>
@@ -132,35 +131,38 @@ const NEEDS_YOU_CTA: Record<NeedsYouKind, string> = {
   nudge: 'Nudge',
 }
 
+const NEEDS_YOU_TONE = {
+  urgent: {
+    container: 'bg-warn/8 border-warn/30',
+    iconBox: 'bg-warn/18 text-warn',
+  },
+  calm: {
+    container: 'bg-ink-900 border-ink-600',
+    iconBox: 'bg-ink-800 text-chalk-300',
+  },
+} as const
+
 function NeedsYouRow({ n }: { n: NeedsYouItem }) {
   const Icon = NEEDS_YOU_ICON[n.kind]
-  const tone = n.urgent
-    ? {
-        fg: 'var(--color-warn)',
-        bg: 'rgba(255,196,61,0.08)',
-        br: 'rgba(255,196,61,0.3)',
-        iconBg: 'rgba(255,196,61,0.18)',
-      }
-    : {
-        fg: 'var(--color-chalk-300)',
-        bg: 'var(--color-ink-900)',
-        br: 'var(--color-ink-600)',
-        iconBg: 'var(--color-ink-800)',
-      }
+  const tone = n.urgent ? NEEDS_YOU_TONE.urgent : NEEDS_YOU_TONE.calm
   return (
     <div
-      className="flex items-center gap-3 rounded-sm border px-3 py-2.5"
-      style={{ background: tone.bg, borderColor: tone.br }}
+      className={cn(
+        'flex items-center gap-3 rounded-sm border px-3 py-2.5',
+        tone.container,
+      )}
     >
       <div
-        className="flex size-[30px] shrink-0 items-center justify-center rounded-sm"
-        style={{ background: tone.iconBg, color: tone.fg }}
+        className={cn(
+          'flex size-[30px] shrink-0 items-center justify-center rounded-sm',
+          tone.iconBox,
+        )}
       >
         <Icon size={14} />
       </div>
       <div className="flex-1">
         <div className="text-[13px] font-medium text-chalk-50">{n.label}</div>
-        <Mono size={10} color="var(--color-chalk-300)">
+        <Mono size={10} className="text-chalk-300">
           {n.detail.toUpperCase()}
         </Mono>
       </div>
@@ -173,84 +175,39 @@ function NeedsYouRow({ n }: { n: NeedsYouItem }) {
 
 function TDCourtTile({ c }: { c: CourtStatus }) {
   if (c.state === 'live') {
+    const containerTone = c.you
+      ? 'bg-ball-500/8 border-ball-500/35 shadow-[0_0_16px_rgba(255,122,26,0.10)]'
+      : 'bg-ink-900 border-serve-500/25 shadow-[0_0_14px_rgba(0,226,154,0.06)]'
     return (
-      <div
-        className="rounded-sm border p-2.5"
-        style={{
-          background: c.you ? 'rgba(255,122,26,0.08)' : 'var(--color-ink-900)',
-          borderColor: c.you
-            ? 'rgba(255,122,26,0.35)'
-            : 'rgba(0,226,154,0.25)',
-          boxShadow: c.you
-            ? '0 0 16px rgba(255,122,26,0.1)'
-            : '0 0 14px rgba(0,226,154,0.06)',
-        }}
-      >
+      <div className={cn('rounded-sm border p-2.5', containerTone)}>
         <div className="mb-1.5 flex items-center justify-between">
           <Mono
             size={11}
-            color={
-              c.you ? 'var(--color-ball-500)' : 'var(--color-chalk-100)'
-            }
             weight={700}
+            className={c.you ? 'text-ball-500' : 'text-chalk-100'}
           >
             CT {c.n}
             {c.you ? ' · YOU' : ''}
           </Mono>
           <LiveDot
             color={
-              c.you
-                ? 'var(--color-ball-500)'
-                : 'var(--color-serve-500)'
+              c.you ? 'var(--color-ball-500)' : 'var(--color-serve-500)'
             }
             size={6}
           />
         </div>
-        <div
-          className="flex items-center justify-between text-[12px]"
-          style={{
-            color:
-              c.win === 'a'
-                ? 'var(--color-serve-500)'
-                : 'var(--color-chalk-100)',
-          }}
-        >
-          <span>{c.a}</span>
-          <Mono
-            size={12}
-            color={
-              c.win === 'a'
-                ? 'var(--color-serve-500)'
-                : 'var(--color-chalk-50)'
-            }
-            weight={700}
-          >
-            {c.sa}
-          </Mono>
-        </div>
-        <div
-          className="mt-0.5 flex items-center justify-between text-[12px]"
-          style={{
-            color:
-              c.win === 'b'
-                ? 'var(--color-serve-500)'
-                : 'var(--color-chalk-100)',
-          }}
-        >
-          <span>{c.b}</span>
-          <Mono
-            size={12}
-            color={
-              c.win === 'b'
-                ? 'var(--color-serve-500)'
-                : 'var(--color-chalk-50)'
-            }
-            weight={700}
-          >
-            {c.sb}
-          </Mono>
-        </div>
-        <Mono size={9} color="var(--color-chalk-300)" className="mt-1.5 block">
+        <CourtScoreRow
+          name={c.a}
+          score={c.sa}
+          won={c.win === 'a'}
+        />
+        <CourtScoreRow
+          name={c.b}
+          score={c.sb}
+          won={c.win === 'b'}
+          className="mt-0.5"
+        />
+        <Mono size={9} className="mt-1.5 block text-chalk-300">
           GAME {c.g}
         </Mono>
       </div>
@@ -260,10 +217,10 @@ function TDCourtTile({ c }: { c: CourtStatus }) {
     return (
       <div className="flex min-h-[92px] flex-col justify-between rounded-sm border border-dashed border-ink-500 p-2.5">
         <div className="flex justify-between">
-          <Mono size={11} color="var(--color-chalk-300)">
+          <Mono size={11} className="text-chalk-300">
             CT {c.n}
           </Mono>
-          <Mono size={9} color="var(--color-serve-500)" weight={700}>
+          <Mono size={9} weight={700} className="text-serve-500">
             OPEN
           </Mono>
         </div>
@@ -272,7 +229,7 @@ function TDCourtTile({ c }: { c: CourtStatus }) {
         </div>
         <button
           type="button"
-          className="cursor-pointer self-start rounded-sm border border-ball-500 bg-transparent px-2 py-1 font-sans text-[11px] font-semibold text-ball-500 hover:bg-ball-500/10"
+          className="self-start rounded-sm border border-ball-500 bg-transparent px-2 py-1 font-sans text-[11px] font-semibold text-ball-500 hover:bg-ball-500/10"
         >
           Call to court
         </button>
@@ -282,16 +239,44 @@ function TDCourtTile({ c }: { c: CourtStatus }) {
   return (
     <div className="flex min-h-[92px] flex-col rounded-sm border border-ink-600 bg-white/[0.01] p-2.5">
       <div className="flex justify-between">
-        <Mono size={11} color="var(--color-ink-400)">
+        <Mono size={11} className="text-ink-400">
           CT {c.n}
         </Mono>
-        <Mono size={9} color="var(--color-ink-400)" weight={700}>
+        <Mono size={9} weight={700} className="text-ink-400">
           SETUP
         </Mono>
       </div>
       <div className="flex flex-1 items-center justify-center text-[11px] text-ink-400">
         —
       </div>
+    </div>
+  )
+}
+
+type CourtScoreRowProps = {
+  name: string
+  score: number
+  won: boolean
+  className?: string
+}
+
+function CourtScoreRow({ name, score, won, className }: CourtScoreRowProps) {
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-between text-[12px]',
+        won ? 'text-serve-500' : 'text-chalk-100',
+        className,
+      )}
+    >
+      <span>{name}</span>
+      <Mono
+        size={12}
+        weight={700}
+        className={won ? 'text-serve-500' : 'text-chalk-50'}
+      >
+        {score}
+      </Mono>
     </div>
   )
 }

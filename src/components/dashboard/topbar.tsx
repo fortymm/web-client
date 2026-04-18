@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Bell, Search, Zap } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -6,13 +7,19 @@ import { ME, STATE_LABELS } from './data'
 import { Ball } from './ball'
 import { Avatar } from './primitives'
 
-const NAV_ITEMS: { label: string; active: boolean }[] = [
-  { label: 'Dashboard', active: true },
-  { label: 'Matches', active: false },
-  { label: 'Tournaments', active: false },
-  { label: 'Clubs', active: false },
-  { label: 'Find opponents', active: false },
+const NAV_ITEMS: { label: string; to?: '/dashboard' }[] = [
+  { label: 'Dashboard', to: '/dashboard' },
+  { label: 'Matches' },
+  { label: 'Tournaments' },
+  { label: 'Clubs' },
+  { label: 'Find opponents' },
 ]
+
+const NAV_ITEM_BASE = 'rounded-md px-3 py-2 transition-colors font-medium'
+const NAV_ITEM_ACTIVE = 'bg-white/5 font-semibold text-chalk-50'
+const NAV_ITEM_INACTIVE = 'text-chalk-300 hover:text-chalk-50'
+const NAV_ITEM_DISABLED =
+  'text-chalk-500 cursor-not-allowed hover:text-chalk-500'
 
 type TopBarProps = {
   state: DashboardState
@@ -31,19 +38,28 @@ export function TopBar({ state, onCycleState }: TopBarProps) {
       </div>
 
       <nav className="ml-6 flex gap-1 font-sans text-[13px]">
-        {NAV_ITEMS.map(({ label, active }) => (
-          <a
-            key={label}
-            className={cn(
-              'cursor-pointer rounded-md px-3 py-2 transition-colors',
-              active
-                ? 'bg-white/5 font-semibold text-chalk-50'
-                : 'font-medium text-chalk-300 hover:text-chalk-50',
-            )}
-          >
-            {label}
-          </a>
-        ))}
+        {NAV_ITEMS.map(({ label, to }) =>
+          to ? (
+            <Link
+              key={label}
+              to={to}
+              className={cn(NAV_ITEM_BASE, NAV_ITEM_INACTIVE)}
+              activeProps={{ className: cn(NAV_ITEM_BASE, NAV_ITEM_ACTIVE) }}
+            >
+              {label}
+            </Link>
+          ) : (
+            <button
+              key={label}
+              type="button"
+              aria-disabled
+              title="Coming soon"
+              className={cn(NAV_ITEM_BASE, NAV_ITEM_DISABLED)}
+            >
+              {label}
+            </button>
+          ),
+        )}
       </nav>
 
       <div className="flex-1" />
@@ -53,7 +69,7 @@ export function TopBar({ state, onCycleState }: TopBarProps) {
         onClick={onCycleState}
         aria-label={`Cycle dashboard state (current: ${s.label})`}
         title="Click to cycle states"
-        className="inline-flex cursor-pointer items-center gap-2.5 rounded-pill border border-ink-500 bg-ink-900 px-3 py-1.5 pl-2.5"
+        className="inline-flex items-center gap-2.5 rounded-pill border border-ink-500 bg-ink-900 py-1.5 pr-3 pl-2.5"
       >
         <Zap size={13} className="text-chalk-300" />
         <span className="font-mono text-[11px] tracking-[0.1em]">
@@ -69,14 +85,14 @@ export function TopBar({ state, onCycleState }: TopBarProps) {
       <button
         type="button"
         aria-label="Search"
-        className="cursor-pointer text-chalk-300 hover:text-chalk-50"
+        className="text-chalk-300 hover:text-chalk-50"
       >
         <Search size={18} />
       </button>
       <button
         type="button"
         aria-label="Notifications"
-        className="cursor-pointer text-chalk-300 hover:text-chalk-50"
+        className="text-chalk-300 hover:text-chalk-50"
       >
         <Bell size={18} />
       </button>

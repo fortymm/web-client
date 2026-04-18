@@ -57,45 +57,14 @@ type PillTone =
   | 'warn'
   | 'ghost'
 
-const PILL_TONES: Record<
-  PillTone,
-  { bg: string; fg: string; br: string }
-> = {
-  neutral: {
-    bg: 'var(--color-ink-800)',
-    fg: 'var(--color-chalk-100)',
-    br: 'var(--color-ink-600)',
-  },
-  live: {
-    bg: 'rgba(0,226,154,0.12)',
-    fg: 'var(--color-serve-500)',
-    br: 'rgba(0,226,154,0.35)',
-  },
-  ball: {
-    bg: 'rgba(255,122,26,0.12)',
-    fg: 'var(--color-ball-500)',
-    br: 'rgba(255,122,26,0.35)',
-  },
-  win: {
-    bg: 'rgba(0,226,154,0.12)',
-    fg: 'var(--color-serve-500)',
-    br: 'rgba(0,226,154,0.35)',
-  },
-  loss: {
-    bg: 'rgba(255,77,109,0.12)',
-    fg: 'var(--color-loss)',
-    br: 'rgba(255,77,109,0.35)',
-  },
-  warn: {
-    bg: 'rgba(255,196,61,0.12)',
-    fg: 'var(--color-warn)',
-    br: 'rgba(255,196,61,0.35)',
-  },
-  ghost: {
-    bg: 'transparent',
-    fg: 'var(--color-chalk-300)',
-    br: 'var(--color-ink-500)',
-  },
+const PILL_TONES: Record<PillTone, string> = {
+  neutral: 'bg-ink-800 text-chalk-100 border-ink-600',
+  live: 'bg-serve-500/12 text-serve-500 border-serve-500/35',
+  ball: 'bg-ball-500/12 text-ball-500 border-ball-500/35',
+  win: 'bg-serve-500/12 text-serve-500 border-serve-500/35',
+  loss: 'bg-loss/12 text-loss border-loss/35',
+  warn: 'bg-warn/12 text-warn border-warn/30',
+  ghost: 'bg-transparent text-chalk-300 border-ink-500',
 }
 
 type PillProps = {
@@ -111,18 +80,13 @@ export function Pill({
   icon,
   className,
 }: PillProps) {
-  const t = PILL_TONES[tone]
   return (
     <span
       className={cn(
         'inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-1 font-mono text-[11px] font-semibold tracking-[0.12em] uppercase leading-none',
+        PILL_TONES[tone],
         className,
       )}
-      style={{
-        background: t.bg,
-        color: t.fg,
-        borderColor: t.br,
-      }}
     >
       {icon}
       {children}
@@ -195,7 +159,7 @@ export function Card({
       className={cn(
         'rounded-md border bg-ink-800',
         live
-          ? 'border-[rgba(0,226,154,0.35)] shadow-[0_0_32px_rgba(0,226,154,0.10)]'
+          ? 'border-serve-500/35 shadow-[0_0_32px_rgba(0,226,154,0.10)]'
           : 'border-ink-600',
         className,
       )}
@@ -242,18 +206,21 @@ type MonoProps = {
 export function Mono({
   children,
   size = 14,
-  color = 'var(--color-chalk-50)',
+  color,
   weight = 600,
   className,
   style,
 }: MonoProps) {
   return (
     <span
-      className={cn('font-mono tabular-nums tracking-[-0.01em]', className)}
+      className={cn(
+        'font-mono tabular-nums tracking-[-0.01em] text-chalk-50',
+        className,
+      )}
       style={{
         fontSize: size,
-        color,
         fontWeight: weight,
+        ...(color ? { color } : {}),
         ...style,
       }}
     >

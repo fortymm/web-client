@@ -1,5 +1,6 @@
 import { LayoutGrid, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { PathResult, PathStep, Tournament, UpNext } from './data'
 import { TOURNAMENT } from './data'
 import { Card, LiveDot, Mono, Overline, Pill } from './primitives'
@@ -61,42 +62,37 @@ export function TournamentPanel() {
 
 const PATH_COLORS: Record<
   PathResult,
-  { bg: string; br: string; fg: string; label: string }
+  { container: string; accent: string; label: string }
 > = {
   W: {
-    bg: 'rgba(0,226,154,0.12)',
-    br: 'rgba(0,226,154,0.35)',
-    fg: 'var(--color-serve-500)',
+    container: 'bg-serve-500/12 border-serve-500/35',
+    accent: 'text-serve-500',
     label: 'WON',
   },
   L: {
-    bg: 'rgba(255,77,109,0.1)',
-    br: 'rgba(255,77,109,0.3)',
-    fg: 'var(--color-loss)',
+    container: 'bg-loss/10 border-loss/30',
+    accent: 'text-loss',
     label: 'LOST',
   },
   bye: {
-    bg: 'var(--color-ink-800)',
-    br: 'var(--color-ink-600)',
-    fg: 'var(--color-chalk-300)',
+    container: 'bg-ink-800 border-ink-600',
+    accent: 'text-chalk-300',
     label: 'BYE',
   },
   live: {
-    bg: 'rgba(255,122,26,0.1)',
-    br: 'rgba(255,122,26,0.45)',
-    fg: 'var(--color-ball-500)',
+    container:
+      'bg-ball-500/10 border-ball-500/45 shadow-[0_0_18px_rgba(255,122,26,0.15)]',
+    accent: 'text-ball-500',
     label: 'LIVE',
   },
   upcoming: {
-    bg: 'var(--color-ink-800)',
-    br: 'var(--color-ink-500)',
-    fg: 'var(--color-chalk-50)',
+    container: 'bg-ink-800 border-ink-500',
+    accent: 'text-chalk-50',
     label: 'NEXT',
   },
   locked: {
-    bg: 'transparent',
-    br: 'var(--color-ink-600)',
-    fg: 'var(--color-ink-400)',
+    container: 'bg-transparent border-ink-600 border-dashed',
+    accent: 'text-ink-400',
     label: '—',
   },
 }
@@ -104,23 +100,24 @@ const PATH_COLORS: Record<
 function PathStepCard({ step }: { step: PathStep }) {
   const c = PATH_COLORS[step.result]
   const isLive = step.result === 'live'
+  const opponentColor =
+    step.result === 'locked' ? 'text-ink-400' : 'text-chalk-50'
   return (
     <div
-      className="relative flex min-h-24 flex-col justify-between rounded-md border px-3 pt-3 pb-3.5"
-      style={{
-        background: c.bg,
-        borderColor: c.br,
-        borderStyle: step.result === 'locked' ? 'dashed' : 'solid',
-        boxShadow: isLive ? '0 0 18px rgba(255,122,26,0.15)' : 'none',
-      }}
+      className={cn(
+        'relative flex min-h-24 flex-col justify-between rounded-md border px-3 pt-3 pb-3.5',
+        c.container,
+      )}
     >
       <div className="flex items-center justify-between">
-        <Mono size={11} color="var(--color-chalk-300)" weight={700}>
+        <Mono size={11} weight={700} className="text-chalk-300">
           {step.round}
         </Mono>
         <span
-          className="inline-flex items-center gap-1 font-mono text-[9px] font-bold tracking-[0.14em]"
-          style={{ color: c.fg }}
+          className={cn(
+            'inline-flex items-center gap-1 font-mono text-[9px] font-bold tracking-[0.14em]',
+            c.accent,
+          )}
         >
           {isLive && <LiveDot color="var(--color-ball-500)" size={6} />}
           {c.label}
@@ -128,47 +125,30 @@ function PathStepCard({ step }: { step: PathStep }) {
       </div>
       <div>
         <div
-          className="text-[13px] font-medium"
-          style={{
-            color:
-              step.result === 'locked'
-                ? 'var(--color-ink-400)'
-                : 'var(--color-chalk-50)',
-            lineHeight: 1.25,
-          }}
+          className={cn(
+            'text-[13px] font-medium leading-[1.25]',
+            opponentColor,
+          )}
         >
           {step.opponent}
         </div>
         {step.score && (
-          <Mono
-            size={12}
-            color={c.fg}
-            weight={700}
-            className="mt-0.5 block"
-          >
+          <Mono size={12} weight={700} className={cn('mt-0.5 block', c.accent)}>
             {step.score}
           </Mono>
         )}
         {step.games && (
-          <Mono
-            size={10}
-            color="var(--color-chalk-300)"
-            className="mt-0.5 block"
-          >
+          <Mono size={10} className="mt-0.5 block text-chalk-300">
             {step.games}
           </Mono>
         )}
         {step.detail && (
-          <Mono size={10} color={c.fg} className="mt-0.5 block">
+          <Mono size={10} className={cn('mt-0.5 block', c.accent)}>
             {step.detail}
           </Mono>
         )}
         {step.eta && (
-          <Mono
-            size={10}
-            color="var(--color-chalk-300)"
-            className="mt-0.5 block"
-          >
+          <Mono size={10} className="mt-0.5 block text-chalk-300">
             {step.eta}
           </Mono>
         )}
@@ -178,19 +158,24 @@ function PathStepCard({ step }: { step: PathStep }) {
 }
 
 function UpNextRow({ m }: { m: UpNext }) {
+  const rowTone = m.you
+    ? 'bg-ball-500/6 border-ball-500/30'
+    : 'bg-ink-900 border-ink-600'
+  const nameTone = m.you
+    ? 'text-[13px] font-semibold text-chalk-50'
+    : 'text-[13px] font-medium text-chalk-100'
   return (
     <div
-      className="grid items-center gap-4 rounded-sm border px-3.5 py-2.5"
-      style={{
-        gridTemplateColumns: '72px 56px 1fr auto',
-        background: m.you ? 'rgba(255,122,26,0.06)' : 'var(--color-ink-900)',
-        borderColor: m.you ? 'rgba(255,122,26,0.3)' : 'var(--color-ink-600)',
-      }}
+      className={cn(
+        'grid items-center gap-4 rounded-sm border px-3.5 py-2.5',
+        rowTone,
+      )}
+      style={{ gridTemplateColumns: '72px 56px 1fr auto' }}
     >
       <Mono
         size={14}
-        color={m.you ? 'var(--color-ball-500)' : 'var(--color-chalk-50)'}
         weight={700}
+        className={m.you ? 'text-ball-500' : 'text-chalk-50'}
       >
         {m.time}
       </Mono>
@@ -198,35 +183,15 @@ function UpNextRow({ m }: { m: UpNext }) {
         CT {m.court}
       </div>
       <div className="flex items-center gap-2.5">
-        <span
-          className={
-            m.you
-              ? 'text-[13px] font-semibold text-chalk-50'
-              : 'text-[13px] font-medium text-chalk-100'
-          }
-        >
-          {m.a}
-        </span>
+        <span className={nameTone}>{m.a}</span>
         <span className="text-[12px] text-ink-400">vs</span>
-        <span
-          className={
-            m.you
-              ? 'text-[13px] font-semibold text-chalk-50'
-              : 'text-[13px] font-medium text-chalk-100'
-          }
-        >
-          {m.b}
-        </span>
+        <span className={nameTone}>{m.b}</span>
         <Pill tone="ghost" className="ml-1.5">
           {m.round}
         </Pill>
         {m.you && <Pill tone="ball">YOU</Pill>}
       </div>
-      <Mono
-        size={11}
-        color="var(--color-chalk-300)"
-        className="text-right"
-      >
+      <Mono size={11} className="text-right text-chalk-300">
         {m.note ?? (m.you ? 'your next match' : '')}
       </Mono>
     </div>

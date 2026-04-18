@@ -10,7 +10,7 @@ export function DashboardFooter() {
       </span>
       <span className="text-[12px]">Play more. Pay never.</span>
       <div className="flex-1" />
-      <Mono size={10} color="var(--color-chalk-300)">
+      <Mono size={10} className="text-chalk-300">
         v 2026.04 · NO ADS · NO TRACKING
       </Mono>
     </footer>

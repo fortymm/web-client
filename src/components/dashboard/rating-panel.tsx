@@ -37,7 +37,7 @@ export function RatingPanel() {
           {ME.rating}
         </Mono>
         <div className="pb-2.5">
-          <Mono size={12} color="var(--color-chalk-300)">
+          <Mono size={12} className="text-chalk-300">
             peak <span className="text-chalk-50">1,870</span>
           </Mono>
           <div className="text-[12px] text-chalk-300">A / region top 12%</div>
@@ -85,10 +85,10 @@ export function RatingPanel() {
       </svg>
 
       <div className="mt-2 flex justify-between">
-        <Mono size={10} color="var(--color-chalk-300)">
+        <Mono size={10} className="text-chalk-300">
           12 WEEKS AGO
         </Mono>
-        <Mono size={10} color="var(--color-chalk-300)">
+        <Mono size={10} className="text-chalk-300">
           TODAY
         </Mono>
       </div>

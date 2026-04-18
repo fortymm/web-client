@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { GameScore, LiveMatch } from './data'
 import { LiveDot, Mono, Overline, Pill } from './primitives'
 
@@ -77,7 +78,7 @@ export function LiveMatchScoreboard({
             <span>BEST OF {match.bestOf}</span>
           </div>
           <div className="flex-1" />
-          <Mono size={13} color="var(--color-chalk-300)">
+          <Mono size={13} className="text-chalk-300">
             ⌚ {match.timer} since {match.startedAt}
           </Mono>
           <Button variant="ghost-secondary" size="sm" onClick={onExit}>
@@ -127,14 +128,14 @@ export function LiveMatchScoreboard({
           <Button variant="primary" size="lg">
             <Plus />
             +1 for me
-            <Mono size={11} color="var(--color-ink-950)" className="ml-1">
+            <Mono size={11} className="ml-1 text-ink-950">
               SPACE
             </Mono>
           </Button>
           <Button variant="secondary" size="lg">
             <Plus />
             +1 for opponent
-            <Mono size={11} color="var(--color-chalk-300)" className="ml-1">
+            <Mono size={11} className="ml-1 text-chalk-300">
               N
             </Mono>
           </Button>
@@ -154,7 +155,7 @@ export function LiveMatchScoreboard({
           <Button
             variant="ghost-secondary"
             size="lg"
-            className="border-[rgba(255,77,109,0.4)] text-loss hover:bg-loss/10 hover:text-loss"
+            className="border-loss/40 text-loss hover:bg-loss/10 hover:text-loss"
           >
             <X />
             Retire
@@ -256,23 +257,15 @@ type CenterScoreProps = {
 function CenterScore({ myScore, theirScore, gameLabel }: CenterScoreProps) {
   return (
     <div className="flex min-w-[320px] flex-col items-center gap-1">
-      <Overline
-        className="text-ball-500"
-        style={{ letterSpacing: '0.22em' }}
-      >
+      <Overline className="tracking-[0.22em] text-ball-500">
         {gameLabel}
       </Overline>
       <div className="flex items-baseline gap-[18px] px-2.5 py-1.5">
-        <Mono size={132} color="var(--color-chalk-50)" weight={700}>
+        <Mono size={132} weight={700} className="text-chalk-50">
           {myScore}
         </Mono>
-        <span
-          className="font-display text-ink-400"
-          style={{ fontSize: 38 }}
-        >
-          —
-        </span>
-        <Mono size={132} color="var(--color-chalk-100)" weight={700}>
+        <span className="font-display text-[38px] text-ink-400">—</span>
+        <Mono size={132} weight={700} className="text-chalk-100">
           {theirScore}
         </Mono>
       </div>
@@ -295,44 +288,21 @@ function GameStrip({
         return (
           <div
             key={i}
-            className="flex min-w-[92px] items-center gap-2.5 rounded-sm border px-3 py-1.5"
-            style={{
-              background: active
-                ? 'rgba(255,122,26,0.09)'
-                : 'var(--color-ink-800)',
-              borderColor: active
-                ? 'rgba(255,122,26,0.35)'
-                : 'var(--color-ink-600)',
-            }}
+            className={cn(
+              'flex min-w-[92px] items-center gap-2.5 rounded-sm border px-3 py-1.5',
+              active
+                ? 'bg-ball-500/9 border-ball-500/35'
+                : 'bg-ink-800 border-ink-600',
+            )}
           >
-            <Mono size={10} color="var(--color-chalk-300)">
+            <Mono size={10} className="text-chalk-300">
               G{i + 1}
             </Mono>
-            <Mono
-              size={15}
-              color={
-                g.winner === 'me'
-                  ? 'var(--color-serve-500)'
-                  : 'var(--color-chalk-50)'
-              }
-              weight={g.winner === 'me' ? 700 : 600}
-            >
-              {g.me}
-            </Mono>
-            <Mono size={11} color="var(--color-ink-400)">
+            <GameScoreCell score={g.me} won={g.winner === 'me'} />
+            <Mono size={11} className="text-ink-400">
               –
             </Mono>
-            <Mono
-              size={15}
-              color={
-                g.winner === 'them'
-                  ? 'var(--color-serve-500)'
-                  : 'var(--color-chalk-50)'
-              }
-              weight={g.winner === 'them' ? 700 : 600}
-            >
-              {g.them}
-            </Mono>
+            <GameScoreCell score={g.them} won={g.winner === 'them'} />
           </div>
         )
       })}
@@ -342,13 +312,25 @@ function GameStrip({
             key={`f${i}`}
             className="flex min-w-[92px] items-center justify-center rounded-sm border border-dashed border-ink-600 px-3 py-1.5"
           >
-            <Mono size={11} color="var(--color-ink-400)">
+            <Mono size={11} className="text-ink-400">
               G{games.length + i + 1}
             </Mono>
           </div>
         ),
       )}
     </div>
+  )
+}
+
+function GameScoreCell({ score, won }: { score: number; won: boolean }) {
+  return (
+    <Mono
+      size={15}
+      weight={won ? 700 : 600}
+      className={won ? 'text-serve-500' : 'text-chalk-50'}
+    >
+      {score}
+    </Mono>
   )
 }
 
@@ -378,7 +360,7 @@ function OpponentStrip({ match }: { match: LiveMatch }) {
         label="Rating gap"
         value={`+${match.me.rating - o.rating}`}
         sub="In your favour"
-        accent="var(--color-serve-500)"
+        accent="text-serve-500"
       />
     </div>
   )
@@ -403,16 +385,13 @@ function MetaTile({
     <div className="rounded-md border border-ink-600 bg-white/[0.015] px-3.5 py-3">
       <Overline>{label}</Overline>
       <div
-        className={
-          mono ? 'font-mono tabular-nums' : 'font-sans'
-        }
-        style={{
-          fontSize: mono ? 20 : 15,
-          color: accent ?? 'var(--color-chalk-50)',
-          marginTop: 4,
-          fontWeight: 600,
-          letterSpacing: mono ? '-0.01em' : '0',
-        }}
+        className={cn(
+          'mt-1 font-semibold',
+          mono
+            ? 'font-mono text-[20px] tracking-[-0.01em] tabular-nums'
+            : 'font-sans text-[15px]',
+          accent ?? 'text-chalk-50',
+        )}
       >
         {value}
       </div>
@@ -437,20 +416,13 @@ function LiveMatchHeroCard({
   theirGamesWon,
 }: HeroCardProps) {
   return (
-    <div
-      className="relative overflow-hidden rounded-lg border px-[22px] py-[18px]"
-      style={{
-        background: 'var(--color-ink-800)',
-        borderColor: 'rgba(0,226,154,0.35)',
-        boxShadow: '0 0 32px rgba(0,226,154,0.08)',
-      }}
-    >
+    <div className="relative overflow-hidden rounded-lg border border-serve-500/35 bg-ink-800 px-[22px] py-[18px] shadow-[0_0_32px_rgba(0,226,154,0.08)]">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Pill tone="live" icon={<LiveDot size={7} />}>
             YOU'RE ON · COURT {match.court}
           </Pill>
-          <Mono size={11} color="var(--color-chalk-300)">
+          <Mono size={11} className="text-chalk-300">
             {match.round} · G{match.games.length}
           </Mono>
         </div>
@@ -470,40 +442,34 @@ function LiveMatchHeroCard({
         style={{ gridTemplateColumns: '1fr auto 1fr' }}
       >
         <div>
-          <div
-            className="font-display uppercase tracking-[0.02em] text-chalk-50"
-            style={{ fontSize: 32 }}
-          >
+          <div className="font-display text-[32px] uppercase tracking-[0.02em] text-chalk-50">
             {match.me.name}
           </div>
-          <Mono size={11} color="var(--color-chalk-300)">
+          <Mono size={11} className="text-chalk-300">
             [#{match.me.seed}] · {match.me.rating} · YOU
           </Mono>
         </div>
         <div className="text-center">
           <div className="flex items-baseline justify-center gap-2.5">
-            <Mono size={52} color="var(--color-chalk-50)" weight={700}>
+            <Mono size={52} weight={700} className="text-chalk-50">
               {currentGame.me}
             </Mono>
-            <Mono size={22} color="var(--color-ink-400)">
+            <Mono size={22} className="text-ink-400">
               –
             </Mono>
-            <Mono size={52} color="var(--color-chalk-100)" weight={700}>
+            <Mono size={52} weight={700} className="text-chalk-100">
               {currentGame.them}
             </Mono>
           </div>
-          <Mono size={11} color="var(--color-chalk-300)">
+          <Mono size={11} className="text-chalk-300">
             games: {myGamesWon} – {theirGamesWon}
           </Mono>
         </div>
         <div className="text-right">
-          <div
-            className="font-display uppercase tracking-[0.02em] text-chalk-50"
-            style={{ fontSize: 32 }}
-          >
+          <div className="font-display text-[32px] uppercase tracking-[0.02em] text-chalk-50">
             {match.opponent.name}
           </div>
-          <Mono size={11} color="var(--color-chalk-300)">
+          <Mono size={11} className="text-chalk-300">
             [#{match.opponent.seed}] · {match.opponent.rating}
           </Mono>
         </div>

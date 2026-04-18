@@ -111,7 +111,7 @@ export function ContextRow({ state }: { state: DashboardState }) {
           : "When you're on court, the scoreboard takes over. We'll get out of your way."}
       </div>
       <div className="flex-1" />
-      <Mono size={11} color="var(--color-chalk-300)">
+      <Mono size={11} className="text-chalk-300">
         AUTO-FULL-BLEED
       </Mono>
     </div>

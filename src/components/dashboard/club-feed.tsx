@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import { CLUB_FEED, ME } from './data'
 import { Avatar, Card, Mono, SectionHeader, TextLink } from './primitives'
 
@@ -32,12 +33,10 @@ export function ClubFeed() {
               {f.meta && (
                 <Mono
                   size={11}
-                  color={
-                    f.tone === 'win'
-                      ? 'var(--color-serve-500)'
-                      : 'var(--color-chalk-300)'
-                  }
-                  className="mt-0.5 block"
+                  className={cn(
+                    'mt-0.5 block',
+                    f.tone === 'win' ? 'text-serve-500' : 'text-chalk-300',
+                  )}
                 >
                   {f.meta}
                 </Mono>
@@ -45,8 +44,7 @@ export function ClubFeed() {
             </div>
             <Mono
               size={10}
-              color="var(--color-chalk-300)"
-              className="mt-1 shrink-0 whitespace-nowrap"
+              className="mt-1 shrink-0 whitespace-nowrap text-chalk-300"
             >
               {f.when.toUpperCase()}
             </Mono>
