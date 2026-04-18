@@ -46,7 +46,7 @@ export function Footer() {
         ))}
       </div>
       <div className="mx-auto mt-14 flex max-w-[1200px] justify-between border-t border-ink-600 pt-6 font-mono text-[11px] font-medium tracking-[0.08em] text-chalk-300">
-        <span>v0.9.0 · commit a4f2e1 · status: operational</span>
+        <span>Glue · rubber · a little bit of chalk</span>
         <span>Play more. Pay never.</span>
       </div>
     </footer>

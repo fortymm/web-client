@@ -17,13 +17,18 @@ const FINAL_STEP = LINES.length + 1
 export function SolverCard() {
   const [step, setStep] = useState(0)
   useEffect(() => {
-    if (step >= FINAL_STEP) return
     const id = setInterval(() => {
       if (document.hidden) return
-      setStep((s) => (s >= FINAL_STEP ? s : s + 1))
+      setStep((s) => {
+        if (s >= FINAL_STEP) {
+          clearInterval(id)
+          return s
+        }
+        return s + 1
+      })
     }, 1200)
     return () => clearInterval(id)
-  }, [step])
+  }, [])
 
   const visible = LINES.slice(0, Math.min(step + 1, LINES.length))
 

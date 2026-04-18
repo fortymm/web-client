@@ -38,7 +38,7 @@ const QUESTIONS = [
 ] as const
 
 export function FAQ() {
-  const [open, setOpen] = useState<number>(0)
+  const [open, setOpen] = useState<number | null>(0)
   return (
     <section id="faq" className="py-26">
       <div className="mx-auto max-w-[1200px] px-10">
@@ -66,7 +66,7 @@ export function FAQ() {
                 )}
               >
                 <button
-                  onClick={() => setOpen(isOpen ? -1 : i)}
+                  onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   className="grid w-full cursor-pointer grid-cols-[40px_1fr_28px] items-center gap-4 bg-transparent px-7 py-5.5 text-left text-chalk-50 hover:bg-white/5"
