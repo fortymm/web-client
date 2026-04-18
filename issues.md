@@ -55,3 +55,32 @@ The project has no `vitest`/`jest` configured. The six-state matrix + the state 
 
 - **Don't copy `primitives.tsx` wholesale.** `Mono`/`Pill`/`Avatar` should move toward cva variants matching `Button` before they're reused.
 - **Consolidate the dashboard `Ball` with marketing `Logo`.** The SVG is nearly identical; `Logo` adds a cue-ball highlight ellipse the dashboard design omits. A `<Ball highlight={false} />` prop on one shared component would end the duplication.
+
+# TanStack Query / MSW follow-ups
+
+Review findings from PR #6. Capture before they compound; none block merge.
+
+## Medium
+
+### 10. UI `Player` type is the de facto API contract
+`src/lib/api/me.ts` and `src/mocks/handlers.ts` both import `Player` from `@/components/dashboard/data`. A dashboard refactor would ripple into the network + mock layers. Before the second endpoint lands, move API shapes to `src/lib/api/types.ts`; dashboard components consume from there, not vice versa.
+
+### 11. Playwright has no MSW
+Current e2e runs against `vite preview` (prod build), where MSW is gated off. Current specs don't hit `/api/*`, so this is latent. Before the first data-driven Playwright test, pick one:
+- Wire MSW into preview under a flag.
+- Switch e2e to `vite dev`.
+- Add per-test mocks via `page.route()`.
+
+## Low
+
+### 12. Dev `onUnhandledRequest` is `'bypass'`
+`src/main.tsx` — a typo'd endpoint silently hits the real network (or 404s) in dev. Consider `'warn'` so misrouted calls surface in DevTools without blocking.
+
+### 13. React Query defaults are loose
+`new QueryClient()` in `src/main.tsx` uses `staleTime: 0` (refetch on every mount) and `retry: 3` with exponential backoff. Decide on app-wide defaults (e.g. `staleTime: 30_000`, `retry: 1`) before many hooks land and start hammering the network.
+
+### 14. Test wrapper + query-key boilerplate
+`src/lib/api/me.test.tsx` inline-creates a `QueryClient({ retry: false })` + `QueryClientProvider` wrapper. On the second hook test, extract `src/test/query-wrapper.tsx` with a `renderHookWithQuery(hook)` helper. Also introduce a query-key factory (e.g. `meKeys.all = ['me'] as const`) before bare strings like `['me']` proliferate across hooks.
+
+### 15. `useMe` error discards response body
+`src/lib/api/me.ts` throws with `${res.status}` only. Once real endpoints ship, parse the JSON body (when present) into the error to keep debugging info. Not urgent.
