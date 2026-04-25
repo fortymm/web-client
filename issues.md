@@ -87,7 +87,18 @@ Current e2e runs against `vite preview` (prod build), where MSW is gated off. Cu
 
 # Session persistence follow-ups
 
-Review findings from `feat/create-session`. None block merge.
+Review findings from `feat/create-session` (PR #7). None block merge.
+
+## Medium
+
+### 19. No error boundary around the session Suspense
+`src/routes/_app.tsx` — the Suspense boundary has no `<ErrorBoundary>` paired with it. If `POST /v1/session` 5xxs or the network drops, the suspended throw surfaces past the layout with nothing to catch it (white screen). Wrap `<SessionGate />` in an error boundary with a "retry" affordance before the next feature adds a second authed route.
+
+### 20. JWT in localStorage is XSS-exposed
+`src/lib/auth/tokenStore.ts` persists the bearer token to localStorage, which any injected script can read. Mature option is an httpOnly cookie + `credentials: 'include'` (drags CORS into "allow credentials" territory). Defer until matches/ratings tie real value to identity, but keep this near the top of the post-merge backlog.
+
+### 21. Production CORS and build-time `VITE_API_URL`
+The Vite proxy at `vite.config.ts` (`server.proxy['/v1']`) hides cross-origin in dev and preview only. In production the static bundle calls `VITE_API_URL` directly, and the FastAPI app currently has no `CORSMiddleware`. First deploy will fail unless either (a) CORS is added on the API for the web origin, or (b) both are fronted by the same reverse proxy with relative URLs. `VITE_API_URL` is also baked at build time — consider a runtime `/config.json` fetch on boot if one image needs to span environments.
 
 ## Low
 
@@ -99,3 +110,15 @@ Review findings from `feat/create-session`. None block merge.
 
 ### 18. Private/incognito creates anonymous users on every refresh
 When localStorage throws (Safari private browsing, sandboxed iframes), the store stays `null` and each load creates a fresh user. Acceptable today; revisit once matches/ratings make ephemeral identity user-visible (e.g. a "your stats won't persist" banner).
+
+### 22. Suspense fallback is `null` (white flash)
+`src/routes/_app.tsx` renders `<Suspense fallback={null}>` while the session POST is in flight. On a real network this is a blank page for the round-trip. Even a placeholder div with the dashboard's background colour would prevent the flash.
+
+### 23. `/v1/session` failure path is untested
+`src/lib/api/session.ts` throws inside the queryFn on `error`, but no test covers it. Add an MSW handler returning `{ status: 500 }` and assert the throw surfaces. Will need an error boundary in the test wrapper once #19 lands.
+
+### 24. Vite proxy target is hardcoded
+`vite.config.ts` — the dev/preview proxy `apiProxy` points at `http://127.0.0.1:4001`, assuming every dev runs the `fortymm-api` Docker container with that exact port mapping. Either source from `VITE_API_PROXY_TARGET` with that as the default, or add a comment explaining the assumption.
+
+### 25. `--legacy-peer-deps` needed for fresh installs
+`openapi-typescript@7` declares `peerDependencies.typescript: "^5.x"` but the repo is on `typescript@6`. `npm ci` follows the lockfile so CI is unaffected; anyone running `npm install` from scratch hits ERESOLVE. Add `legacy-peer-deps=true` to a project-level `.npmrc`, or upgrade `openapi-typescript` once it supports TS 6.
