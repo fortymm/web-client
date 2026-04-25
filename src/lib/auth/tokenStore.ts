@@ -11,7 +11,8 @@ export const useTokenStore = create<TokenState>()(
   persist(
     (set) => ({
       token: null,
-      setToken: (token) => set({ token }),
+      setToken: (token) =>
+        set((state) => (state.token === token ? state : { token })),
       clearToken: () => set({ token: null }),
     }),
     {
