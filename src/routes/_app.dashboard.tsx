@@ -13,7 +13,7 @@ import { TDPanel } from '@/components/dashboard/td-panel'
 import { TopBar } from '@/components/dashboard/topbar'
 import { TournamentPanel } from '@/components/dashboard/tournament-panel'
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute('/_app/dashboard')({
   component: DashboardPage,
 })
 

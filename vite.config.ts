@@ -18,4 +18,20 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/v1': {
+        target: 'http://127.0.0.1:4001',
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    proxy: {
+      '/v1': {
+        target: 'http://127.0.0.1:4001',
+        changeOrigin: true,
+      },
+    },
+  },
 })

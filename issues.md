@@ -84,3 +84,18 @@ Current e2e runs against `vite preview` (prod build), where MSW is gated off. Cu
 
 ### 15. `useMe` error discards response body
 `src/lib/api/me.ts` throws with `${res.status}` only. Once real endpoints ship, parse the JSON body (when present) into the error to keep debugging info. Not urgent.
+
+# Session persistence follow-ups
+
+Review findings from `feat/create-session`. None block merge.
+
+## Low
+
+### 16. Multi-tab token sync
+`src/lib/auth/tokenStore.ts` — zustand `persist` writes localStorage, but the in-memory store is per-tab. If tab A rotates its token, tab B keeps stale state until its next page load. Subscribe to `storage` events (or use zustand's rehydrate hook) if cross-tab consistency starts to matter.
+
+### 17. Token rotation behavior is undocumented
+`src/lib/api/session.ts` — the queryFn overwrites the stored token on every successful POST. This is intentional (supports server-side rotation) but should be commented near the call so a future reader doesn't "fix" it back to a write-once pattern.
+
+### 18. Private/incognito creates anonymous users on every refresh
+When localStorage throws (Safari private browsing, sandboxed iframes), the store stays `null` and each load creates a fresh user. Acceptable today; revisit once matches/ratings make ephemeral identity user-visible (e.g. a "your stats won't persist" banner).
