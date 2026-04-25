@@ -5,6 +5,10 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 
+const apiProxy = {
+  '/v1': { target: 'http://127.0.0.1:4001', changeOrigin: true },
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -18,4 +22,6 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: { proxy: apiProxy },
+  preview: { proxy: apiProxy },
 })

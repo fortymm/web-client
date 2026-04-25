@@ -16,7 +16,7 @@ declare module '@tanstack/react-router' {
 
 const queryClient = new QueryClient()
 
-if (import.meta.env.DEV) {
+if (import.meta.env.VITE_USE_MOCKS === 'true') {
   const { worker } = await import('./mocks/browser')
   try {
     await worker.start({ onUnhandledRequest: 'bypass' })
