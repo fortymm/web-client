@@ -12,7 +12,7 @@ export const handlers = [
     }
     return HttpResponse.json(player)
   }),
-  http.post('*/v1/session', () => {
+  http.post('*/api/v1/session', () => {
     const session: Session = {
       token: faker.string.alphanumeric(32),
       user: {
