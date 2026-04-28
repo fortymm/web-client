@@ -15,7 +15,7 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:install": "playwright install --with-deps",
-    "codegen:api": "openapi-typescript https://api.fortymm.mightymoose.dev/openapi.json -o src/lib/api/schema.d.ts"
+    "codegen:api": "npx --yes openapi-typescript@^7 https://api.fortymm.mightymoose.dev/openapi.json -o src/lib/api/schema.d.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
@@ -61,7 +61,6 @@
     "globals": "^17.4.0",
     "jsdom": "^29.0.2",
     "msw": "^2.13.4",
-    "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4.2.2",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
