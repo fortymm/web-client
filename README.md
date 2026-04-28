@@ -45,11 +45,19 @@ services:
 
 ### Behind a reverse proxy
 
+The bundle calls the API at the relative path `/api/*`, so your reverse proxy
+must route `/api/*` to the FortyMM API and everything else to this container.
+
 Caddy:
 
 ```
 fortymm.example.com {
-    reverse_proxy localhost:8080
+    handle /api/* {
+        reverse_proxy api.internal:4001
+    }
+    handle {
+        reverse_proxy localhost:8080
+    }
 }
 ```
 
@@ -60,6 +68,13 @@ server {
     listen 443 ssl;
     server_name fortymm.example.com;
 
+    location /api/ {
+        proxy_pass http://api.internal:4001/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
     location / {
         proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
@@ -69,7 +84,9 @@ server {
 }
 ```
 
-The container itself serves plain HTTP on port 80 — terminate TLS at your reverse proxy.
+The trailing slash on `proxy_pass http://api.internal:4001/` strips the
+`/api/` prefix so the upstream sees `/v1/...`. Terminate TLS at your reverse
+proxy — the container itself serves plain HTTP on port 80.
 
 ### Build the image locally
 

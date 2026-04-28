@@ -21,7 +21,7 @@ function makeWrapper() {
 describe('useSession', () => {
   it('returns the session from POST /v1/session', async () => {
     server.use(
-      http.post('*/v1/session', () =>
+      http.post('*/api/v1/session', () =>
         HttpResponse.json({
           token: 'test-token',
           user: {
@@ -47,7 +47,7 @@ describe('useSession', () => {
     useTokenStore.setState({ token: 'stored-token' })
     let receivedAuthHeader: string | null = null
     server.use(
-      http.post('*/v1/session', ({ request }) => {
+      http.post('*/api/v1/session', ({ request }) => {
         receivedAuthHeader = request.headers.get('authorization')
         return HttpResponse.json({
           token: 'next-token',
@@ -63,7 +63,7 @@ describe('useSession', () => {
 
   it('persists the response token', async () => {
     server.use(
-      http.post('*/v1/session', () =>
+      http.post('*/api/v1/session', () =>
         HttpResponse.json({
           token: 'rotated-token',
           user: { id: '00000000-0000-0000-0000-000000000003', username: 'tester' },
