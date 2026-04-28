@@ -45,6 +45,8 @@ jobs:
       - run: npm ci
 
       - run: npm run build
+        env:
+          VITE_USE_MOCKS: 'true'
 
       - id: playwright-version
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
